@@ -19,12 +19,6 @@ header h1 {
   margin: 0 0 10px;
 }
 
-header ul {
-  list-style: disc;
-  margin: 10px auto 0;
-  padding: 0 0 0 20px;
-}
-
 /* Tabs Navigation */
 #category-tabs {
   display: flex;
@@ -107,7 +101,6 @@ input[type="checkbox"] {
 input[type="color"],
 input[type="number"],
 select,
-.operator-select,
 input[type="text"] {
   margin-left: 8px;
   background-color: #333;
