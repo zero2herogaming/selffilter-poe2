@@ -21,8 +21,7 @@ function hexToRGB(hex) {
 
 /***************************************************************
  * 2. FULL CATEGORIES & SUB-ITEMS
- * Each sub-item includes "isStackable" / "usesItemLevel" so we 
- * only show relevant fields in the UI (StackSize vs. ItemLevel).
+ * These are the 10 categories you requested, each with sub-items.
  ***************************************************************/
 const CATEGORIES = [
   {
@@ -36,7 +35,7 @@ const CATEGORIES = [
         enabled: true,
         showOrHide: "Show",
         isStackable: false,
-        usesItemLevel: true, 
+        usesItemLevel: true,
       },
       {
         id: 2,
@@ -127,7 +126,7 @@ const CATEGORIES = [
       { id: 60, name: "Flasks", enabled: false, showOrHide: "Show", isStackable: false, usesItemLevel: true },
       { id: 61, name: "Life Flasks", enabled: false, showOrHide: "Show", isStackable: false, usesItemLevel: true },
       { id: 62, name: "Mana Flasks", enabled: false, showOrHide: "Show", isStackable: false, usesItemLevel: true },
-      { id: 63, name: "Charms", enabled: false, showOrHide: "Show", isStackable: false, usesItemLevel: false }, 
+      { id: 63, name: "Charms", enabled: false, showOrHide: "Show", isStackable: false, usesItemLevel: false },
     ],
   },
   {
@@ -155,7 +154,7 @@ const CATEGORIES = [
   {
     categoryId: "jewels",
     categoryName: "Jewels",
-    description: "Generic Jewels (e.g. Abyss Jewels, Timeless Jewels, etc.)",
+    description: "Generic Jewels (Abyss, Timeless, etc.)",
     itemTypes: [
       { id: 90, name: "Jewels", enabled: false, showOrHide: "Show", isStackable: false, usesItemLevel: true },
     ],
@@ -211,13 +210,6 @@ function activateCategory(index) {
 
 /***************************************************************
  * 4. BUILD THE HTML FOR EACH ITEM TYPE
- *    - Enable/Disable
- *    - Show/Hide
- *    - Rarity checkboxes
- *    - AreaLevel always optional
- *    - If usesItemLevel: show itemLevel fields
- *    - If isStackable: show stackSize fields
- *    - Colors & sound
  ***************************************************************/
 function createItemTypeHTML(categoryId, item) {
   const container = document.createElement("div");
@@ -288,42 +280,21 @@ function createItemTypeHTML(categoryId, item) {
   }
 
   // Colors
-  if (item.colorSettings) {
-    const textC = rgbaToHex(item.colorSettings.textColor);
-    const borderC = rgbaToHex(item.colorSettings.borderColor);
-    const bgC = rgbaToHex(item.colorSettings.backgroundColor);
-    const fs = item.colorSettings.fontSize || 35;
-    html += `
-      <label>Text Color:
-        <input type="color" id="textColor-${categoryId}-${item.id}" value="${textC}"/>
-      </label>
-      <label>Border Color:
-        <input type="color" id="borderColor-${categoryId}-${item.id}" value="${borderC}"/>
-      </label>
-      <label>Background Color:
-        <input type="color" id="bgColor-${categoryId}-${item.id}" value="${bgC}"/>
-      </label>
-      <label>Font Size:
-        <input type="number" id="fontSize-${categoryId}-${item.id}" value="${fs}" min="12" max="60"/>
-      </label>
-    `;
-  } else {
-    // Default color inputs
-    html += `
-      <label>Text Color:
-        <input type="color" id="textColor-${categoryId}-${item.id}" value="#ffffff"/>
-      </label>
-      <label>Border Color:
-        <input type="color" id="borderColor-${categoryId}-${item.id}" value="#ffffff"/>
-      </label>
-      <label>Background Color:
-        <input type="color" id="bgColor-${categoryId}-${item.id}" value="#000000"/>
-      </label>
-      <label>Font Size:
-        <input type="number" id="fontSize-${categoryId}-${item.id}" value="35" min="12" max="60"/>
-      </label>
-    `;
-  }
+  // If you want default color settings, you can do so here
+  html += `
+    <label>Text Color:
+      <input type="color" id="textColor-${categoryId}-${item.id}" value="#ffffff"/>
+    </label>
+    <label>Border Color:
+      <input type="color" id="borderColor-${categoryId}-${item.id}" value="#ffffff"/>
+    </label>
+    <label>Background Color:
+      <input type="color" id="bgColor-${categoryId}-${item.id}" value="#000000"/>
+    </label>
+    <label>Font Size:
+      <input type="number" id="fontSize-${categoryId}-${item.id}" value="35" min="12" max="60"/>
+    </label>
+  `;
 
   // Sound
   html += `
@@ -374,7 +345,6 @@ function generateFilterContent() {
       if (rareCk)   rarities.push("Rare");
       if (uniqCk)   rarities.push("Unique");
       if (rarities.length > 0) {
-        // PoE syntax for multiple rarities can be "Rarity Normal Rare Unique"
         ruleBlock += `  Rarity ${rarities.join(" ")}\n`;
       }
 
@@ -400,12 +370,12 @@ function generateFilterContent() {
         if (maxStack > 0 && maxStack >= minStack) ruleBlock += `  StackSize <= ${maxStack}\n`;
       }
 
-      // Decide if we do Class or BaseType
-      // For gear (isStackable=false) we do Class "X"
-      // For currency (isStackable=true) we do BaseType "X"
+      // Class or BaseType
       if (item.isStackable) {
+        // For currency, do BaseType
         ruleBlock += `  BaseType "${item.name}"\n`;
       } else {
+        // For gear-like items, do Class
         ruleBlock += `  Class "${item.name}"\n`;
       }
 
@@ -423,8 +393,8 @@ function generateFilterContent() {
       if (fontVal) ruleBlock += `  SetFontSize ${fontVal}\n`;
 
       // Alert Sound
-      const aSound = document.getElementById(`alertSound-${cat.categoryId}-${item.id}`).value;
-      const aDur   = document.getElementById(`alertDuration-${cat.categoryId}-${item.id}`).value;
+      const aSound = document.getElementById(`alertSound-${cat.categoryId}-${item.id}`)?.value;
+      const aDur   = document.getElementById(`alertDuration-${cat.categoryId}-${item.id}`)?.value;
       if (aSound) {
         ruleBlock += `  PlayAlertSound ${aSound} ${aDur}\n`;
       }
@@ -443,7 +413,7 @@ function generateFilterContent() {
 function init() {
   createTabs();
   createCategorySections();
-  activateCategory(0); // default to first category
+  activateCategory(0); // Show the first category by default
 }
 
 document.getElementById("filter-form").addEventListener("submit", function (e) {
