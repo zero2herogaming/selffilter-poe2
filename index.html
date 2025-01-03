@@ -3,22 +3,27 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>PoE2 - Streamlined Filter Builder</title>
+  <title>PoE2 - Filter Builder with Load Feature</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <header>
-    <h1>Path of Exile 2 - Streamlined Filter Builder</h1>
+    <h1>Path of Exile 2 - Filter Builder with Load Feature</h1>
     <p>
-      Choose which items to <strong>Show</strong> or <strong>Hide</strong>, select any rarities (Normal, Magic, Rare, Unique),
-      and specify conditions (<code>AreaLevel >= x</code>, <code>ItemLevel = x</code>, <code>Sockets > x</code>,
-      <code>Quality > x</code>, <code>StackSize >= x</code>) only if they appeared in your filters. 
-      Customize colors and alert sounds, then click <strong>“Generate My Filter!”</strong>.
+      You can <strong>paste</strong> an existing <code>.filter</code> in the box below
+      to <strong>load</strong> its settings. Then, customize as needed and click
+      "Generate My Filter!" to download your new version.
     </p>
   </header>
 
+  <section id="load-filter-section" style="margin: 20px auto; max-width: 1000px;">
+    <h2>Load Existing Filter</h2>
+    <textarea id="filter-load-text" rows="8" style="width: 100%;"></textarea><br/>
+    <button id="load-filter-button">Load Filter from Text</button>
+  </section>
+
   <nav id="category-tabs">
-    <!-- Tabs for categories, created in script.js -->
+    <!-- Tabs for categories (created in script.js) -->
   </nav>
 
   <main>
@@ -28,7 +33,7 @@
     </form>
 
     <div id="download-section" style="display: none;">
-      <p>Your custom filter is ready! Download below:</p>
+      <p>Your custom filter is ready! Download it below:</p>
       <a id="download-link" href="#" download="my-custom-filter.filter">Download Filter</a>
     </div>
   </main>
