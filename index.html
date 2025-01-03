@@ -3,41 +3,60 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>PoE2 - Filter Builder with Load Feature</title>
+  <title>PoE2 - Custom Filter Builder</title>
+  <!-- Make sure style.css is present in the same folder, or update the path if needed -->
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <header>
-    <h1>Path of Exile 2 - Filter Builder with Load Feature</h1>
+    <h1>Path of Exile 2 - Custom Filter Builder</h1>
     <p>
-      You can <strong>paste</strong> an existing <code>.filter</code> in the box below
-      to <strong>load</strong> its settings. Then, customize as needed and click
-      "Generate My Filter!" to download your new version.
+      Use this tool to create or edit your own PoE2 filter. You can:
+    </p>
+    <ul>
+      <li><strong>Paste</strong> an existing filter into the box below to load its lines.</li>
+      <li><strong>Enable</strong> or <strong>disable</strong> specific sub-items, choose <strong>Show</strong> or <strong>Hide</strong>.</li>
+      <li>Select any combination of <strong>Rarities</strong> (Normal, Magic, Rare, Unique).</li>
+      <li>Specify <code>Sockets &gt; x</code>, <code>Quality &gt; x</code>, <code>ItemLevel = x</code>, or <code>AreaLevel &gt;= x</code> only if you want them.</li>
+      <li>Set <strong>colors</strong>, <strong>font size</strong>, or <strong>alert sounds</strong>.</li>
+    </ul>
+    <p>
+      When done, click <strong>"Generate My Filter!"</strong> to download a 
+      final <code>.filter</code> file ready for Path of Exile 2.
     </p>
   </header>
 
+  <!-- Section to load an existing filter -->
   <section id="load-filter-section" style="margin: 20px auto; max-width: 1000px;">
     <h2>Load Existing Filter</h2>
-    <textarea id="filter-load-text" rows="8" style="width: 100%;"></textarea><br/>
+    <textarea 
+      id="filter-load-text" 
+      rows="8" 
+      style="width: 100%;" 
+      placeholder="Paste an existing filter here..."
+    ></textarea><br/>
     <button id="load-filter-button">Load Filter from Text</button>
   </section>
 
+  <!-- Tabs for categories (constructed via script.js) -->
   <nav id="category-tabs">
-    <!-- Tabs for categories (created in script.js) -->
+    <!-- script.js will create the buttons -->
   </nav>
 
   <main>
     <form id="filter-form">
-      <!-- Category sections inserted here by script.js -->
+      <!-- script.js will insert category sections here -->
       <button type="submit" id="generate-button">Generate My Filter!</button>
     </form>
 
-    <div id="download-section" style="display: none;">
+    <!-- Download section for the generated .filter -->
+    <div id="download-section" style="display: none; margin-top: 20px; text-align: center;">
       <p>Your custom filter is ready! Download it below:</p>
       <a id="download-link" href="#" download="my-custom-filter.filter">Download Filter</a>
     </div>
   </main>
 
+  <!-- Link to your script (make sure script.js is in the same folder or correct path) -->
   <script src="script.js"></script>
 </body>
 </html>
