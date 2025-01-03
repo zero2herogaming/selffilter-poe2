@@ -19,12 +19,6 @@ header h1 {
   margin: 0 0 10px;
 }
 
-header ul {
-  list-style: none;
-  padding: 0;
-  margin: 10px 0 0;
-}
-
 /* Tabs Navigation */
 #category-tabs {
   display: flex;
@@ -63,13 +57,8 @@ main {
   margin-top: 20px;
 }
 
-/* Category Section */
 .category-section {
-  display: none; /* hidden by default; JS will show the active one */
-}
-
-.category-section.active {
-  display: block;
+  display: none; /* hidden by default; shown by script.js */
   margin-bottom: 30px;
   border: 1px solid #444;
   border-radius: 5px;
@@ -77,12 +66,15 @@ main {
   background-color: #1e1e1e;
 }
 
+.category-section.active {
+  display: block;
+}
+
 .category-section h2 {
   margin-top: 0;
 }
 
-/* Individual Rule Panels */
-.rule {
+.item-type {
   background-color: #2a2a2a;
   margin-bottom: 15px;
   padding: 15px;
@@ -90,27 +82,21 @@ main {
   border: 1px solid #444;
 }
 
-.rule-title {
+.item-type-title {
   font-weight: bold;
   margin-bottom: 5px;
   color: #ffa500;
 }
 
-.rule label {
+.item-type label {
   display: block;
   margin-top: 8px;
-}
-
-.rule small {
-  font-size: 0.9em;
-  color: #aaa;
 }
 
 input[type="checkbox"] {
   margin-right: 8px;
 }
 
-/* Inputs */
 input[type="color"],
 input[type="number"],
 select,
@@ -142,7 +128,6 @@ input[type="text"] {
   background-color: #316bd1;
 }
 
-/* Download Section */
 #download-section {
   margin-top: 20px;
   text-align: center;
