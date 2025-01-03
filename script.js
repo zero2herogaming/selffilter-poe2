@@ -7,7 +7,7 @@ function rgbaToHex(rgba) {
   if (!match) return "#ffffff";
   const [r, g, b] = match;
   return `#${[r, g, b]
-    .map((x) => parseInt(x).toString(16).padStart(2,"0"))
+    .map(x => parseInt(x).toString(16).padStart(2,"0"))
     .join("")}`;
 }
 
@@ -20,24 +20,22 @@ function hexToRGB(hex) {
 }
 
 /***************************************************************
- * 2. COMPLETE CATEGORIES & ITEMS
- *    (Ten categories, each with sub-items. 
- *     We add any new references from your new filters so that 
- *     lines like BaseType "Furtive Wraps" or Class "Relic" 
- *     are recognized.)
+ * 2. CATEGORIES & ITEMS
+ *    - All 10 categories: Gems, One-Handed, Two-Handed, Off-hand,
+ *      Armour, Jewellery, Flasks, Currency, Waystones, Jewels.
+ *    - Sub-items reference everything from your older & newer filters:
+ *      e.g. "Uncut Spirit Gem", "Distilled Disgust", "Expert Zealot",
+ *      etc. 
  ***************************************************************/
 const CATEGORIES = [
   {
     categoryId: "gems",
     categoryName: "Gems",
-    description: "Covers skill gems, spirit gems, timeless, relic, etc.",
+    description: "Skill Gems, Support Gems, Spirit Gems, Timeless, Relics, etc.",
     itemTypes: [
-      // Uncut Gems
       { id:1,  name: "Uncut Spirit Gem",   showOrHide: "Show", enabled: false, isStackable: false, usesItemLevel: true },
       { id:2,  name: "Uncut Support Gem",  showOrHide: "Show", enabled: false, isStackable: false, usesItemLevel: true },
       { id:3,  name: "Uncut Skill Gem",    showOrHide: "Show", enabled: false, isStackable: false, usesItemLevel: true },
-
-      // Soul Core, Timeless, plus any relic references that the filter uses Class "Relic" for
       { id:4,  name: "Soul Core",          showOrHide: "Show", enabled: false, isStackable: false, usesItemLevel: false },
       { id:5,  name: "Timeless",           showOrHide: "Show", enabled: false, isStackable: false, usesItemLevel: false },
       { id:6,  name: "Relic",              showOrHide: "Show", enabled: false, isStackable: false, usesItemLevel: false }
@@ -46,22 +44,21 @@ const CATEGORIES = [
   {
     categoryId: "weapons-onehand",
     categoryName: "One-Handed Weapons",
-    description: "Claws, Daggers, Wands, Swords, Axes, Maces, etc.",
+    description: "Claws, Daggers, Wands, Swords, Axes, Maces, Sceptres, Flails, Spears, etc.",
     itemTypes: [
-      { id:10, name: "Claws",            showOrHide: "Show", enabled: false, isStackable: false, usesItemLevel: true },
-      { id:11, name: "Daggers",          showOrHide: "Show", enabled: false, isStackable: false, usesItemLevel: true },
-      { id:12, name: "Wands",            showOrHide: "Show", enabled: false, isStackable: false, usesItemLevel: true },
-      { id:13, name: "One Hand Swords",  showOrHide: "Show", enabled: false, isStackable: false, usesItemLevel: true },
-      { id:14, name: "One Hand Axes",    showOrHide: "Show", enabled: false, isStackable: false, usesItemLevel: true },
-      { id:15, name: "One Hand Maces",   showOrHide: "Show", enabled: false, isStackable: false, usesItemLevel: true },
-      { id:16, name: "Sceptres",         showOrHide: "Show", enabled: false, isStackable: false, usesItemLevel: true },
-      { id:17, name: "Spears",           showOrHide: "Show", enabled: false, isStackable: false, usesItemLevel: true },
-      { id:18, name: "Flails",           showOrHide: "Hide", enabled: false, isStackable: false, usesItemLevel: true },
-
-      // Additional from new filters:
-      { id:19, name: "Attuned Wand",     showOrHide: "Show", enabled: false, isStackable: false, usesItemLevel: true },
-      { id:20, name: "Siphoning Wand",   showOrHide: "Show", enabled: false, isStackable: false, usesItemLevel: true },
-      { id:21, name: "Spiked Club",      showOrHide: "Show", enabled: false, isStackable: false, usesItemLevel: true }
+      { id:10, name: "Claws",           showOrHide: "Show", enabled: false, isStackable: false, usesItemLevel: true },
+      { id:11, name: "Daggers",         showOrHide: "Show", enabled: false, isStackable: false, usesItemLevel: true },
+      { id:12, name: "Wands",           showOrHide: "Show", enabled: false, isStackable: false, usesItemLevel: true },
+      { id:13, name: "One Hand Swords", showOrHide: "Show", enabled: false, isStackable: false, usesItemLevel: true },
+      { id:14, name: "One Hand Axes",   showOrHide: "Show", enabled: false, isStackable: false, usesItemLevel: true },
+      { id:15, name: "One Hand Maces",  showOrHide: "Show", enabled: false, isStackable: false, usesItemLevel: true },
+      { id:16, name: "Sceptres",        showOrHide: "Show", enabled: false, isStackable: false, usesItemLevel: true },
+      { id:17, name: "Spears",          showOrHide: "Show", enabled: false, isStackable: false, usesItemLevel: true },
+      { id:18, name: "Flails",          showOrHide: "Hide", enabled: false, isStackable: false, usesItemLevel: true },
+      // Additional references: 
+      { id:19, name: "Attuned Wand",    showOrHide: "Show", enabled: false, isStackable: false, usesItemLevel: true },
+      { id:20, name: "Siphoning Wand",  showOrHide: "Show", enabled: false, isStackable: false, usesItemLevel: true },
+      { id:21, name: "Spiked Club",     showOrHide: "Show", enabled: false, isStackable: false, usesItemLevel: true }
     ]
   },
   {
@@ -73,24 +70,19 @@ const CATEGORIES = [
       { id:31, name: "Staves",          showOrHide: "Show", enabled: false, isStackable: false, usesItemLevel: true },
       { id:32, name: "Quarterstaves",   showOrHide: "Show", enabled: false, isStackable: false, usesItemLevel: true },
       { id:33, name: "Crossbows",       showOrHide: "Hide", enabled: false, isStackable: false, usesItemLevel: true },
-
-      // Additional references:
       { id:34, name: "Crude Bow",       showOrHide: "Show", enabled: false, isStackable: false, usesItemLevel: true },
-      { id:35, name: "Long Quarterstaff",showOrHide: "Show", enabled: false, isStackable: false, usesItemLevel: true }
+      { id:35, name: "Long Quarterstaff", showOrHide: "Show", enabled: false, isStackable: false, usesItemLevel: true }
     ]
   },
   {
     categoryId: "weapons-offhand",
-    categoryName: "Off-hand",
+    categoryName: "Off-hand Items",
     description: "Shields, Quivers, Foci, etc.",
     itemTypes: [
       { id:40, name: "Quivers", showOrHide: "Show", enabled: false, isStackable: false, usesItemLevel: true },
       { id:41, name: "Shields", showOrHide: "Show", enabled: false, isStackable: false, usesItemLevel: true },
-      { id:42, name: "Foci",    showOrHide: "Hide", enabled: false, isStackable: false, usesItemLevel: true },
-
-      // Additional
-      { id:43, name: "Spiked Club",     showOrHide: "Show", enabled: false, isStackable: false, usesItemLevel: true } 
-      // We see "Spiked Club" as a 1H, but let's keep it to ensure coverage
+      { id:42, name: "Foci",    showOrHide: "Hide", enabled: false, isStackable: false, usesItemLevel: true }
+      // If you have special references like "Stone Tower Shield", add them here if needed
     ]
   },
   {
@@ -102,8 +94,7 @@ const CATEGORIES = [
       { id:51, name: "Boots",        showOrHide: "Show", enabled: false, isStackable: false, usesItemLevel: true },
       { id:52, name: "Body Armours", showOrHide: "Show", enabled: false, isStackable: false, usesItemLevel: true },
       { id:53, name: "Helmets",      showOrHide: "Show", enabled: false, isStackable: false, usesItemLevel: true },
-
-      // Additional from filter:
+      // Additional references from new scripts:
       { id:54, name: "Armoured Cap",     showOrHide: "Show", enabled: false, isStackable: true, usesItemLevel: false },
       { id:55, name: "Furtive Wraps",    showOrHide: "Show", enabled: false, isStackable: true, usesItemLevel: false },
       { id:56, name: "Smuggler Coat",    showOrHide: "Show", enabled: false, isStackable: true, usesItemLevel: false },
@@ -118,8 +109,7 @@ const CATEGORIES = [
       { id:60, name: "Rings",   showOrHide: "Show", enabled: false, isStackable: false, usesItemLevel: true },
       { id:61, name: "Amulets", showOrHide: "Show", enabled: false, isStackable: false, usesItemLevel: true },
       { id:62, name: "Belts",   showOrHide: "Show", enabled: false, isStackable: false, usesItemLevel: true },
-
-      // Additional references: "Heavy Belt", "Ornate Belt", "Utility Belt", etc.
+      // Additional from new scripts:
       { id:63, name: "Heavy Belt",    showOrHide: "Show", enabled: false, isStackable: true, usesItemLevel: false },
       { id:64, name: "Ornate Belt",   showOrHide: "Show", enabled: false, isStackable: true, usesItemLevel: false },
       { id:65, name: "Utility Belt",  showOrHide: "Show", enabled: false, isStackable: true, usesItemLevel: false },
@@ -129,58 +119,50 @@ const CATEGORIES = [
   {
     categoryId: "flasks",
     categoryName: "Flasks",
-    description: "Flasks, plus new references from your script.",
+    description: "Flasks, Life, Mana, etc.",
     itemTypes: [
       { id:70, name: "Flasks",      showOrHide: "Show", enabled: false, isStackable: false, usesItemLevel: true },
       { id:71, name: "Life Flasks", showOrHide: "Show", enabled: false, isStackable: false, usesItemLevel: true },
       { id:72, name: "Mana Flasks", showOrHide: "Show", enabled: false, isStackable: false, usesItemLevel: true },
       { id:73, name: "Charms",      showOrHide: "Hide", enabled: false, isStackable: false, usesItemLevel: false },
-
-      // The filter includes "Flask" (BaseType "Flask") for unique items?
-      { id:74, name: "Flask",       showOrHide: "Show", enabled: false, isStackable: true,  usesItemLevel: false }
+      // Additional references:
+      { id:74, name: "Flask",       showOrHide: "Show", enabled: false, isStackable: true, usesItemLevel: false }
     ]
   },
   {
     categoryId: "currency",
     categoryName: "Currency",
-    description: "Orbs, Gold, Distilled, Splinters, Catalyst, etc.",
+    description: "Mirror, Divine, Distilled, Splinters, Catalyst, etc.",
     itemTypes: [
-      // Mirror, Divine, Perfect Jeweller's Orb, Greater Jeweller's Orb
-      { id:80,  name: "Mirror",                showOrHide: "Show", enabled: false, isStackable: true, usesItemLevel: false },
-      { id:81,  name: "Divine",                showOrHide: "Show", enabled: false, isStackable: true, usesItemLevel: false },
-      { id:82,  name: "Perfect Jeweller's Orb",showOrHide: "Show", enabled: false, isStackable: true, usesItemLevel: false },
-      { id:83,  name: "Greater Jeweller's Orb",showOrHide: "Show", enabled: false, isStackable: true, usesItemLevel: false },
+      { id:80, name: "Mirror",                showOrHide: "Show", enabled: false, isStackable: true, usesItemLevel: false },
+      { id:81, name: "Divine",                showOrHide: "Show", enabled: false, isStackable: true, usesItemLevel: false },
+      { id:82, name: "Perfect Jeweller's Orb",showOrHide: "Show", enabled: false, isStackable: true, usesItemLevel: false },
+      { id:83, name: "Greater Jeweller's Orb",showOrHide: "Show", enabled: false, isStackable: true, usesItemLevel: false },
 
-      // Distilled Isolation, Distilled Suffering, Distilled Fear, Distilled Despair, Distilled Disgust
-      { id:84,  name: "Distilled Isolation",   showOrHide: "Show", enabled: false, isStackable: true, usesItemLevel: false },
-      { id:85,  name: "Distilled Suffering",   showOrHide: "Show", enabled: false, isStackable: true, usesItemLevel: false },
-      { id:86,  name: "Distilled Fear",        showOrHide: "Show", enabled: false, isStackable: true, usesItemLevel: false },
-      { id:87,  name: "Distilled Despair",     showOrHide: "Show", enabled: false, isStackable: true, usesItemLevel: false },
-      { id:88,  name: "Distilled Disgust",     showOrHide: "Show", enabled: false, isStackable: true, usesItemLevel: false },
+      { id:84, name: "Distilled Isolation",   showOrHide: "Show", enabled: false, isStackable: true, usesItemLevel: false },
+      { id:85, name: "Distilled Suffering",   showOrHide: "Show", enabled: false, isStackable: true, usesItemLevel: false },
+      { id:86, name: "Distilled Fear",        showOrHide: "Show", enabled: false, isStackable: true, usesItemLevel: false },
+      { id:87, name: "Distilled Despair",     showOrHide: "Show", enabled: false, isStackable: true, usesItemLevel: false },
+      { id:88, name: "Distilled Disgust",     showOrHide: "Show", enabled: false, isStackable: true, usesItemLevel: false },
 
-      // Essence of, Catalyst, Omen of, Rune? (some might go in Jewels, but let's keep here to ensure coverage)
-      { id:89,  name: "Essence of",    showOrHide: "Show", enabled: false, isStackable: true, usesItemLevel: false },
-      { id:90,  name: "Catalyst",      showOrHide: "Show", enabled: false, isStackable: true, usesItemLevel: false },
-      { id:91,  name: "Omen of",       showOrHide: "Show", enabled: false, isStackable: false,usesItemLevel: false }, 
-      // "Exotic", "Exalted Orb", "Chaos Orb", "Vaal Orb," etc. 
-      { id:92,  name: "Exotic",        showOrHide: "Show", enabled: false, isStackable: true, usesItemLevel: false },
-      { id:93,  name: "Exalted Orb",   showOrHide: "Show", enabled: false, isStackable: true, usesItemLevel: false },
-      { id:94,  name: "Chaos Orb",     showOrHide: "Show", enabled: false, isStackable: true, usesItemLevel: false },
-      { id:95,  name: "Vaal Orb",      showOrHide: "Show", enabled: false, isStackable: true, usesItemLevel: false },
-
-      // "Gold"
-      { id:96,  name: "Gold",          showOrHide: "Show", enabled: false, isStackable: true, usesItemLevel: false },
-
-      // We can keep adding references from your scripts for full coverage ...
-      // "Neural Catalyst," "Adaptive Catalyst," etc.
-      { id:97,  name: "Neural Catalyst",    showOrHide: "Show", enabled: false, isStackable: true, usesItemLevel: false },
-      { id:98,  name: "Adaptive Catalyst",  showOrHide: "Show", enabled: false, isStackable: true, usesItemLevel: false }
+      { id:89, name: "Catalyst",              showOrHide: "Show", enabled: false, isStackable: true, usesItemLevel: false },
+      { id:90, name: "Essence of",            showOrHide: "Show", enabled: false, isStackable: true, usesItemLevel: false },
+      { id:91, name: "Chaos Orb",             showOrHide: "Show", enabled: false, isStackable: true, usesItemLevel: false },
+      { id:92, name: "Exotic",                showOrHide: "Show", enabled: false, isStackable: true, usesItemLevel: false },
+      { id:93, name: "Exalted Orb",           showOrHide: "Show", enabled: false, isStackable: true, usesItemLevel: false },
+      { id:94, name: "Vaal Orb",              showOrHide: "Show", enabled: false, isStackable: true, usesItemLevel: false },
+      { id:95, name: "Gemcutter's Prism",     showOrHide: "Show", enabled: false, isStackable: true, usesItemLevel: false },
+      { id:96, name: "Gold",                  showOrHide: "Show", enabled: false, isStackable: true, usesItemLevel: false },
+      // More e.g. "Neural Catalyst", "Adaptive Catalyst", etc.
+      { id:97, name: "Neural Catalyst",       showOrHide: "Show", enabled: false, isStackable: true, usesItemLevel: false },
+      { id:98, name: "Adaptive Catalyst",     showOrHide: "Show", enabled: false, isStackable: true, usesItemLevel: false },
+      // etc.
     ]
   },
   {
     categoryId: "waystones",
     categoryName: "Waystones",
-    description: "Any references to BaseType 'Waystone', including WaystoneTier logic.",
+    description: "BaseType 'Waystone', controlling WaystoneTier logic.",
     itemTypes: [
       { id:110, name: "Waystone", showOrHide: "Show", enabled: false, isStackable: true, usesItemLevel: false }
     ]
@@ -188,16 +170,13 @@ const CATEGORIES = [
   {
     categoryId: "jewels",
     categoryName: "Jewels",
-    description: "Class Jewel, Rare or Magic. Timeless Jewel, etc.",
+    description: "Class 'Jewel' Rare or Magic, Timeless Jewel, Runes, etc.",
     itemTypes: [
       { id:120, name: "Jewel",        showOrHide: "Show", enabled: false, isStackable: false, usesItemLevel: true },
-      // Any runes/charms that the script references:
       { id:121, name: " Rune",        showOrHide: "Show", enabled: false, isStackable: false, usesItemLevel: false },
       { id:122, name: " Charm",       showOrHide: "Show", enabled: false, isStackable: false, usesItemLevel: false },
-
-      // "Time-Lost Diamond," "Timeless Jewel," etc.
-      { id:123, name: "Time-Lost Diamond", showOrHide: "Show", enabled: false, isStackable: true,  usesItemLevel: false },
-      { id:124, name: "Timeless Jewel",    showOrHide: "Show", enabled: false, isStackable: false, usesItemLevel: false }
+      { id:123, name: "Timeless Jewel",   showOrHide: "Show", enabled: false, isStackable: false, usesItemLevel: false },
+      { id:124, name: "Time-Lost Diamond",showOrHide: "Show", enabled: false, isStackable: true, usesItemLevel: false }
     ]
   }
 ];
@@ -251,7 +230,7 @@ function activateCategory(index) {
 }
 
 /***************************************************************
- * 4. BUILD UI FOR EACH ITEM TYPE
+ * 4. BUILD THE HTML FOR EACH ITEM TYPE
  ***************************************************************/
 function createItemTypeHTML(categoryId, item) {
   const container = document.createElement("div");
@@ -287,6 +266,7 @@ function createItemTypeHTML(categoryId, item) {
     <label>Sockets >:
       <input type="number" id="sockets-${categoryId}-${item.id}" value="" min="0"/>
     </label>
+
     <label>Quality >:
       <input type="number" id="quality-${categoryId}-${item.id}" value="" min="0"/>
     </label>
@@ -308,7 +288,7 @@ function createItemTypeHTML(categoryId, item) {
     `;
   }
 
-  // Single-operator AreaLevel
+  // Single operator for AreaLevel
   html += `
     <label>AreaLevel:
       <select id="areaLevelOp-${categoryId}-${item.id}">
@@ -453,7 +433,9 @@ function generateFilterContent() {
 }
 
 /***************************************************************
- * 6. ADVANCED PARSING (Show/Hide -> UI)
+ * 6. ADVANCED PARSING + UNMATCHED LINES
+ *    If the line doesn't match a known pattern, we store it
+ *    in unmatchedLines[] so you see which lines we couldn't parse.
  ***************************************************************/
 function parseFilterText(rawText) {
   const text = rawText.trim();
@@ -462,8 +444,9 @@ function parseFilterText(rawText) {
     return;
   }
 
-  // Split lines, gather blocks
-  const lines = text.split(/\r?\n/).map(l=>l.trim()).filter(l=>l!=="");
+  // Split lines
+  const lines = text.split(/\r?\n/).map(l => l.trim()).filter(l=>l!=="");
+
   let blocks = [];
   let current = [];
 
@@ -475,7 +458,7 @@ function parseFilterText(rawText) {
   }
 
   lines.forEach(ln=>{
-    if (ln.startsWith("Show")||ln.startsWith("Hide")) {
+    if (ln.startsWith("Show") || ln.startsWith("Hide")) {
       pushBlock();
       current.push(ln);
     } else {
@@ -490,8 +473,8 @@ function parseFilterText(rawText) {
   }
 
   let matchedCount=0;
+  let unmatchedLines = [];
 
-  // Parse each block
   for (let block of blocks) {
     const showOrHide = block[0].startsWith("Show") ? "Show":"Hide";
     let linesDict = {
@@ -513,50 +496,70 @@ function parseFilterText(rawText) {
       alertDur:"300"
     };
 
+    // We'll store lines that couldn't be recognized:
+    let leftover = [];
+
     for (let line of block.slice(1)) {
+      let recognized = false;
+
       if (line.startsWith("Rarity ")) {
         linesDict.rarities=line.replace("Rarity ","").split(" ");
+        recognized = true;
       } else if (line.startsWith("Sockets > ")) {
         linesDict.sockets=parseInt(line.replace("Sockets > ",""),10);
+        recognized = true;
       } else if (line.startsWith("Quality > ")) {
         linesDict.quality=parseInt(line.replace("Quality > ",""),10);
+        recognized = true;
       } else if (line.startsWith("ItemLevel = ")) {
         linesDict.itemLevel=parseInt(line.replace("ItemLevel = ",""),10);
+        recognized = true;
       } else if (line.startsWith("StackSize >=")) {
         linesDict.stackSize=parseInt(line.replace("StackSize >=",""),10);
+        recognized = true;
       } else if (line.startsWith("AreaLevel ")) {
         const tokens=line.split(" ");
         if (tokens.length===3) {
           linesDict.areaOp=tokens[1];
-          linesDict.areaVal= parseInt(tokens[2],10);
+          linesDict.areaVal=parseInt(tokens[2],10);
+          recognized = true;
         }
       } else if (line.startsWith("Class ")) {
         let n=line.replace("Class ","").trim();
         linesDict.className=n.replace(/"/g,"");
+        recognized = true;
       } else if (line.startsWith("BaseType ")) {
         let n=line.replace("BaseType ","").trim();
         linesDict.baseName=n.replace(/"/g,"");
+        recognized = true;
       } else if (line.startsWith("SetTextColor ")) {
         linesDict.textColor=line.replace("SetTextColor ","").trim();
+        recognized = true;
       } else if (line.startsWith("SetBorderColor ")) {
         linesDict.borderColor=line.replace("SetBorderColor ","").trim();
+        recognized = true;
       } else if (line.startsWith("SetBackgroundColor ")) {
         linesDict.bgColor=line.replace("SetBackgroundColor ","").trim();
+        recognized = true;
       } else if (line.startsWith("SetFontSize ")) {
         linesDict.fontSize=line.replace("SetFontSize ","").trim();
+        recognized = true;
       } else if (line.startsWith("PlayAlertSound ")) {
         const parts=line.replace("PlayAlertSound ","").split(" ");
         linesDict.alertSound= parts[0];
         if (parts[1]) linesDict.alertDur= parts[1];
-      }
+        recognized = true;
+      } 
+      // If not recognized, store it
+      if (!recognized) leftover.push(line);
     }
 
-    // Attempt matching
+    // Attempt to match Class vs. BaseType
     let foundCat=null;
     let foundItem=null;
 
     if (linesDict.baseName) {
-      // stackable item
+      // isStackable
       for (let cat of CATEGORIES) {
         for (let it of cat.itemTypes) {
           if (it.isStackable && it.name===linesDict.baseName) {
@@ -566,7 +569,7 @@ function parseFilterText(rawText) {
         if (foundItem) break;
       }
     } else if (linesDict.className) {
-      // non-stackable item
+      // non-stackable
       for (let cat of CATEGORIES) {
         for (let it of cat.itemTypes) {
           if (!it.isStackable && it.name===linesDict.className) {
@@ -579,7 +582,7 @@ function parseFilterText(rawText) {
 
     if (foundCat && foundItem) {
       matchedCount++;
-      // enable
+      // enable item
       document.getElementById(`enable-${foundCat.categoryId}-${foundItem.id}`).checked=true;
       document.getElementById(`showOrHide-${foundCat.categoryId}-${foundItem.id}`).value= linesDict.showOrHide;
 
@@ -597,56 +600,72 @@ function parseFilterText(rawText) {
         document.getElementById(`rarity-unique-${foundCat.categoryId}-${foundItem.id}`).checked=true;
       }
 
+      // sockets, quality, itemLevel, stackSize, areaLevel
       if (linesDict.sockets>0) {
-        document.getElementById(`sockets-${foundCat.categoryId}-${foundItem.id}`).value=linesDict.sockets;
+        document.getElementById(`sockets-${foundCat.categoryId}-${foundItem.id}`).value= linesDict.sockets;
       }
       if (linesDict.quality>0) {
-        document.getElementById(`quality-${foundCat.categoryId}-${foundItem.id}`).value=linesDict.quality;
+        document.getElementById(`quality-${foundCat.categoryId}-${foundItem.id}`).value= linesDict.quality;
       }
       if (foundItem.usesItemLevel && linesDict.itemLevel>0) {
-        document.getElementById(`itemLevel-${foundCat.categoryId}-${foundItem.id}`).value=linesDict.itemLevel;
+        document.getElementById(`itemLevel-${foundCat.categoryId}-${foundItem.id}`).value= linesDict.itemLevel;
       }
       if (foundItem.isStackable && linesDict.stackSize>0) {
-        document.getElementById(`stackSize-${foundCat.categoryId}-${foundItem.id}`).value=linesDict.stackSize;
+        document.getElementById(`stackSize-${foundCat.categoryId}-${foundItem.id}`).value= linesDict.stackSize;
       }
       if (linesDict.areaOp && linesDict.areaVal>0) {
-        document.getElementById(`areaLevelOp-${foundCat.categoryId}-${foundItem.id}`).value=linesDict.areaOp;
-        document.getElementById(`areaLevelVal-${foundCat.categoryId}-${foundItem.id}`).value=linesDict.areaVal;
+        document.getElementById(`areaLevelOp-${foundCat.categoryId}-${foundItem.id}`).value= linesDict.areaOp;
+        document.getElementById(`areaLevelVal-${foundCat.categoryId}-${foundItem.id}`).value= linesDict.areaVal;
       }
 
-      // parse color lines -> hex
+      // color & font
       if (linesDict.textColor) {
-        const rgb= linesDict.textColor.split(" ").map(x=> parseInt(x,10));
+        let rgb= linesDict.textColor.split(" ").map(x=> parseInt(x,10));
         if (rgb.length>=3) {
           const cHex="#"+rgb.slice(0,3).map(x=> x.toString(16).padStart(2,"0")).join("");
           document.getElementById(`textColor-${foundCat.categoryId}-${foundItem.id}`).value=cHex;
         }
       }
       if (linesDict.borderColor) {
-        const rgb= linesDict.borderColor.split(" ").map(x=> parseInt(x,10));
+        let rgb= linesDict.borderColor.split(" ").map(x=> parseInt(x,10));
         if (rgb.length>=3) {
           const cHex="#"+rgb.slice(0,3).map(x=> x.toString(16).padStart(2,"0")).join("");
           document.getElementById(`borderColor-${foundCat.categoryId}-${foundItem.id}`).value=cHex;
         }
       }
       if (linesDict.bgColor) {
-        const rgb= linesDict.bgColor.split(" ").map(x=> parseInt(x,10));
+        let rgb= linesDict.bgColor.split(" ").map(x=> parseInt(x,10));
         if (rgb.length>=3) {
           const cHex="#"+rgb.slice(0,3).map(x=> x.toString(16).padStart(2,"0")).join("");
           document.getElementById(`bgColor-${foundCat.categoryId}-${foundItem.id}`).value=cHex;
         }
       }
       if (linesDict.fontSize) {
-        document.getElementById(`fontSize-${foundCat.categoryId}-${foundItem.id}`).value=linesDict.fontSize;
+        document.getElementById(`fontSize-${foundCat.categoryId}-${foundItem.id}`).value= linesDict.fontSize;
       }
       if (linesDict.alertSound) {
-        document.getElementById(`alertSound-${foundCat.categoryId}-${foundItem.id}`).value=linesDict.alertSound;
-        document.getElementById(`alertDuration-${foundCat.categoryId}-${foundItem.id}`).value=linesDict.alertDur;
+        document.getElementById(`alertSound-${foundCat.categoryId}-${foundItem.id}`).value= linesDict.alertSound;
+        document.getElementById(`alertDuration-${foundCat.categoryId}-${foundItem.id}`).value= linesDict.alertDur;
       }
+
+      // If leftover lines remain, store them as unmatched
+      if (leftover.length>0) {
+        leftover.forEach(l => unmatchedLines.push(`Block matched to '${foundItem.name}', but leftover line: ${l}`));
+      }
+    } else {
+      // entire block unmatched => store lines
+      unmatchedLines.push(`[UNMATCHED BLOCK Start: ${block[0]}]`);
+      leftover.forEach(l => unmatchedLines.push(`  leftover line: ${l}`));
+      unmatchedLines.push(`[UNMATCHED BLOCK End]\n`);
     }
   }
 
-  alert(`Loaded filter with ${blocks.length} blocks total. Matched & set ${matchedCount} item(s) in the UI!`);
+  let msg = `Loaded filter with ${blocks.length} blocks total. Matched & set ${matchedCount} item(s) in the UI!`;
+  if (unmatchedLines.length>0) {
+    msg += `\n\nHowever, ${unmatchedLines.length} lines/blocks were NOT matched:\n` +
+           unmatchedLines.join("\n");
+  }
+  alert(msg);
 }
 
 /***************************************************************
@@ -660,8 +679,8 @@ function init() {
   const loadBtn = document.getElementById("load-filter-button");
   if (loadBtn) {
     loadBtn.addEventListener("click", () => {
-      const raw = document.getElementById("filter-load-text")?.value || "";
-      parseFilterText(raw);
+      const rawText = document.getElementById("filter-load-text")?.value || "";
+      parseFilterText(rawText);
     });
   }
 }
@@ -680,4 +699,3 @@ document.getElementById("filter-form").addEventListener("submit", function(e) {
 });
 
 window.addEventListener("DOMContentLoaded", init);
-
