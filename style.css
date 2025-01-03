@@ -19,6 +19,12 @@ header h1 {
   margin: 0 0 10px;
 }
 
+header ul {
+  list-style: disc;
+  margin: 10px auto 0;
+  padding: 0 0 0 20px;
+}
+
 /* Tabs Navigation */
 #category-tabs {
   display: flex;
@@ -52,13 +58,13 @@ main {
   padding: 10px 20px;
 }
 
-/* Form */
+/* Form & Category Sections */
 #filter-form {
   margin-top: 20px;
 }
 
 .category-section {
-  display: none; /* hidden by default; shown by script.js */
+  display: none; /* hidden by default; JS shows the active one */
   margin-bottom: 30px;
   border: 1px solid #444;
   border-radius: 5px;
@@ -74,6 +80,7 @@ main {
   margin-top: 0;
 }
 
+/* Item-type Panels */
 .item-type {
   background-color: #2a2a2a;
   margin-bottom: 15px;
