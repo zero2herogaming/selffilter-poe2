@@ -1,0 +1,115 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background-color: #121212;
+  color: #ffffff;
+  text-align: center;
+}
+
+header {
+  background-color: #1e1e1e;
+  padding: 20px;
+}
+
+main {
+  max-width: 1000px;
+  margin: 20px auto;
+  padding: 0 20px;
+  text-align: left;
+}
+
+#filter-form {
+  background-color: #1e1e1e;
+  padding: 20px;
+  border-radius: 5px;
+}
+
+.rule {
+  background-color: #2a2a2a;
+  margin-bottom: 15px;
+  padding: 15px;
+  border-radius: 5px;
+  border: 1px solid #444;
+}
+
+.rule-title {
+  font-weight: bold;
+  margin-bottom: 5px;
+  color: #ffa500;
+}
+
+.rule label {
+  display: block;
+  margin-top: 8px;
+}
+
+input[type="checkbox"] {
+  margin-right: 8px;
+}
+
+input[type="color"],
+input[type="number"],
+select {
+  margin-left: 8px;
+  background-color: #333;
+  color: #fff;
+  border: none;
+  border-radius: 3px;
+  padding: 3px;
+}
+
+input[type="text"] {
+  margin-left: 8px;
+  background-color: #333;
+  color: #fff;
+  border: none;
+  border-radius: 3px;
+  padding: 3px;
+  min-width: 60px;
+}
+
+.operator-select {
+  margin-left: 8px;
+  background-color: #333;
+  color: #fff;
+  border: none;
+  border-radius: 3px;
+  padding: 3px;
+}
+
+button {
+  background-color: #3a82f7;
+  border: none;
+  padding: 10px 20px;
+  color: #ffffff;
+  cursor: pointer;
+  font-size: 16px;
+  margin-top: 20px;
+  border-radius: 5px;
+}
+
+button:hover {
+  background-color: #316bd1;
+}
+
+#download-section {
+  margin-top: 20px;
+  text-align: center;
+}
+
+#download-link {
+  display: inline-block;
+  padding: 10px 20px;
+  background-color: #3a82f7;
+  color: #fff;
+  border-radius: 5px;
+  text-decoration: none;
+}
+
+#download-link:hover {
+  background-color: #316bd1;
+}
