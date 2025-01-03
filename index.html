@@ -3,74 +3,27 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>PoE2 - Custom Filter Builder</title>
+  <title>PoE2 - Streamlined Filter Builder</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <header>
-    <h1>Path of Exile 2 - Custom Filter Builder</h1>
+    <h1>Path of Exile 2 - Streamlined Filter Builder</h1>
     <p>
-      Choose which item types you want to show or hide, select multiple rarities, and 
-      set advanced thresholds (like ItemLevel or StackSize) only where they make sense. 
-      When done, click <strong>Generate My Filter!</strong> to download your filter file.<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>PoE2 - Custom Filter Builder</title>
-  <link rel="stylesheet" href="style.css" />
-</head>
-<body>
-  <header>
-    <h1>Path of Exile 2 - Custom Filter Builder</h1>
-    <p>
-      This filter builder lists <strong>all categories and items</strong> from your provided data. 
-      You can enable or disable each sub-item (e.g. "Crossbows"), choose whether to <strong>Show</strong> or <strong>Hide</strong> it, 
-      pick any combination of rarity (Normal, Magic, Rare, Unique), and set thresholds only if they make sense:
-    </p>
-    <ul style="text-align:left; max-width: 700px; margin: 0 auto;">
-      <li><strong>ItemLevel</strong> - For gear-like items (weapons, armour, gems), if relevant.</li>
-      <li><strong>StackSize</strong> - For stackable/currency items.</li>
-      <li><strong>AreaLevel</strong> - Always optional for drops.</li>
-    </ul>
-    <p>
-      Use <strong>colors and alert sounds</strong> if desired. Then click <strong>"Generate My Filter!"</strong> to 
-      download your final <code>.filter</code> file.
+      Choose which items to <strong>Show</strong> or <strong>Hide</strong>, select any rarities (Normal, Magic, Rare, Unique),
+      and specify conditions (<code>AreaLevel >= x</code>, <code>ItemLevel = x</code>, <code>Sockets > x</code>,
+      <code>Quality > x</code>, <code>StackSize >= x</code>) only if they appeared in your filters. 
+      Customize colors and alert sounds, then click <strong>“Generate My Filter!”</strong>.
     </p>
   </header>
 
   <nav id="category-tabs">
-    <!-- Tabs created dynamically by script.js -->
+    <!-- Tabs for categories, created in script.js -->
   </nav>
 
   <main>
     <form id="filter-form">
       <!-- Category sections inserted here by script.js -->
-
-      <button type="submit" id="generate-button">Generate My Filter!</button>
-    </form>
-
-    <div id="download-section" style="display: none;">
-      <p>Your custom filter is ready! Download it below:</p>
-      <a id="download-link" href="#" download="my-custom-filter.filter">Download Filter</a>
-    </div>
-  </main>
-
-  <script src="script.js"></script>
-</body>
-</html>
-
-    </p>
-  </header>
-
-  <nav id="category-tabs">
-    <!-- Tabs created dynamically in script.js -->
-  </nav>
-
-  <main>
-    <form id="filter-form">
-      <!-- Category sections inserted here by script.js -->
-
       <button type="submit" id="generate-button">Generate My Filter!</button>
     </form>
 
