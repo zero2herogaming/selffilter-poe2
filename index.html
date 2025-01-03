@@ -10,32 +10,25 @@
   <header>
     <h1>Path of Exile 2 - Custom Filter Builder</h1>
     <p>
-      This filter builder is organized by major item categories (Weapons, Gems, Armour, 
-      etc.). For each subcategory (e.g. One Hand Swords), you can:
-      <ul>
-        <li>Enable or disable it entirely.</li>
-        <li>Pick whether it <strong>Shows</strong> or <strong>Hides</strong> items.</li>
-        <li>Set advanced fields like <em>Rarity</em> (Normal, Magic, Rare, Unique),
-            <em>AreaLevel</em>, <em>ItemLevel</em>, or <em>StackSize</em> thresholds.</li>
-        <li>Customize <strong>colors, font size, alert sounds</strong>, etc.</li>
-      </ul>
-      When you’re done, click <strong>“Generate My Filter!”</strong> to download your 
-      personalized <code>.filter</code> file.
+      Choose which item types you want to show or hide, select multiple rarities, and 
+      set advanced thresholds (like ItemLevel or StackSize) only where they make sense. 
+      When done, click <strong>Generate My Filter!</strong> to download your filter file.
     </p>
   </header>
 
   <nav id="category-tabs">
-    <!-- Tabs for categories created dynamically by script.js -->
+    <!-- Tabs created dynamically in script.js -->
   </nav>
 
   <main>
     <form id="filter-form">
-      <!-- Category sections inserted here via script.js -->
+      <!-- Category sections inserted here by script.js -->
+
       <button type="submit" id="generate-button">Generate My Filter!</button>
     </form>
 
     <div id="download-section" style="display: none;">
-      <p>Your custom filter is ready! Download it below:</p>
+      <p>Your custom filter is ready! Download below:</p>
       <a id="download-link" href="#" download="my-custom-filter.filter">Download Filter</a>
     </div>
   </main>
