@@ -3,24 +3,28 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>PoE2 - Comprehensive Filter Builder</title>
+  <title>PoE2 - Custom Filter Builder</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <header>
-    <h1>Comprehensive PoE2 Filter Builder</h1>
+    <h1>Path of Exile 2 - Custom Filter Builder</h1>
     <p>
-      This filter builder merges all your NeverSink-inspired rules (including basic, strict, 
-      and uber-strict samples). Toggle any rule and tweak advanced settings to create your perfect filter!
+      Build your own fully customizable filter. Use the tabs below to explore item categories
+      (Uniques, Rares, Currency, Gems, etc.). For each category, you can enable or disable entire
+      sections, pick what subtypes (like crossbows) you want to see, and fine-tune advanced settings
+      like AreaLevel, ItemLevel, or StackSize thresholds.
     </p>
   </header>
 
+  <nav id="category-tabs">
+    <!-- Tabs to jump between categories will be created dynamically. -->
+  </nav>
+
   <main>
     <form id="filter-form">
-      <div id="rules-container">
-        <!-- Filter rules will be dynamically generated here -->
-      </div>
-      <button type="submit">Generate My Filter!</button>
+      <!-- Category sections will be dynamically generated here -->
+      <button type="submit" id="generate-button">Generate My Filter!</button>
     </form>
 
     <div id="download-section" style="display: none;">
