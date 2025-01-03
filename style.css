@@ -9,7 +9,6 @@ body {
   color: #ffffff;
 }
 
-/* Header */
 header {
   background-color: #1e1e1e;
   padding: 20px;
@@ -18,6 +17,12 @@ header {
 
 header h1 {
   margin: 0 0 10px;
+}
+
+header ul {
+  list-style: none;
+  padding: 0;
+  margin: 10px 0 0;
 }
 
 /* Tabs Navigation */
@@ -72,6 +77,10 @@ main {
   background-color: #1e1e1e;
 }
 
+.category-section h2 {
+  margin-top: 0;
+}
+
 /* Individual Rule Panels */
 .rule {
   background-color: #2a2a2a;
@@ -90,6 +99,11 @@ main {
 .rule label {
   display: block;
   margin-top: 8px;
+}
+
+.rule small {
+  font-size: 0.9em;
+  color: #aaa;
 }
 
 input[type="checkbox"] {
