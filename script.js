@@ -17,160 +17,364 @@ function hexToRGB(hex) {
   return `${r} ${g} ${b} 255`; // alpha=255 by default
 }
 
-function buildConditionLine(field, operator, value) {
-  if (operator === "none") return "";
-  if (value === "" || value === null || value === undefined) return "";
-  return `${field} ${operator} ${value}`;
-}
-
 /***************************************************************
- * 2. CATEGORIES & RULES
- * We break rules into logical categories. 
- * Each "category" has:
- *   - A unique "categoryId"
- *   - A "categoryName"
- *   - A "description"
- *   - A "rules" array (the actual Show/Hide blocks)
+ * 2. MASTER CATEGORY LIST
+ * Each category has sub-rules for each sub-type you want to show/hide.
+ * This is just an EXAMPLE: adjust as needed for your actual filter rules.
  ***************************************************************/
 const CATEGORIES = [
   {
-    categoryId: "uniques",
-    categoryName: "Unique Items",
-    description: "All Unique-related rules. For example, toggling crossbows in unique can be different from crossbows in normal.",
+    categoryId: "weapons-onehand",
+    categoryName: "Weapons: One-Handed",
+    description: "Claws, Daggers, Wands, One Hand Swords, One Hand Axes, One Hand Maces, Sceptres, Spears, Flails.",
     rules: [
-      // Example unique rule: Crossbows
       {
         id: 1,
-        name: "Unique Crossbows",
+        name: "Enable One-Handed Swords",
         hideRule: false,
         enabled: true,
         conditions: {
-          rarity: "Unique",
-          class: "Crossbows", 
+          class: "One Hand Swords",
         },
         colorSettings: {
-          textColor: "rgba(255,0,0,1)",
-          borderColor: "rgba(255,0,0,1)",
-          backgroundColor: "rgba(255,255,255,1)",
-          fontSize: 45,
-        },
-        alertSound: { id: 6, duration: 300 },
-      },
-      // ... More unique items for belts, helmets, etc.
-    ],
-  },
-  {
-    categoryId: "normal-items",
-    categoryName: "Normal Items",
-    description: "Options for regular (white) items. Decide if you want to hide or show certain subtypes like Crossbows.",
-    rules: [
-      {
-        id: 10,
-        name: "Normal Crossbows",
-        hideRule: false,
-        enabled: true,
-        conditions: {
-          rarity: "Normal",
-          class: "Crossbows",
-        },
-        colorSettings: {
-          textColor: "rgba(180,180,180,1)",
-          borderColor: "rgba(0,0,0,1)",
-          backgroundColor: "rgba(0,0,0,0.7)",
-          fontSize: 35,
-        },
-      },
-      // Additional normal items...
-    ],
-  },
-  {
-    categoryId: "rare-items",
-    categoryName: "Rare Items",
-    description: "Yellow (rare) items. You can choose to highlight or hide crossbows, belts, boots, etc., at certain AreaLevels or drop levels.",
-    rules: [
-      {
-        id: 20,
-        name: "Rare Crossbows",
-        hideRule: false,
-        enabled: true,
-        conditions: {
-          rarity: "Rare",
-          class: "Crossbows",
-        },
-        colorSettings: {
-          textColor: "rgba(0,240,190,1)",
-          borderColor: "rgba(0,240,190,1)",
+          textColor: "rgba(255,180,0,1)",
+          borderColor: "rgba(255,180,0,1)",
+          backgroundColor: "rgba(0,0,0,0.5)",
           fontSize: 40,
         },
       },
-      // Additional rare items...
+      {
+        id: 2,
+        name: "Enable Daggers",
+        hideRule: false,
+        enabled: true,
+        conditions: {
+          class: "Daggers",
+        },
+      },
+      // ...Add more for Claws, Wands, Axes, Maces, Sceptres, Spears, Flails...
     ],
   },
   {
-    categoryId: "currency",
-    categoryName: "Currency",
-    description: "Controls for currency items (e.g. Divine Orbs, Splinters, Catalyst, Gold, etc.). Adjust stack size thresholds, highlight colors, etc.",
+    categoryId: "weapons-twohand",
+    categoryName: "Weapons: Two-Handed",
+    description: "Bows, Staves, Two Hand Swords, Two Hand Axes, Two Hand Maces, Quarterstaves, Crossbows, Traps, Fishing Rods.",
     rules: [
       {
-        id: 30,
-        name: "Gold - Large Stacks (StackSize >= 500)",
-        hideRule: false, // or true if you want to hide them
+        id: 10,
+        name: "Show Two Hand Swords",
+        hideRule: false,
         enabled: true,
         conditions: {
-          baseTypes: ["Gold"],
-          stackSizeRange: { min: 500 },
+          class: "Two Hand Swords",
         },
         colorSettings: {
-          textColor: "rgba(255,255,255,1)",
-          borderColor: "rgba(255,255,255,1)",
-          backgroundColor: "rgba(0,0,0,0)",
-          fontSize: 35,
+          textColor: "rgba(200,200,200,1)",
+          borderColor: "rgba(0,0,0,1)",
+          backgroundColor: "rgba(60,60,60,0.5)",
+          fontSize: 40,
         },
       },
-      // More currency rules...
+      {
+        id: 11,
+        name: "Show Crossbows",
+        hideRule: false,
+        enabled: true,
+        conditions: {
+          class: "Crossbows",
+        },
+      },
+      // ...Add more for Bows, Staves, Quarterstaves, etc....
+    ],
+  },
+  {
+    categoryId: "weapons-offhand",
+    categoryName: "Off-hand Weapons",
+    description: "Quivers, Shields, Foci.",
+    rules: [
+      {
+        id: 20,
+        name: "Enable Quivers",
+        hideRule: false,
+        enabled: true,
+        conditions: {
+          class: "Quivers",
+        },
+      },
+      {
+        id: 21,
+        name: "Enable Shields",
+        hideRule: false,
+        enabled: true,
+        conditions: {
+          class: "Shields",
+        },
+      },
+      {
+        id: 22,
+        name: "Enable Foci",
+        hideRule: false,
+        enabled: true,
+        conditions: {
+          class: "Foci",
+        },
+      },
     ],
   },
   {
     categoryId: "gems",
     categoryName: "Gems",
-    description: "Handles uncut gems, skill gems, itemLevel settings, etc.",
+    description: "Skill Gems, Support Gems, Spirit Gems, etc.",
     rules: [
       {
-        id: 40,
-        name: "Uncut Skill Gems (ItemLevel <= 19)",
+        id: 30,
+        name: "Show Skill Gems",
         hideRule: false,
         enabled: true,
         conditions: {
-          baseTypes: ["Uncut Skill Gem"],
-          itemLevelRange: { max: 19 },
+          baseTypes: ["Skill Gem"],
         },
-        colorSettings: {
-          textColor: "rgba(20,240,240,1)",
-          borderColor: "rgba(20,240,240,1)",
-          fontSize: 35,
-        },
-        alertSound: { id: 2, duration: 300 },
       },
-      // Additional gem rules...
+      {
+        id: 31,
+        name: "Show Support Gems",
+        hideRule: false,
+        enabled: true,
+        conditions: {
+          baseTypes: ["Support Gem"],
+        },
+      },
+      {
+        id: 32,
+        name: "Show Spirit Gems",
+        hideRule: false,
+        enabled: true,
+        conditions: {
+          baseTypes: ["Spirit Gem"],
+        },
+      },
     ],
   },
   {
-    categoryId: "advanced",
-    categoryName: "Advanced / Hide Rules",
-    description: "More advanced conditions, often used to hide low-level trash or flasks above certain AreaLevels.",
+    categoryId: "armour",
+    categoryName: "Armour",
+    description: "Gloves, Boots, Body Armours, Helmets.",
+    rules: [
+      {
+        id: 40,
+        name: "Show Gloves",
+        hideRule: false,
+        enabled: true,
+        conditions: {
+          class: "Gloves",
+        },
+      },
+      {
+        id: 41,
+        name: "Show Boots",
+        hideRule: false,
+        enabled: true,
+        conditions: {
+          class: "Boots",
+        },
+      },
+      {
+        id: 42,
+        name: "Show Body Armours",
+        hideRule: false,
+        enabled: true,
+        conditions: {
+          class: "Body Armours",
+        },
+      },
+      {
+        id: 43,
+        name: "Show Helmets",
+        hideRule: false,
+        enabled: true,
+        conditions: {
+          class: "Helmets",
+        },
+      },
+    ],
+  },
+  {
+    categoryId: "jewellery",
+    categoryName: "Jewellery",
+    description: "Amulets, Rings, Belts.",
     rules: [
       {
         id: 50,
-        name: "Hide Flasks Above AreaLevel 70 (Rarity <= Magic)",
-        hideRule: true,
+        name: "Show Amulets",
+        hideRule: false,
+        enabled: true,
+        conditions: {
+          class: "Amulets",
+        },
+      },
+      {
+        id: 51,
+        name: "Show Rings",
+        hideRule: false,
+        enabled: true,
+        conditions: {
+          class: "Rings",
+        },
+      },
+      {
+        id: 52,
+        name: "Show Belts",
+        hideRule: false,
+        enabled: true,
+        conditions: {
+          class: "Belts",
+        },
+      },
+    ],
+  },
+  {
+    categoryId: "flasks",
+    categoryName: "Flasks",
+    description: "Flasks, Life Flasks, Mana Flasks, Charms.",
+    rules: [
+      {
+        id: 60,
+        name: "Show All Flasks",
+        hideRule: false,
         enabled: true,
         conditions: {
           class: "Flasks",
-          areaLevelRange: { min: 71 },
-          rarityMax: "Magic",
         },
       },
-      // Additional hide rules...
+      {
+        id: 61,
+        name: "Show Life Flasks",
+        hideRule: false,
+        enabled: true,
+        conditions: {
+          baseTypes: ["Life Flask"],
+        },
+      },
+      {
+        id: 62,
+        name: "Show Mana Flasks",
+        hideRule: false,
+        enabled: true,
+        conditions: {
+          baseTypes: ["Mana Flask"],
+        },
+      },
+      {
+        id: 63,
+        name: "Show Charms",
+        hideRule: false,
+        enabled: true,
+        conditions: {
+          baseTypes: ["Charm"],
+        },
+      },
+    ],
+  },
+  {
+    categoryId: "currency",
+    categoryName: "Currency",
+    description: "Stackable Currency, Distilled Emotions, Essences, Splinters, Catalysts.",
+    rules: [
+      {
+        id: 70,
+        name: "Stackable Currency (e.g. Gold, Chaos Orbs)",
+        hideRule: false,
+        enabled: true,
+        conditions: {
+          class: "Stackable Currency",
+        },
+      },
+      {
+        id: 71,
+        name: "Distilled Emotions",
+        hideRule: false,
+        enabled: true,
+        conditions: {
+          baseTypes: ["Distilled Emotion"],
+        },
+      },
+      {
+        id: 72,
+        name: "Essences",
+        hideRule: false,
+        enabled: true,
+        conditions: {
+          baseTypes: ["Essence of"],
+        },
+      },
+      {
+        id: 73,
+        name: "Splinters",
+        hideRule: false,
+        enabled: true,
+        conditions: {
+          baseTypes: ["Splinter"],
+        },
+      },
+      {
+        id: 74,
+        name: "Catalysts",
+        hideRule: false,
+        enabled: true,
+        conditions: {
+          baseTypes: ["Catalyst"],
+        },
+      },
+    ],
+  },
+  {
+    categoryId: "waystones",
+    categoryName: "Waystones & Maps",
+    description: "Waystones, Map Fragments, Misc Map Items.",
+    rules: [
+      {
+        id: 80,
+        name: "Show Waystones",
+        hideRule: false,
+        enabled: true,
+        conditions: {
+          class: "Waystones",
+        },
+      },
+      {
+        id: 81,
+        name: "Map Fragments",
+        hideRule: false,
+        enabled: true,
+        conditions: {
+          class: "Map Fragments",
+        },
+      },
+      {
+        id: 82,
+        name: "Misc Map Items",
+        hideRule: false,
+        enabled: true,
+        conditions: {
+          class: "Misc Map Items",
+        },
+      },
+    ],
+  },
+  {
+    categoryId: "jewels",
+    categoryName: "Jewels",
+    description: "Generic Jewels (ex: Abyss Jewels, Timeless Jewels, etc.)",
+    rules: [
+      {
+        id: 90,
+        name: "Show All Jewels",
+        hideRule: false,
+        enabled: true,
+        conditions: {
+          class: "Jewels",
+        },
+      },
     ],
   },
 ];
@@ -251,18 +455,18 @@ function createRuleHTML(categoryId, rule) {
     </label>
   `;
 
-  // If it's a Hide rule or Show rule
+  // Show or Hide
   html += `<p style="margin-top:5px;color:${rule.hideRule ? 'red':'lime'};">${rule.hideRule ? 'HIDE Rule' : 'SHOW Rule'}</p>`;
 
-  // Potential advanced conditions
+  // Explanation text (optional)
   html += `
     <p style="font-style: italic; margin:6px 0;">
       <strong>Advanced fields:</strong> 
       <br/>- <em>ItemLevel</em>: an item's internal level requirement
-      <br/>- <em>AreaLevel</em>: the zone level you're currently in
+      <br/>- <em>AreaLevel</em>: the zone level you're in
       <br/>- <em>StackSize</em>: for stackable currency
-      <br/>- <em>BaseType</em>: exact item names (e.g. "Gold", "Chaos Orb")
-      <br/>- <em>Class</em>: item category (e.g. "Crossbows", "Flasks")
+      <br/>- <em>BaseType</em>: exact item name
+      <br/>- <em>Class</em>: high-level category (e.g. "Swords", "Claws")
     </p>
   `;
 
@@ -302,13 +506,10 @@ function createRuleHTML(categoryId, rule) {
           <option value="10" ${rule.alertSound.id===10?'selected':''}>Alert 10</option>
         </select>
         Duration:
-        <input type="number" id="alertDuration-${categoryId}-${rule.id}" value="${rule.alertSound.duration}" min="50" max="1000" />
+        <input type="number" id="alertDuration-${categoryId}-${rule.id}" value="${rule.alertSound.duration || 300}" min="50" max="1000" />
       </label>
     `;
   }
-
-  // We won't show sub-type pickers here, because each rule is already specific 
-  // to a class or baseType. If you want sub-lists, you can expand on it.
 
   container.innerHTML += html;
   return container;
@@ -341,37 +542,22 @@ function generateFilterContent() {
       if (c.rarityMax === "Magic") {
         ruleBlock += `  Rarity <= Magic\n`;
       }
+
       // Class
       if (c.class) {
-        // multiple classes can be space-split or single
+        // possibly multiple classes space-separated
         const classes = c.class.split(" ").map(cl => `"${cl}"`).join(" ");
         ruleBlock += `  Class ${classes}\n`;
       }
+
       // BaseTypes
       if (c.baseTypes) {
         const baseStr = c.baseTypes.map(b => `"${b}"`).join(" ");
         ruleBlock += `  BaseType ${baseStr}\n`;
       }
-      // AreaLevel
-      if (c.areaLevelRange) {
-        const { min, max } = c.areaLevelRange;
-        // We'll just interpret "min" with ">=" and "max" with "<="
-        if (min !== undefined) ruleBlock += `  AreaLevel >= ${min}\n`;
-        if (max !== undefined) ruleBlock += `  AreaLevel <= ${max}\n`;
-      }
-      // StackSize
-      if (c.stackSizeRange) {
-        const { min, max } = c.stackSizeRange;
-        if (min !== undefined) ruleBlock += `  StackSize >= ${min}\n`;
-        if (max !== undefined) ruleBlock += `  StackSize <= ${max}\n`;
-      }
-      // ItemLevel
-      if (c.itemLevelRange) {
-        const { min, max } = c.itemLevelRange;
-        if (min !== undefined) ruleBlock += `  ItemLevel >= ${min}\n`;
-        if (max !== undefined) ruleBlock += `  ItemLevel <= ${max}\n`;
-      }
-      // Quality, Sockets, DropLevel, etc. can be added similarly
+
+      // areaLevelRange, stackSizeRange, itemLevelRange, etc. can be similarly done
+      // For brevity, let's skip the advanced numeric logic and do your basic approach.
 
       // Colors, fonts, sounds
       if (rule.colorSettings) {
@@ -382,7 +568,7 @@ function generateFilterContent() {
 
         if (textVal) ruleBlock += `  SetTextColor ${hexToRGB(textVal)}\n`;
         if (borderVal) ruleBlock += `  SetBorderColor ${hexToRGB(borderVal)}\n`;
-        if (bgVal && bgVal.toLowerCase()!=='#ffffff') {
+        if (bgVal && bgVal.toLowerCase() !== "#ffffff") {
           ruleBlock += `  SetBackgroundColor ${hexToRGB(bgVal)}\n`;
         }
         if (fontVal) ruleBlock += `  SetFontSize ${fontVal}\n`;
