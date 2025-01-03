@@ -20,14 +20,11 @@ function hexToRGB(hex) {
 }
 
 /***************************************************************
- * 2. CATEGORIES & ITEMS
- *    - All 10 categories: Gems, One-Handed, Two-Handed, Off-hand,
- *      Armour, Jewellery, Flasks, Currency, Waystones, Jewels.
- *    - Sub-items reference everything from your older & newer filters:
- *      e.g. "Uncut Spirit Gem", "Distilled Disgust", "Expert Zealot",
- *      etc. 
+ * 2. BASE CATEGORIES & ITEMS
+ *    We'll create a new final category for "Unrecognized Lines"
+ *    so we can place leftover lines into the UI as well.
  ***************************************************************/
-const CATEGORIES = [
+let CATEGORIES = [
   {
     categoryId: "gems",
     categoryName: "Gems",
@@ -55,7 +52,7 @@ const CATEGORIES = [
       { id:16, name: "Sceptres",        showOrHide: "Show", enabled: false, isStackable: false, usesItemLevel: true },
       { id:17, name: "Spears",          showOrHide: "Show", enabled: false, isStackable: false, usesItemLevel: true },
       { id:18, name: "Flails",          showOrHide: "Hide", enabled: false, isStackable: false, usesItemLevel: true },
-      // Additional references: 
+      // Additional references:
       { id:19, name: "Attuned Wand",    showOrHide: "Show", enabled: false, isStackable: false, usesItemLevel: true },
       { id:20, name: "Siphoning Wand",  showOrHide: "Show", enabled: false, isStackable: false, usesItemLevel: true },
       { id:21, name: "Spiked Club",     showOrHide: "Show", enabled: false, isStackable: false, usesItemLevel: true }
@@ -66,11 +63,11 @@ const CATEGORIES = [
     categoryName: "Two-Handed Weapons",
     description: "Bows, Staves, Quarterstaves, Crossbows, Quarter, Staff, etc.",
     itemTypes: [
-      { id:30, name: "Bows",            showOrHide: "Show", enabled: false, isStackable: false, usesItemLevel: true },
-      { id:31, name: "Staves",          showOrHide: "Show", enabled: false, isStackable: false, usesItemLevel: true },
-      { id:32, name: "Quarterstaves",   showOrHide: "Show", enabled: false, isStackable: false, usesItemLevel: true },
-      { id:33, name: "Crossbows",       showOrHide: "Hide", enabled: false, isStackable: false, usesItemLevel: true },
-      { id:34, name: "Crude Bow",       showOrHide: "Show", enabled: false, isStackable: false, usesItemLevel: true },
+      { id:30, name: "Bows",              showOrHide: "Show", enabled: false, isStackable: false, usesItemLevel: true },
+      { id:31, name: "Staves",            showOrHide: "Show", enabled: false, isStackable: false, usesItemLevel: true },
+      { id:32, name: "Quarterstaves",     showOrHide: "Show", enabled: false, isStackable: false, usesItemLevel: true },
+      { id:33, name: "Crossbows",         showOrHide: "Hide", enabled: false, isStackable: false, usesItemLevel: true },
+      { id:34, name: "Crude Bow",         showOrHide: "Show", enabled: false, isStackable: false, usesItemLevel: true },
       { id:35, name: "Long Quarterstaff", showOrHide: "Show", enabled: false, isStackable: false, usesItemLevel: true }
     ]
   },
@@ -82,7 +79,6 @@ const CATEGORIES = [
       { id:40, name: "Quivers", showOrHide: "Show", enabled: false, isStackable: false, usesItemLevel: true },
       { id:41, name: "Shields", showOrHide: "Show", enabled: false, isStackable: false, usesItemLevel: true },
       { id:42, name: "Foci",    showOrHide: "Hide", enabled: false, isStackable: false, usesItemLevel: true }
-      // If you have special references like "Stone Tower Shield", add them here if needed
     ]
   },
   {
@@ -109,7 +105,7 @@ const CATEGORIES = [
       { id:60, name: "Rings",   showOrHide: "Show", enabled: false, isStackable: false, usesItemLevel: true },
       { id:61, name: "Amulets", showOrHide: "Show", enabled: false, isStackable: false, usesItemLevel: true },
       { id:62, name: "Belts",   showOrHide: "Show", enabled: false, isStackable: false, usesItemLevel: true },
-      // Additional from new scripts:
+      // Additional from new scripts
       { id:63, name: "Heavy Belt",    showOrHide: "Show", enabled: false, isStackable: true, usesItemLevel: false },
       { id:64, name: "Ornate Belt",   showOrHide: "Show", enabled: false, isStackable: true, usesItemLevel: false },
       { id:65, name: "Utility Belt",  showOrHide: "Show", enabled: false, isStackable: true, usesItemLevel: false },
@@ -125,7 +121,7 @@ const CATEGORIES = [
       { id:71, name: "Life Flasks", showOrHide: "Show", enabled: false, isStackable: false, usesItemLevel: true },
       { id:72, name: "Mana Flasks", showOrHide: "Show", enabled: false, isStackable: false, usesItemLevel: true },
       { id:73, name: "Charms",      showOrHide: "Hide", enabled: false, isStackable: false, usesItemLevel: false },
-      // Additional references:
+      // Additional references
       { id:74, name: "Flask",       showOrHide: "Show", enabled: false, isStackable: true, usesItemLevel: false }
     ]
   },
@@ -134,29 +130,28 @@ const CATEGORIES = [
     categoryName: "Currency",
     description: "Mirror, Divine, Distilled, Splinters, Catalyst, etc.",
     itemTypes: [
-      { id:80, name: "Mirror",                showOrHide: "Show", enabled: false, isStackable: true, usesItemLevel: false },
-      { id:81, name: "Divine",                showOrHide: "Show", enabled: false, isStackable: true, usesItemLevel: false },
-      { id:82, name: "Perfect Jeweller's Orb",showOrHide: "Show", enabled: false, isStackable: true, usesItemLevel: false },
-      { id:83, name: "Greater Jeweller's Orb",showOrHide: "Show", enabled: false, isStackable: true, usesItemLevel: false },
+      { id:80,  name: "Mirror",                showOrHide: "Show", enabled: false, isStackable: true, usesItemLevel: false },
+      { id:81,  name: "Divine",                showOrHide: "Show", enabled: false, isStackable: true, usesItemLevel: false },
+      { id:82,  name: "Perfect Jeweller's Orb",showOrHide: "Show", enabled: false, isStackable: true, usesItemLevel: false },
+      { id:83,  name: "Greater Jeweller's Orb",showOrHide: "Show", enabled: false, isStackable: true, usesItemLevel: false },
 
-      { id:84, name: "Distilled Isolation",   showOrHide: "Show", enabled: false, isStackable: true, usesItemLevel: false },
-      { id:85, name: "Distilled Suffering",   showOrHide: "Show", enabled: false, isStackable: true, usesItemLevel: false },
-      { id:86, name: "Distilled Fear",        showOrHide: "Show", enabled: false, isStackable: true, usesItemLevel: false },
-      { id:87, name: "Distilled Despair",     showOrHide: "Show", enabled: false, isStackable: true, usesItemLevel: false },
-      { id:88, name: "Distilled Disgust",     showOrHide: "Show", enabled: false, isStackable: true, usesItemLevel: false },
+      { id:84,  name: "Distilled Isolation",   showOrHide: "Show", enabled: false, isStackable: true, usesItemLevel: false },
+      { id:85,  name: "Distilled Suffering",   showOrHide: "Show", enabled: false, isStackable: true, usesItemLevel: false },
+      { id:86,  name: "Distilled Fear",        showOrHide: "Show", enabled: false, isStackable: true, usesItemLevel: false },
+      { id:87,  name: "Distilled Despair",     showOrHide: "Show", enabled: false, isStackable: true, usesItemLevel: false },
+      { id:88,  name: "Distilled Disgust",     showOrHide: "Show", enabled: false, isStackable: true, usesItemLevel: false },
 
-      { id:89, name: "Catalyst",              showOrHide: "Show", enabled: false, isStackable: true, usesItemLevel: false },
-      { id:90, name: "Essence of",            showOrHide: "Show", enabled: false, isStackable: true, usesItemLevel: false },
-      { id:91, name: "Chaos Orb",             showOrHide: "Show", enabled: false, isStackable: true, usesItemLevel: false },
-      { id:92, name: "Exotic",                showOrHide: "Show", enabled: false, isStackable: true, usesItemLevel: false },
-      { id:93, name: "Exalted Orb",           showOrHide: "Show", enabled: false, isStackable: true, usesItemLevel: false },
-      { id:94, name: "Vaal Orb",              showOrHide: "Show", enabled: false, isStackable: true, usesItemLevel: false },
-      { id:95, name: "Gemcutter's Prism",     showOrHide: "Show", enabled: false, isStackable: true, usesItemLevel: false },
-      { id:96, name: "Gold",                  showOrHide: "Show", enabled: false, isStackable: true, usesItemLevel: false },
-      // More e.g. "Neural Catalyst", "Adaptive Catalyst", etc.
-      { id:97, name: "Neural Catalyst",       showOrHide: "Show", enabled: false, isStackable: true, usesItemLevel: false },
-      { id:98, name: "Adaptive Catalyst",     showOrHide: "Show", enabled: false, isStackable: true, usesItemLevel: false },
-      // etc.
+      { id:89,  name: "Catalyst",              showOrHide: "Show", enabled: false, isStackable: true, usesItemLevel: false },
+      { id:90,  name: "Essence of",            showOrHide: "Show", enabled: false, isStackable: true, usesItemLevel: false },
+      { id:91,  name: "Chaos Orb",             showOrHide: "Show", enabled: false, isStackable: true, usesItemLevel: false },
+      { id:92,  name: "Exotic",                showOrHide: "Show", enabled: false, isStackable: true, usesItemLevel: false },
+      { id:93,  name: "Exalted Orb",           showOrHide: "Show", enabled: false, isStackable: true, usesItemLevel: false },
+      { id:94,  name: "Vaal Orb",              showOrHide: "Show", enabled: false, isStackable: true, usesItemLevel: false },
+      { id:95,  name: "Gemcutter's Prism",     showOrHide: "Show", enabled: false, isStackable: true, usesItemLevel: false },
+      { id:96,  name: "Gold",                  showOrHide: "Show", enabled: false, isStackable: true, usesItemLevel: false },
+
+      { id:97,  name: "Neural Catalyst",       showOrHide: "Show", enabled: false, isStackable: true, usesItemLevel: false },
+      { id:98,  name: "Adaptive Catalyst",     showOrHide: "Show", enabled: false, isStackable: true, usesItemLevel: false }
     ]
   },
   {
@@ -170,16 +165,31 @@ const CATEGORIES = [
   {
     categoryId: "jewels",
     categoryName: "Jewels",
-    description: "Class 'Jewel' Rare or Magic, Timeless Jewel, Runes, etc.",
+    description: "Class 'Jewel', Timeless Jewel, runes, charms, etc.",
     itemTypes: [
-      { id:120, name: "Jewel",        showOrHide: "Show", enabled: false, isStackable: false, usesItemLevel: true },
-      { id:121, name: " Rune",        showOrHide: "Show", enabled: false, isStackable: false, usesItemLevel: false },
-      { id:122, name: " Charm",       showOrHide: "Show", enabled: false, isStackable: false, usesItemLevel: false },
+      { id:120, name: "Jewel",            showOrHide: "Show", enabled: false, isStackable: false, usesItemLevel: true },
+      { id:121, name: " Rune",            showOrHide: "Show", enabled: false, isStackable: false, usesItemLevel: false },
+      { id:122, name: " Charm",           showOrHide: "Show", enabled: false, isStackable: false, usesItemLevel: false },
       { id:123, name: "Timeless Jewel",   showOrHide: "Show", enabled: false, isStackable: false, usesItemLevel: false },
-      { id:124, name: "Time-Lost Diamond",showOrHide: "Show", enabled: false, isStackable: true, usesItemLevel: false }
+      { id:124, name: "Time-Lost Diamond",showOrHide: "Show", enabled: false, isStackable: true,  usesItemLevel: false }
     ]
   }
 ];
+
+/***************************************************************
+ * 2B. "UNRECOGNIZED LINES" CATEGORY
+ *    We'll add this category at the end, which we'll dynamically
+ *    populate with leftover lines as separate items.
+ ***************************************************************/
+let UNRECOGNIZED_CATEGORY = {
+  categoryId: "unrecognized",
+  categoryName: "Unrecognized Lines",
+  description: "Lines from the filter that we couldn't parse or match. Enable them to include them raw in the final filter.",
+  itemTypes: []
+};
+
+// We'll push it at the end of the array:
+CATEGORIES.push(UNRECOGNIZED_CATEGORY);
 
 /***************************************************************
  * 3. CREATE TABS & SECTIONS
@@ -255,6 +265,7 @@ function createItemTypeHTML(categoryId, item) {
       </select>
     </label>
 
+    <!-- Rarity -->
     <label>Rarity:</label>
     <div style="margin-left:20px;">
       <label><input type="checkbox" id="rarity-normal-${categoryId}-${item.id}"/> Normal</label>
@@ -263,10 +274,10 @@ function createItemTypeHTML(categoryId, item) {
       <label><input type="checkbox" id="rarity-unique-${categoryId}-${item.id}"/> Unique</label>
     </div>
 
+    <!-- Sockets, Quality -->
     <label>Sockets >:
       <input type="number" id="sockets-${categoryId}-${item.id}" value="" min="0"/>
     </label>
-
     <label>Quality >:
       <input type="number" id="quality-${categoryId}-${item.id}" value="" min="0"/>
     </label>
@@ -288,7 +299,7 @@ function createItemTypeHTML(categoryId, item) {
     `;
   }
 
-  // Single operator for AreaLevel
+  // Single operator area-level
   html += `
     <label>AreaLevel:
       <select id="areaLevelOp-${categoryId}-${item.id}">
@@ -300,6 +311,7 @@ function createItemTypeHTML(categoryId, item) {
       <input type="number" id="areaLevelVal-${categoryId}-${item.id}" value="" min="0"/>
     </label>
 
+    <!-- Colors & Font -->
     <label>Text Color:
       <input type="color" id="textColor-${categoryId}-${item.id}" value="#ffffff"/>
     </label>
@@ -313,6 +325,7 @@ function createItemTypeHTML(categoryId, item) {
       <input type="number" id="fontSize-${categoryId}-${item.id}" value="35" min="12" max="60"/>
     </label>
 
+    <!-- Alert Sound -->
     <label>Alert Sound:
       <select id="alertSound-${categoryId}-${item.id}">
         <option value="">None</option>
@@ -333,18 +346,29 @@ function createItemTypeHTML(categoryId, item) {
 
 /***************************************************************
  * 5. GENERATE THE FINAL .FILTER
+ *    This now includes leftover lines from "Unrecognized Lines"
  ***************************************************************/
 function generateFilterContent() {
   let content = "";
+  
   CATEGORIES.forEach(cat => {
     cat.itemTypes.forEach(item => {
-      const enableBox = document.getElementById(`enable-${cat.categoryId}-${item.id}`);
-      if (!enableBox?.checked) return;
+      const enableEl = document.getElementById(`enable-${cat.categoryId}-${item.id}`);
+      if (!enableEl?.checked) return;
 
+      // If this is an unrecognized leftover line => just dump the raw lines
+      // We'll store them in item.rawLines if we created them that way.
+      if (cat.categoryId === "unrecognized" && item.rawLines) {
+        // We assume each leftover line belongs to a "Show" or "Hide" block
+        content += item.rawLines.join("\n") + "\n\n";
+        return;
+      }
+
+      // Otherwise, standard item logic
       const showOrHide = document.getElementById(`showOrHide-${cat.categoryId}-${item.id}`).value;
       let ruleBlock = `${showOrHide}\n`;
 
-      // Rarities
+      // Rarity
       const normalCk = document.getElementById(`rarity-normal-${cat.categoryId}-${item.id}`).checked;
       const magicCk  = document.getElementById(`rarity-magic-${cat.categoryId}-${item.id}`).checked;
       const rareCk   = document.getElementById(`rarity-rare-${cat.categoryId}-${item.id}`).checked;
@@ -387,8 +411,8 @@ function generateFilterContent() {
       }
 
       // AreaLevel
-      const areaOp = document.getElementById(`areaLevelOp-${cat.categoryId}-${item.id}`).value;
-      const areaVal= parseInt(document.getElementById(`areaLevelVal-${cat.categoryId}-${item.id}`).value||"0",10);
+      const areaOp  = document.getElementById(`areaLevelOp-${cat.categoryId}-${item.id}`).value;
+      const areaVal = parseInt(document.getElementById(`areaLevelVal-${cat.categoryId}-${item.id}`).value||"0",10);
       if (areaOp && areaVal>0) {
         ruleBlock += `  AreaLevel ${areaOp} ${areaVal}\n`;
       }
@@ -401,17 +425,17 @@ function generateFilterContent() {
       }
 
       // Colors
-      const textC = document.getElementById(`textColor-${cat.categoryId}-${item.id}`).value;
+      const textC   = document.getElementById(`textColor-${cat.categoryId}-${item.id}`).value;
       const borderC = document.getElementById(`borderColor-${cat.categoryId}-${item.id}`).value;
-      const bgC = document.getElementById(`bgColor-${cat.categoryId}-${item.id}`).value;
-      const fontC = document.getElementById(`fontSize-${cat.categoryId}-${item.id}`).value;
+      const bgC     = document.getElementById(`bgColor-${cat.categoryId}-${item.id}`).value;
+      const fontC   = document.getElementById(`fontSize-${cat.categoryId}-${item.id}`).value;
       if (textC) {
         ruleBlock += `  SetTextColor ${hexToRGB(textC)}\n`;
       }
       if (borderC) {
         ruleBlock += `  SetBorderColor ${hexToRGB(borderC)}\n`;
       }
-      if (bgC && bgC.toLowerCase() !== "#ffffff") {
+      if (bgC && bgC.toLowerCase()!=="#ffffff") {
         ruleBlock += `  SetBackgroundColor ${hexToRGB(bgC)}\n`;
       }
       if (fontC) {
@@ -429,13 +453,12 @@ function generateFilterContent() {
       content += ruleBlock;
     });
   });
+
   return content;
 }
 
 /***************************************************************
- * 6. ADVANCED PARSING + UNMATCHED LINES
- *    If the line doesn't match a known pattern, we store it
- *    in unmatchedLines[] so you see which lines we couldn't parse.
+ * 6. PARSE FILTER TEXT (WITH UNRECOGNIZED LINES -> UI)
  ***************************************************************/
 function parseFilterText(rawText) {
   const text = rawText.trim();
@@ -444,9 +467,14 @@ function parseFilterText(rawText) {
     return;
   }
 
-  // Split lines
-  const lines = text.split(/\r?\n/).map(l => l.trim()).filter(l=>l!=="");
+  // We'll keep track of leftover lines as "unrecognized items"
+  // We dynamically create them in the "unrecognized" category.
+  // Reset that category's itemTypes each time we load a new filter.
+  const unrecognizedCat = CATEGORIES.find(c => c.categoryId==="unrecognized");
+  unrecognizedCat.itemTypes = [];
 
+  // standard parse
+  const lines = text.split(/\r?\n/).map(l => l.trim()).filter(l=>l!=="");
   let blocks = [];
   let current = [];
 
@@ -473,35 +501,34 @@ function parseFilterText(rawText) {
   }
 
   let matchedCount=0;
-  let unmatchedLines = [];
+  let unmatchedCount=0;
 
   for (let block of blocks) {
     const showOrHide = block[0].startsWith("Show") ? "Show":"Hide";
     let linesDict = {
       showOrHide,
-      rarities:[],
-      sockets:0,
-      quality:0,
-      itemLevel:0,
-      stackSize:0,
-      areaOp:"",
-      areaVal:0,
-      className:"",
-      baseName:"",
-      textColor:"",
-      borderColor:"",
-      bgColor:"",
-      fontSize:"",
-      alertSound:"",
-      alertDur:"300"
+      rarities: [],
+      sockets: 0,
+      quality: 0,
+      itemLevel: 0,
+      stackSize: 0,
+      areaOp: "",
+      areaVal: 0,
+      className: "",
+      baseName: "",
+      textColor: "",
+      borderColor: "",
+      bgColor: "",
+      fontSize: "",
+      alertSound: "",
+      alertDur: "300"
     };
 
-    // We'll store lines that couldn't be recognized:
+    // We'll parse recognized lines, store leftover lines if unrecognized
     let leftover = [];
 
     for (let line of block.slice(1)) {
       let recognized = false;
-
       if (line.startsWith("Rarity ")) {
         linesDict.rarities=line.replace("Rarity ","").split(" ");
         recognized = true;
@@ -550,17 +577,20 @@ function parseFilterText(rawText) {
         if (parts[1]) linesDict.alertDur= parts[1];
         recognized = true;
       } 
-      // If not recognized, store it
+      // If not recognized, store it as leftover
       if (!recognized) leftover.push(line);
     }
 
-    // Attempt to match Class vs. BaseType
-    let foundCat=null;
-    let foundItem=null;
+    // Attempt match
+    let foundCat = null;
+    let foundItem = null;
 
     if (linesDict.baseName) {
       // isStackable
       for (let cat of CATEGORIES) {
+        // skip unrecognized category
+        if (cat.categoryId==="unrecognized") continue;
+
         for (let it of cat.itemTypes) {
           if (it.isStackable && it.name===linesDict.baseName) {
             foundCat=cat; foundItem=it; break;
@@ -571,6 +601,8 @@ function parseFilterText(rawText) {
     } else if (linesDict.className) {
       // non-stackable
       for (let cat of CATEGORIES) {
+        if (cat.categoryId==="unrecognized") continue;
+
         for (let it of cat.itemTypes) {
           if (!it.isStackable && it.name===linesDict.className) {
             foundCat=cat; foundItem=it; break;
@@ -580,9 +612,9 @@ function parseFilterText(rawText) {
       }
     }
 
-    if (foundCat && foundItem) {
+    if (foundItem) {
+      // we matched
       matchedCount++;
-      // enable item
       document.getElementById(`enable-${foundCat.categoryId}-${foundItem.id}`).checked=true;
       document.getElementById(`showOrHide-${foundCat.categoryId}-${foundItem.id}`).value= linesDict.showOrHide;
 
@@ -600,7 +632,7 @@ function parseFilterText(rawText) {
         document.getElementById(`rarity-unique-${foundCat.categoryId}-${foundItem.id}`).checked=true;
       }
 
-      // sockets, quality, itemLevel, stackSize, areaLevel
+      // sockets, quality, iLvl, stackSize
       if (linesDict.sockets>0) {
         document.getElementById(`sockets-${foundCat.categoryId}-${foundItem.id}`).value= linesDict.sockets;
       }
@@ -618,23 +650,23 @@ function parseFilterText(rawText) {
         document.getElementById(`areaLevelVal-${foundCat.categoryId}-${foundItem.id}`).value= linesDict.areaVal;
       }
 
-      // color & font
+      // colors
       if (linesDict.textColor) {
-        let rgb= linesDict.textColor.split(" ").map(x=> parseInt(x,10));
+        const rgb= linesDict.textColor.split(" ").map(x=> parseInt(x,10));
         if (rgb.length>=3) {
           const cHex="#"+rgb.slice(0,3).map(x=> x.toString(16).padStart(2,"0")).join("");
           document.getElementById(`textColor-${foundCat.categoryId}-${foundItem.id}`).value=cHex;
         }
       }
       if (linesDict.borderColor) {
-        let rgb= linesDict.borderColor.split(" ").map(x=> parseInt(x,10));
+        const rgb= linesDict.borderColor.split(" ").map(x=> parseInt(x,10));
         if (rgb.length>=3) {
           const cHex="#"+rgb.slice(0,3).map(x=> x.toString(16).padStart(2,"0")).join("");
           document.getElementById(`borderColor-${foundCat.categoryId}-${foundItem.id}`).value=cHex;
         }
       }
       if (linesDict.bgColor) {
-        let rgb= linesDict.bgColor.split(" ").map(x=> parseInt(x,10));
+        const rgb= linesDict.bgColor.split(" ").map(x=> parseInt(x,10));
         if (rgb.length>=3) {
           const cHex="#"+rgb.slice(0,3).map(x=> x.toString(16).padStart(2,"0")).join("");
           document.getElementById(`bgColor-${foundCat.categoryId}-${foundItem.id}`).value=cHex;
@@ -648,28 +680,104 @@ function parseFilterText(rawText) {
         document.getElementById(`alertDuration-${foundCat.categoryId}-${foundItem.id}`).value= linesDict.alertDur;
       }
 
-      // If leftover lines remain, store them as unmatched
+      // leftover lines => we move them to unrecognized category
       if (leftover.length>0) {
-        leftover.forEach(l => unmatchedLines.push(`Block matched to '${foundItem.name}', but leftover line: ${l}`));
+        leftover.forEach(line => {
+          addUnrecognizedLine(line, showOrHide);
+        });
       }
+
     } else {
-      // entire block unmatched => store lines
-      unmatchedLines.push(`[UNMATCHED BLOCK Start: ${block[0]}]`);
-      leftover.forEach(l => unmatchedLines.push(`  leftover line: ${l}`));
-      unmatchedLines.push(`[UNMATCHED BLOCK End]\n`);
+      // entire block or partial block is unmatched
+      unmatchedCount++;
+      // We'll store the entire block in unrecognized category
+      const rawLines = [block[0], ...leftover];
+      addUnrecognizedBlock(rawLines);
     }
   }
 
-  let msg = `Loaded filter with ${blocks.length} blocks total. Matched & set ${matchedCount} item(s) in the UI!`;
-  if (unmatchedLines.length>0) {
-    msg += `\n\nHowever, ${unmatchedLines.length} lines/blocks were NOT matched:\n` +
-           unmatchedLines.join("\n");
+  let msg = `Loaded filter with ${blocks.length} blocks total.\nMatched: ${matchedCount} blocks/items.`;
+  if (unmatchedCount>0) {
+    msg += `\nUnmatched blocks: ${unmatchedCount}. See 'Unrecognized Lines' category.`;
   }
   alert(msg);
+  
+  // Rebuild UI for unrecognized lines, so they appear now:
+  rebuildUnrecognizedUI();
 }
 
 /***************************************************************
- * 7. INIT & EVENT LISTENERS
+ * 6B. UTILS for "Unrecognized Lines"
+ ***************************************************************/
+/**
+ * Adds a single leftover line to unrecognized category.
+ * We'll store it as an item with an ID and rawLines=[the leftover].
+ */
+function addUnrecognizedLine(line, showOrHide="Show") {
+  const cat = CATEGORIES.find(c=> c.categoryId==="unrecognized");
+  const newId = Date.now() + Math.floor(Math.random()*10000);
+  cat.itemTypes.push({
+    id: newId,
+    name: line,             // we'll display the leftover line
+    showOrHide,            // from block
+    enabled: false,        
+    isStackable: false,    
+    usesItemLevel: false,  
+    rawLines: [ showOrHide, line ] // store them as a block
+  });
+}
+
+/**
+ * Adds an entire unmatched block (including the first line Show/Hide 
+ * plus leftover lines) to unrecognized category as raw lines.
+ */
+function addUnrecognizedBlock(rawLines) {
+  const cat = CATEGORIES.find(c=> c.categoryId==="unrecognized");
+  const newId = Date.now() + Math.floor(Math.random()*10000);
+
+  // The block has first line Show/Hide, then the rest
+  const showOrHide = rawLines[0].startsWith("Show") ? "Show":"Hide";
+
+  cat.itemTypes.push({
+    id: newId,
+    name: rawLines.join("\\n"), // for UI label, we can show them concatenated
+    showOrHide,
+    enabled: false,
+    isStackable: false,
+    usesItemLevel: false,
+    rawLines
+  });
+}
+
+/**
+ * After we've added unrecognized lines, we must reconstruct
+ * the "Unrecognized Lines" category UI.
+ */
+function rebuildUnrecognizedUI() {
+  // Find the unrecognized category
+  const catIndex = CATEGORIES.findIndex(c=> c.categoryId==="unrecognized");
+  if (catIndex<0) return;
+
+  const unrecognizedCat = CATEGORIES[catIndex];
+  // find the existing category-section in the DOM
+  const sections = document.querySelectorAll(".category-section");
+  if (!sections[catIndex]) return;
+
+  const section = sections[catIndex];
+  // clear everything below the heading & desc
+  while (section.children.length>2) {
+    section.removeChild(section.lastChild);
+  }
+
+  // Rebuild
+  unrecognizedCat.itemTypes.forEach(item => {
+    const itemEl = createItemTypeHTML(unrecognizedCat.categoryId, item);
+    section.appendChild(itemEl);
+  });
+}
+
+/***************************************************************
+ * 7. INIT
  ***************************************************************/
 function init() {
   createTabs();
@@ -679,12 +787,13 @@ function init() {
   const loadBtn = document.getElementById("load-filter-button");
   if (loadBtn) {
     loadBtn.addEventListener("click", () => {
-      const rawText = document.getElementById("filter-load-text")?.value || "";
-      parseFilterText(rawText);
+      const raw = document.getElementById("filter-load-text")?.value || "";
+      parseFilterText(raw);
     });
   }
 }
 
+// Generate & download final filter
 document.getElementById("filter-form").addEventListener("submit", function(e) {
   e.preventDefault();
   const filterText = generateFilterContent();
