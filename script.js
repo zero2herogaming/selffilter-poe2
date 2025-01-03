@@ -6,7 +6,7 @@ function rgbaToHex(rgba) {
   const match = rgba.match(/\d+/g);
   if (!match) return "#ffffff";
   const [r, g, b] = match;
-  return `#${[r, g, b].map(x => parseInt(x).toString(16).padStart(2, '0')).join('')}`;
+  return `#${[r, g, b].map(x => parseInt(x).toString(16).padStart(2, "0")).join("")}`;
 }
 
 function hexToRGB(hex) {
@@ -14,13 +14,14 @@ function hexToRGB(hex) {
   const r = (bigint >> 16) & 255;
   const g = (bigint >> 8) & 255;
   const b = bigint & 255;
-  return `${r} ${g} ${b} 255`; // alpha=255 by default
+  return `${r} ${g} ${b} 255`;
 }
 
 /***************************************************************
- * 2. MASTER CATEGORY LIST
- * Each category has sub-rules for each sub-type you want to show/hide.
- * This is just an EXAMPLE: adjust as needed for your actual filter rules.
+ * 2. CATEGORIES WITH RULES
+ * Example demonstration. You can add more sub-rules as needed.
+ * Each rule has "showOrHide" that user can choose at runtime 
+ * (Show or Hide).
  ***************************************************************/
 const CATEGORIES = [
   {
@@ -30,9 +31,10 @@ const CATEGORIES = [
     rules: [
       {
         id: 1,
-        name: "Enable One-Handed Swords",
-        hideRule: false,
+        name: "One Hand Swords",
         enabled: true,
+        showOrHide: "Show", // default
+        // advanced conditions, user can override in UI
         conditions: {
           class: "One Hand Swords",
         },
@@ -45,80 +47,40 @@ const CATEGORIES = [
       },
       {
         id: 2,
-        name: "Enable Daggers",
-        hideRule: false,
-        enabled: true,
+        name: "Daggers",
+        enabled: false,
+        showOrHide: "Show",
         conditions: {
           class: "Daggers",
         },
       },
-      // ...Add more for Claws, Wands, Axes, Maces, Sceptres, Spears, Flails...
+      // Add more for Claws, Wands, Axes, Maces, etc.
     ],
   },
   {
     categoryId: "weapons-twohand",
     categoryName: "Weapons: Two-Handed",
-    description: "Bows, Staves, Two Hand Swords, Two Hand Axes, Two Hand Maces, Quarterstaves, Crossbows, Traps, Fishing Rods.",
+    description: "Bows, Staves, Two Hand Swords, Two Hand Axes, Two Hand Maces, Quarterstaves, Crossbows, etc.",
     rules: [
       {
         id: 10,
-        name: "Show Two Hand Swords",
-        hideRule: false,
+        name: "Two Hand Swords",
         enabled: true,
+        showOrHide: "Show",
         conditions: {
           class: "Two Hand Swords",
-        },
-        colorSettings: {
-          textColor: "rgba(200,200,200,1)",
-          borderColor: "rgba(0,0,0,1)",
-          backgroundColor: "rgba(60,60,60,0.5)",
-          fontSize: 40,
         },
       },
       {
         id: 11,
-        name: "Show Crossbows",
-        hideRule: false,
+        name: "Crossbows",
         enabled: true,
+        showOrHide: "Hide",
         conditions: {
           class: "Crossbows",
         },
       },
-      // ...Add more for Bows, Staves, Quarterstaves, etc....
-    ],
-  },
-  {
-    categoryId: "weapons-offhand",
-    categoryName: "Off-hand Weapons",
-    description: "Quivers, Shields, Foci.",
-    rules: [
-      {
-        id: 20,
-        name: "Enable Quivers",
-        hideRule: false,
-        enabled: true,
-        conditions: {
-          class: "Quivers",
-        },
-      },
-      {
-        id: 21,
-        name: "Enable Shields",
-        hideRule: false,
-        enabled: true,
-        conditions: {
-          class: "Shields",
-        },
-      },
-      {
-        id: 22,
-        name: "Enable Foci",
-        hideRule: false,
-        enabled: true,
-        conditions: {
-          class: "Foci",
-        },
-      },
+      // etc.
     ],
   },
   {
@@ -127,28 +89,28 @@ const CATEGORIES = [
     description: "Skill Gems, Support Gems, Spirit Gems, etc.",
     rules: [
       {
-        id: 30,
-        name: "Show Skill Gems",
-        hideRule: false,
+        id: 20,
+        name: "Skill Gems",
         enabled: true,
+        showOrHide: "Show",
         conditions: {
           baseTypes: ["Skill Gem"],
         },
       },
       {
-        id: 31,
-        name: "Show Support Gems",
-        hideRule: false,
-        enabled: true,
+        id: 21,
+        name: "Support Gems",
+        enabled: false,
+        showOrHide: "Show",
         conditions: {
           baseTypes: ["Support Gem"],
         },
       },
       {
-        id: 32,
-        name: "Show Spirit Gems",
-        hideRule: false,
+        id: 22,
+        name: "Spirit Gems",
         enabled: true,
+        showOrHide: "Show",
         conditions: {
           baseTypes: ["Spirit Gem"],
         },
@@ -161,116 +123,21 @@ const CATEGORIES = [
     description: "Gloves, Boots, Body Armours, Helmets.",
     rules: [
       {
-        id: 40,
-        name: "Show Gloves",
-        hideRule: false,
+        id: 30,
+        name: "Helmets",
         enabled: true,
-        conditions: {
-          class: "Gloves",
-        },
-      },
-      {
-        id: 41,
-        name: "Show Boots",
-        hideRule: false,
-        enabled: true,
-        conditions: {
-          class: "Boots",
-        },
-      },
-      {
-        id: 42,
-        name: "Show Body Armours",
-        hideRule: false,
-        enabled: true,
-        conditions: {
-          class: "Body Armours",
-        },
-      },
-      {
-        id: 43,
-        name: "Show Helmets",
-        hideRule: false,
-        enabled: true,
+        showOrHide: "Show",
         conditions: {
           class: "Helmets",
         },
       },
-    ],
-  },
-  {
-    categoryId: "jewellery",
-    categoryName: "Jewellery",
-    description: "Amulets, Rings, Belts.",
-    rules: [
       {
-        id: 50,
-        name: "Show Amulets",
-        hideRule: false,
+        id: 31,
+        name: "Body Armours",
         enabled: true,
+        showOrHide: "Show",
         conditions: {
-          class: "Amulets",
-        },
-      },
-      {
-        id: 51,
-        name: "Show Rings",
-        hideRule: false,
-        enabled: true,
-        conditions: {
-          class: "Rings",
-        },
-      },
-      {
-        id: 52,
-        name: "Show Belts",
-        hideRule: false,
-        enabled: true,
-        conditions: {
-          class: "Belts",
-        },
-      },
-    ],
-  },
-  {
-    categoryId: "flasks",
-    categoryName: "Flasks",
-    description: "Flasks, Life Flasks, Mana Flasks, Charms.",
-    rules: [
-      {
-        id: 60,
-        name: "Show All Flasks",
-        hideRule: false,
-        enabled: true,
-        conditions: {
-          class: "Flasks",
-        },
-      },
-      {
-        id: 61,
-        name: "Show Life Flasks",
-        hideRule: false,
-        enabled: true,
-        conditions: {
-          baseTypes: ["Life Flask"],
-        },
-      },
-      {
-        id: 62,
-        name: "Show Mana Flasks",
-        hideRule: false,
-        enabled: true,
-        conditions: {
-          baseTypes: ["Mana Flask"],
-        },
-      },
-      {
-        id: 63,
-        name: "Show Charms",
-        hideRule: false,
-        enabled: true,
-        conditions: {
-          baseTypes: ["Charm"],
+          class: "Body Armours",
         },
       },
     ],
@@ -278,101 +145,24 @@ const CATEGORIES = [
   {
     categoryId: "currency",
     categoryName: "Currency",
-    description: "Stackable Currency, Distilled Emotions, Essences, Splinters, Catalysts.",
+    description: "Stackable Currency, Distilled Emotions, Essences, Splinters, Catalysts, etc.",
     rules: [
       {
-        id: 70,
-        name: "Stackable Currency (e.g. Gold, Chaos Orbs)",
-        hideRule: false,
+        id: 40,
+        name: "Gold & Chaos (Stackable)",
         enabled: true,
+        showOrHide: "Show",
         conditions: {
           class: "Stackable Currency",
         },
       },
       {
-        id: 71,
-        name: "Distilled Emotions",
-        hideRule: false,
-        enabled: true,
-        conditions: {
-          baseTypes: ["Distilled Emotion"],
-        },
-      },
-      {
-        id: 72,
-        name: "Essences",
-        hideRule: false,
-        enabled: true,
-        conditions: {
-          baseTypes: ["Essence of"],
-        },
-      },
-      {
-        id: 73,
-        name: "Splinters",
-        hideRule: false,
-        enabled: true,
-        conditions: {
-          baseTypes: ["Splinter"],
-        },
-      },
-      {
-        id: 74,
+        id: 41,
         name: "Catalysts",
-        hideRule: false,
-        enabled: true,
+        enabled: false,
+        showOrHide: "Show",
         conditions: {
           baseTypes: ["Catalyst"],
-        },
-      },
-    ],
-  },
-  {
-    categoryId: "waystones",
-    categoryName: "Waystones & Maps",
-    description: "Waystones, Map Fragments, Misc Map Items.",
-    rules: [
-      {
-        id: 80,
-        name: "Show Waystones",
-        hideRule: false,
-        enabled: true,
-        conditions: {
-          class: "Waystones",
-        },
-      },
-      {
-        id: 81,
-        name: "Map Fragments",
-        hideRule: false,
-        enabled: true,
-        conditions: {
-          class: "Map Fragments",
-        },
-      },
-      {
-        id: 82,
-        name: "Misc Map Items",
-        hideRule: false,
-        enabled: true,
-        conditions: {
-          class: "Misc Map Items",
-        },
-      },
-    ],
-  },
-  {
-    categoryId: "jewels",
-    categoryName: "Jewels",
-    description: "Generic Jewels (ex: Abyss Jewels, Timeless Jewels, etc.)",
-    rules: [
-      {
-        id: 90,
-        name: "Show All Jewels",
-        hideRule: false,
-        enabled: true,
-        conditions: {
-          class: "Jewels",
         },
       },
     ],
@@ -380,19 +170,17 @@ const CATEGORIES = [
 ];
 
 /***************************************************************
- * 3. DOM CREATION - TABS, CATEGORY SECTIONS
+ * 3. CREATE TABS + CREATE CATEGORY SECTIONS
  ***************************************************************/
 function createTabs() {
   const tabContainer = document.getElementById("category-tabs");
 
   CATEGORIES.forEach((cat, index) => {
-    const button = document.createElement("button");
-    button.classList.add("tab-button");
-    button.innerText = cat.categoryName;
-    button.addEventListener("click", () => {
-      activateCategory(index);
-    });
-    tabContainer.appendChild(button);
+    const btn = document.createElement("button");
+    btn.classList.add("tab-button");
+    btn.innerText = cat.categoryName;
+    btn.addEventListener("click", () => activateCategory(index));
+    tabContainer.appendChild(btn);
   });
 }
 
@@ -402,9 +190,8 @@ function createCategorySections() {
   CATEGORIES.forEach((cat, index) => {
     const section = document.createElement("div");
     section.classList.add("category-section");
-    if (index === 0) section.classList.add("active"); // default first active
+    if (index === 0) section.classList.add("active");
 
-    // Category title / description
     const heading = document.createElement("h2");
     heading.innerText = cat.categoryName;
     section.appendChild(heading);
@@ -413,10 +200,9 @@ function createCategorySections() {
     desc.innerText = cat.description;
     section.appendChild(desc);
 
-    // Now create each rule inside this category
     cat.rules.forEach(rule => {
-      const ruleDiv = createRuleHTML(cat.categoryId, rule);
-      section.appendChild(ruleDiv);
+      const ruleEl = createRuleHTML(cat.categoryId, rule);
+      section.appendChild(ruleEl);
     });
 
     form.insertBefore(section, document.getElementById("generate-button"));
@@ -435,7 +221,13 @@ function activateCategory(index) {
 }
 
 /***************************************************************
- * 4. BUILDING EACH RULE'S HTML
+ * 4. BUILD THE RULE UI
+ * Here we add:
+ *  - "Enable" checkbox
+ *  - "Show/Hide" dropdown
+ *  - Rarity dropdown
+ *  - min/max for AreaLevel, ItemLevel, StackSize
+ *  - optional color & sound picks
  ***************************************************************/
 function createRuleHTML(categoryId, rule) {
   const container = document.createElement("div");
@@ -449,25 +241,56 @@ function createRuleHTML(categoryId, rule) {
 
   // Basic info
   let html = `
+    <!-- Enable checkbox -->
     <label>
       <input type="checkbox" id="enable-${categoryId}-${rule.id}" ${rule.enabled ? "checked" : ""} />
       Enable
     </label>
-  `;
 
-  // Show or Hide
-  html += `<p style="margin-top:5px;color:${rule.hideRule ? 'red':'lime'};">${rule.hideRule ? 'HIDE Rule' : 'SHOW Rule'}</p>`;
+    <!-- Show/Hide dropdown -->
+    <label>
+      Action:
+      <select id="showOrHide-${categoryId}-${rule.id}">
+        <option value="Show" ${rule.showOrHide==="Show" ? "selected" : ""}>Show</option>
+        <option value="Hide" ${rule.showOrHide==="Hide" ? "selected" : ""}>Hide</option>
+      </select>
+    </label>
 
-  // Explanation text (optional)
-  html += `
-    <p style="font-style: italic; margin:6px 0;">
-      <strong>Advanced fields:</strong> 
-      <br/>- <em>ItemLevel</em>: an item's internal level requirement
-      <br/>- <em>AreaLevel</em>: the zone level you're in
-      <br/>- <em>StackSize</em>: for stackable currency
-      <br/>- <em>BaseType</em>: exact item name
-      <br/>- <em>Class</em>: high-level category (e.g. "Swords", "Claws")
-    </p>
+    <!-- Rarity dropdown -->
+    <label>
+      Rarity:
+      <select id="rarity-${categoryId}-${rule.id}">
+        <option value="">Any</option>
+        <option value="Normal">Normal</option>
+        <option value="Magic">Magic</option>
+        <option value="Rare">Rare</option>
+        <option value="Unique">Unique</option>
+      </select>
+    </label>
+
+    <!-- AreaLevel -->
+    <label>Min AreaLevel:
+      <input type="number" id="minAreaLevel-${categoryId}-${rule.id}" value="" min="0" />
+    </label>
+    <label>Max AreaLevel:
+      <input type="number" id="maxAreaLevel-${categoryId}-${rule.id}" value="" min="0" />
+    </label>
+
+    <!-- ItemLevel -->
+    <label>Min ItemLevel:
+      <input type="number" id="minItemLevel-${categoryId}-${rule.id}" value="" min="0" />
+    </label>
+    <label>Max ItemLevel:
+      <input type="number" id="maxItemLevel-${categoryId}-${rule.id}" value="" min="0" />
+    </label>
+
+    <!-- StackSize -->
+    <label>Min StackSize:
+      <input type="number" id="minStackSize-${categoryId}-${rule.id}" value="" min="0" />
+    </label>
+    <label>Max StackSize:
+      <input type="number" id="maxStackSize-${categoryId}-${rule.id}" value="" min="0" />
+    </label>
   `;
 
   // Colors / Font
@@ -493,73 +316,95 @@ function createRuleHTML(categoryId, rule) {
     `;
   }
 
-  // Sounds
-  if (rule.alertSound) {
-    html += `
-      <label>Alert Sound:
-        <select id="alertSound-${categoryId}-${rule.id}">
-          <option value="1" ${rule.alertSound.id===1?'selected':''}>Alert 1</option>
-          <option value="2" ${rule.alertSound.id===2?'selected':''}>Alert 2</option>
-          <option value="3" ${rule.alertSound.id===3?'selected':''}>Alert 3</option>
-          <option value="4" ${rule.alertSound.id===4?'selected':''}>Alert 4</option>
-          <option value="6" ${rule.alertSound.id===6?'selected':''}>Alert 6</option>
-          <option value="10" ${rule.alertSound.id===10?'selected':''}>Alert 10</option>
-        </select>
-        Duration:
-        <input type="number" id="alertDuration-${categoryId}-${rule.id}" value="${rule.alertSound.duration || 300}" min="50" max="1000" />
-      </label>
-    `;
-  }
+  // Alert Sound (optional)
+  html += `
+    <label>Alert Sound:
+      <select id="alertSound-${categoryId}-${rule.id}">
+        <option value="">None</option>
+        <option value="1">Alert 1</option>
+        <option value="2">Alert 2</option>
+        <option value="3">Alert 3</option>
+        <option value="4">Alert 4</option>
+        <option value="6">Alert 6</option>
+        <option value="10">Alert 10</option>
+      </select>
+      Duration:
+      <input type="number" id="alertDuration-${categoryId}-${rule.id}" value="300" min="50" max="1000"/>
+    </label>
+  `;
 
   container.innerHTML += html;
   return container;
 }
 
 /***************************************************************
- * 5. GENERATING THE FILTER
+ * 5. GENERATE THE FILTER CONTENT
  ***************************************************************/
 function generateFilterContent() {
   let content = "";
 
   CATEGORIES.forEach(cat => {
     cat.rules.forEach(rule => {
-      const enableEl = document.getElementById(`enable-${cat.categoryId}-${rule.id}`);
-      if (!enableEl) return; // safety
-      const enabled = enableEl.checked;
-      if (!enabled) return; // skip if disabled
+      // If "enable" is not found or not checked, skip
+      const enableBox = document.getElementById(`enable-${cat.categoryId}-${rule.id}`);
+      if (!enableBox || !enableBox.checked) return;
 
-      // Show or Hide
-      const blockType = rule.hideRule ? "Hide" : "Show";
+      // "ShowOrHide" from the dropdown
+      const showOrHideSel = document.getElementById(`showOrHide-${cat.categoryId}-${rule.id}`);
+      const blockType = showOrHideSel.value;
+
+      // Build the block
       let ruleBlock = `${blockType}\n`;
 
-      // Conditions
-      const c = rule.conditions || {};
-
-      // Rarity
-      if (c.rarity) {
-        ruleBlock += `  Rarity ${c.rarity}\n`;
-      }
-      if (c.rarityMax === "Magic") {
-        ruleBlock += `  Rarity <= Magic\n`;
+      // Rarity dropdown
+      const rarityVal = document.getElementById(`rarity-${cat.categoryId}-${rule.id}`).value;
+      if (rarityVal) {
+        ruleBlock += `  Rarity ${rarityVal}\n`;
       }
 
-      // Class
-      if (c.class) {
-        // possibly multiple classes space-separated
-        const classes = c.class.split(" ").map(cl => `"${cl}"`).join(" ");
+      // AreaLevel
+      const minAL = parseInt(document.getElementById(`minAreaLevel-${cat.categoryId}-${rule.id}`).value || 0, 10);
+      const maxAL = parseInt(document.getElementById(`maxAreaLevel-${cat.categoryId}-${rule.id}`).value || 0, 10);
+      if (minAL > 0) {
+        ruleBlock += `  AreaLevel >= ${minAL}\n`;
+      }
+      if (maxAL > 0 && maxAL >= minAL) {
+        ruleBlock += `  AreaLevel <= ${maxAL}\n`;
+      }
+
+      // ItemLevel
+      const minIL = parseInt(document.getElementById(`minItemLevel-${cat.categoryId}-${rule.id}`).value || 0, 10);
+      const maxIL = parseInt(document.getElementById(`maxItemLevel-${cat.categoryId}-${rule.id}`).value || 0, 10);
+      if (minIL > 0) {
+        ruleBlock += `  ItemLevel >= ${minIL}\n`;
+      }
+      if (maxIL > 0 && maxIL >= minIL) {
+        ruleBlock += `  ItemLevel <= ${maxIL}\n`;
+      }
+
+      // StackSize
+      const minStack = parseInt(document.getElementById(`minStackSize-${cat.categoryId}-${rule.id}`).value || 0, 10);
+      const maxStack = parseInt(document.getElementById(`maxStackSize-${cat.categoryId}-${rule.id}`).value || 0, 10);
+      if (minStack > 0) {
+        ruleBlock += `  StackSize >= ${minStack}\n`;
+      }
+      if (maxStack > 0 && maxStack >= minStack) {
+        ruleBlock += `  StackSize <= ${maxStack}\n`;
+      }
+
+      // "class" from the rule (conditions.class)
+      if (rule.conditions?.class) {
+        // Could be multiple classes (space separated)
+        const classes = rule.conditions.class.split(" ").map(cl => `"${cl}"`).join(" ");
         ruleBlock += `  Class ${classes}\n`;
       }
-
-      // BaseTypes
-      if (c.baseTypes) {
-        const baseStr = c.baseTypes.map(b => `"${b}"`).join(" ");
-        ruleBlock += `  BaseType ${baseStr}\n`;
+      // "baseTypes" from the rule
+      if (rule.conditions?.baseTypes) {
+        const btStr = rule.conditions.baseTypes.map(bt => `"${bt}"`).join(" ");
+        ruleBlock += `  BaseType ${btStr}\n`;
       }
 
-      // areaLevelRange, stackSizeRange, itemLevelRange, etc. can be similarly done
-      // For brevity, let's skip the advanced numeric logic and do your basic approach.
-
-      // Colors, fonts, sounds
+      // Colors
       if (rule.colorSettings) {
         const textVal = document.getElementById(`textColor-${cat.categoryId}-${rule.id}`)?.value;
         const borderVal = document.getElementById(`borderColor-${cat.categoryId}-${rule.id}`)?.value;
@@ -574,10 +419,11 @@ function generateFilterContent() {
         if (fontVal) ruleBlock += `  SetFontSize ${fontVal}\n`;
       }
 
-      if (rule.alertSound) {
-        const aSound = document.getElementById(`alertSound-${cat.categoryId}-${rule.id}`)?.value;
-        const aDur = document.getElementById(`alertDuration-${cat.categoryId}-${rule.id}`)?.value;
-        if (aSound && aDur) ruleBlock += `  PlayAlertSound ${aSound} ${aDur}\n`;
+      // Alert Sound
+      const aSound = document.getElementById(`alertSound-${cat.categoryId}-${rule.id}`).value;
+      const aDur = document.getElementById(`alertDuration-${cat.categoryId}-${rule.id}`).value;
+      if (aSound && aDur && aSound !== "") {
+        ruleBlock += `  PlayAlertSound ${aSound} ${aDur}\n`;
       }
 
       ruleBlock += "\n";
@@ -594,10 +440,10 @@ function generateFilterContent() {
 function init() {
   createTabs();
   createCategorySections();
-  activateCategory(0); // default to first category
+  activateCategory(0); // first tab active
 }
 
-document.getElementById("filter-form").addEventListener("submit", function(e){
+document.getElementById("filter-form").addEventListener("submit", function (e) {
   e.preventDefault();
   const filterText = generateFilterContent();
   const blob = new Blob([filterText], { type: "text/plain" });
