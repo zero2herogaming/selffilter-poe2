@@ -20,9 +20,7 @@ function hexToRGB(hex) {
 }
 
 /***************************************************************
- * 2. COMPLETE CATEGORIES & ITEMS (NO PLACEHOLDERS)
- * All 10 categories: Gems, 1H Weapons, 2H Weapons, Off-hand, 
- * Armour, Jewellery, Flasks, Currency, Waystones, Jewels.
+ * 2. COMPLETE CATEGORIES (ALL 10), NO PLACEHOLDERS
  ***************************************************************/
 const CATEGORIES = [
   {
@@ -198,8 +196,9 @@ function createCategorySections() {
 function activateCategory(index) {
   const allSections = document.querySelectorAll(".category-section");
   const allButtons = document.querySelectorAll(".tab-button");
-  allSections.forEach((sec) => sec.classList.remove("active"));
-  allButtons.forEach((btn) => btn.classList.remove("active"));
+  allSections.forEach(sec => sec.classList.remove("active"));
+  allButtons.forEach(btn => btn.classList.remove("active"));
+
   allSections[index].classList.add("active");
   allButtons[index].classList.add("active");
 }
@@ -217,22 +216,19 @@ function createItemTypeHTML(categoryId, item) {
   container.appendChild(titleDiv);
 
   let html = `
-    <!-- Enable -->
     <label>
       <input type="checkbox" id="enable-${categoryId}-${item.id}" ${item.enabled ? "checked" : ""}/>
       Enable
     </label>
 
-    <!-- Show/Hide -->
     <label>
       Action:
       <select id="showOrHide-${categoryId}-${item.id}">
-        <option value="Show" ${item.showOrHide==="Show" ? "selected" : ""}>Show</option>
-        <option value="Hide" ${item.showOrHide==="Hide" ? "selected" : ""}>Hide</option>
+        <option value="Show" ${item.showOrHide==="Show" ? "selected":""}>Show</option>
+        <option value="Hide" ${item.showOrHide==="Hide" ? "selected":""}>Hide</option>
       </select>
     </label>
 
-    <!-- Rarity Checkboxes -->
     <label>Rarity:</label>
     <div style="margin-left:20px;">
       <label><input type="checkbox" id="rarity-normal-${categoryId}-${item.id}"/> Normal</label>
@@ -241,36 +237,30 @@ function createItemTypeHTML(categoryId, item) {
       <label><input type="checkbox" id="rarity-unique-${categoryId}-${item.id}"/> Unique</label>
     </div>
 
-    <!-- Sockets > X -->
     <label>Sockets >:
       <input type="number" id="sockets-${categoryId}-${item.id}" value="" min="0"/>
     </label>
-
-    <!-- Quality > X -->
     <label>Quality >:
       <input type="number" id="quality-${categoryId}-${item.id}" value="" min="0"/>
     </label>
   `;
 
-  // If item uses itemLevel => "ItemLevel = X"
   if (item.usesItemLevel) {
     html += `
       <label>ItemLevel =:
-        <input type="number" id="itemLevel-${categoryId}-${item.id}" min="0" value=""/>
+        <input type="number" id="itemLevel-${categoryId}-${item.id}" value="" min="0"/>
       </label>
     `;
   }
 
-  // If item is stackable => "StackSize >= X"
   if (item.isStackable) {
     html += `
       <label>StackSize >=:
-        <input type="number" id="stackSize-${categoryId}-${item.id}" min="0" value=""/>
+        <input type="number" id="stackSize-${categoryId}-${item.id}" value="" min="0"/>
       </label>
     `;
   }
 
-  // Single operator for area level
   html += `
     <label>AreaLevel:
       <select id="areaLevelOp-${categoryId}-${item.id}">
@@ -279,10 +269,9 @@ function createItemTypeHTML(categoryId, item) {
         <option value="<="><=</option>
         <option value="=">=</option>
       </select>
-      <input type="number" id="areaLevelVal-${categoryId}-${item.id}" min="0" value=""/>
+      <input type="number" id="areaLevelVal-${categoryId}-${item.id}" value="" min="0"/>
     </label>
 
-    <!-- Colors & Font -->
     <label>Text Color:
       <input type="color" id="textColor-${categoryId}-${item.id}" value="#ffffff"/>
     </label>
@@ -296,7 +285,6 @@ function createItemTypeHTML(categoryId, item) {
       <input type="number" id="fontSize-${categoryId}-${item.id}" value="35" min="12" max="60"/>
     </label>
 
-    <!-- Alert Sound -->
     <label>Alert Sound:
       <select id="alertSound-${categoryId}-${item.id}">
         <option value="">None</option>
@@ -320,15 +308,13 @@ function createItemTypeHTML(categoryId, item) {
  ***************************************************************/
 function generateFilterContent() {
   let content = "";
-
   CATEGORIES.forEach(cat => {
     cat.itemTypes.forEach(item => {
-      // check if enabled
-      const enableEl = document.getElementById(`enable-${cat.categoryId}-${item.id}`);
-      if (!enableEl || !enableEl.checked) return;
+      const enableBox = document.getElementById(`enable-${cat.categoryId}-${item.id}`);
+      if (!enableBox.checked) return;
 
-      const showOrHideSel = document.getElementById(`showOrHide-${cat.categoryId}-${item.id}`).value;
-      let ruleBlock = `${showOrHideSel}\n`;
+      const showOrHide = document.getElementById(`showOrHide-${cat.categoryId}-${item.id}`).value;
+      let ruleBlock = `${showOrHide}\n`;
 
       // Rarity
       const normalCk = document.getElementById(`rarity-normal-${cat.categoryId}-${item.id}`).checked;
@@ -344,31 +330,31 @@ function generateFilterContent() {
         ruleBlock += `  Rarity ${rarities.join(" ")}\n`;
       }
 
-      // Sockets > x
+      // Sockets > X
       const sockVal = parseInt(document.getElementById(`sockets-${cat.categoryId}-${item.id}`).value||0,10);
       if (sockVal>0) {
         ruleBlock += `  Sockets > ${sockVal}\n`;
       }
 
-      // Quality > x
+      // Quality > X
       const qualVal = parseInt(document.getElementById(`quality-${cat.categoryId}-${item.id}`).value||0,10);
       if (qualVal>0) {
         ruleBlock += `  Quality > ${qualVal}\n`;
       }
 
-      // ItemLevel = x
+      // ItemLevel = X
       if (item.usesItemLevel) {
-        const ilvlVal = parseInt(document.getElementById(`itemLevel-${cat.categoryId}-${item.id}`).value||0,10);
-        if (ilvlVal>0) {
-          ruleBlock += `  ItemLevel = ${ilvlVal}\n`;
+        const iLvl = parseInt(document.getElementById(`itemLevel-${cat.categoryId}-${item.id}`).value||0,10);
+        if (iLvl>0) {
+          ruleBlock += `  ItemLevel = ${iLvl}\n`;
         }
       }
 
-      // StackSize >= x
+      // StackSize >= X
       if (item.isStackable) {
-        const stackVal = parseInt(document.getElementById(`stackSize-${cat.categoryId}-${item.id}`).value||0,10);
-        if (stackVal>0) {
-          ruleBlock += `  StackSize >= ${stackVal}\n`;
+        const stVal = parseInt(document.getElementById(`stackSize-${cat.categoryId}-${item.id}`).value||0,10);
+        if (stVal>0) {
+          ruleBlock += `  StackSize >= ${stVal}\n`;
         }
       }
 
@@ -387,18 +373,17 @@ function generateFilterContent() {
       }
 
       // Colors
-      const textC = document.getElementById(`textColor-${cat.categoryId}-${item.id}`).value;
+      const textC   = document.getElementById(`textColor-${cat.categoryId}-${item.id}`).value;
       const borderC = document.getElementById(`borderColor-${cat.categoryId}-${item.id}`).value;
-      const bgC = document.getElementById(`bgColor-${cat.categoryId}-${item.id}`).value;
-      const fontC = document.getElementById(`fontSize-${cat.categoryId}-${item.id}`).value;
-
+      const bgC     = document.getElementById(`bgColor-${cat.categoryId}-${item.id}`).value;
+      const fontC   = document.getElementById(`fontSize-${cat.categoryId}-${item.id}`).value;
       if (textC) {
         ruleBlock += `  SetTextColor ${hexToRGB(textC)}\n`;
       }
       if (borderC) {
         ruleBlock += `  SetBorderColor ${hexToRGB(borderC)}\n`;
       }
-      if (bgC && bgC.toLowerCase() !== "#ffffff") {
+      if (bgC && bgC.toLowerCase()!=="#ffffff") {
         ruleBlock += `  SetBackgroundColor ${hexToRGB(bgC)}\n`;
       }
       if (fontC) {
@@ -406,8 +391,8 @@ function generateFilterContent() {
       }
 
       // Alert Sound
-      const aSound = document.getElementById(`alertSound-${cat.categoryId}-${item.id}`).value;
-      const aDur   = document.getElementById(`alertDuration-${cat.categoryId}-${item.id}`).value;
+      const aSound= document.getElementById(`alertSound-${cat.categoryId}-${item.id}`).value;
+      const aDur  = document.getElementById(`alertDuration-${cat.categoryId}-${item.id}`).value;
       if (aSound) {
         ruleBlock += `  PlayAlertSound ${aSound} ${aDur}\n`;
       }
@@ -416,13 +401,11 @@ function generateFilterContent() {
       content += ruleBlock;
     });
   });
-
   return content;
 }
 
 /***************************************************************
- * 6. OPTIONAL: LOAD FILTER FROM TEXT
- * We'll show an alert if no text or no lines found.
+ * 6. ADVANCED PARSING: MATCH BLOCKS -> UI
  ***************************************************************/
 function parseFilterText(rawText) {
   const text = rawText.trim();
@@ -431,15 +414,195 @@ function parseFilterText(rawText) {
     return;
   }
 
-  // Count "Show" or "Hide" lines
-  const lines = text.split(/\r?\n/).map(l=>l.trim());
-  const blockCount = lines.filter(ln=> ln.startsWith("Show") || ln.startsWith("Hide")).length;
+  // Split lines
+  const lines = text.split(/\r?\n/).map(l => l.trim()).filter(l=>l!=="");
+  let blocks = [];
+  let current = [];
 
-  if (blockCount===0) {
-    alert("No 'Show' or 'Hide' lines found. This filter may not match the expected format.");
-  } else {
-    alert(`Loaded filter with ${blockCount} block(s) found! (Note: advanced parsing is not implemented)`);
+  function pushBlock() {
+    if (current.length>0) {
+      blocks.push([...current]);
+      current=[];
+    }
   }
+
+  // gather blocks
+  lines.forEach(ln=>{
+    if (ln.startsWith("Show")||ln.startsWith("Hide")) {
+      pushBlock();
+      current.push(ln);
+    } else {
+      current.push(ln);
+    }
+  });
+  pushBlock();
+
+  if (blocks.length===0) {
+    alert("No 'Show' or 'Hide' lines found. This filter may not match the expected format.");
+    return;
+  }
+
+  let matchedCount=0;
+
+  for (let block of blocks) {
+    const showOrHide=block[0].startsWith("Show") ? "Show":"Hide";
+    let linesDict = {
+      showOrHide,
+      rarities:[],
+      sockets:0,
+      quality:0,
+      itemLevel:0,
+      stackSize:0,
+      areaOp:"",
+      areaVal:0,
+      className:"",
+      baseName:"",
+      textColor:"",
+      borderColor:"",
+      bgColor:"",
+      fontSize:"",
+      alertSound:"",
+      alertDur:"300"
+    };
+
+    for (let line of block.slice(1)) {
+      if (line.startsWith("Rarity ")) {
+        linesDict.rarities=line.replace("Rarity ","").split(" ");
+      } else if (line.startsWith("Sockets > ")) {
+        linesDict.sockets=parseInt(line.replace("Sockets > ",""),10);
+      } else if (line.startsWith("Quality > ")) {
+        linesDict.quality=parseInt(line.replace("Quality > ",""),10);
+      } else if (line.startsWith("ItemLevel = ")) {
+        linesDict.itemLevel=parseInt(line.replace("ItemLevel = ",""),10);
+      } else if (line.startsWith("StackSize >=")) {
+        linesDict.stackSize=parseInt(line.replace("StackSize >=",""),10);
+      } else if (line.startsWith("AreaLevel ")) {
+        const tokens=line.split(" ");
+        if (tokens.length===3) {
+          linesDict.areaOp=tokens[1];
+          linesDict.areaVal=parseInt(tokens[2],10);
+        }
+      } else if (line.startsWith("Class ")) {
+        let n=line.replace("Class ","").trim();
+        linesDict.className=n.replace(/"/g,"");
+      } else if (line.startsWith("BaseType ")) {
+        let n=line.replace("BaseType ","").trim();
+        linesDict.baseName=n.replace(/"/g,"");
+      } else if (line.startsWith("SetTextColor ")) {
+        linesDict.textColor=line.replace("SetTextColor ","").trim();
+      } else if (line.startsWith("SetBorderColor ")) {
+        linesDict.borderColor=line.replace("SetBorderColor ","").trim();
+      } else if (line.startsWith("SetBackgroundColor ")) {
+        linesDict.bgColor=line.replace("SetBackgroundColor ","").trim();
+      } else if (line.startsWith("SetFontSize ")) {
+        linesDict.fontSize=line.replace("SetFontSize ","").trim();
+      } else if (line.startsWith("PlayAlertSound ")) {
+        const parts=line.replace("PlayAlertSound ","").split(" ");
+        linesDict.alertSound=parts[0];
+        if (parts[1]) linesDict.alertDur=parts[1];
+      }
+    }
+
+    // try to find the matching item
+    let foundCat=null;
+    let foundItem=null;
+
+    if (linesDict.baseName) {
+      // find stackable
+      for (let cat of CATEGORIES) {
+        for (let it of cat.itemTypes) {
+          if (it.isStackable && it.name===linesDict.baseName) {
+            foundCat=cat;
+            foundItem=it;
+            break;
+          }
+        }
+        if (foundItem) break;
+      }
+    } else if (linesDict.className) {
+      // find non-stackable
+      for (let cat of CATEGORIES) {
+        for (let it of cat.itemTypes) {
+          if (!it.isStackable && it.name===linesDict.className) {
+            foundCat=cat;
+            foundItem=it;
+            break;
+          }
+        }
+        if (foundItem) break;
+      }
+    }
+
+    // if found => set UI
+    if (foundCat && foundItem) {
+      matchedCount++;
+      document.getElementById(`enable-${foundCat.categoryId}-${foundItem.id}`).checked=true;
+      document.getElementById(`showOrHide-${foundCat.categoryId}-${foundItem.id}`).value=linesDict.showOrHide;
+
+      // rarities
+      if (linesDict.rarities.includes("Normal")) {
+        document.getElementById(`rarity-normal-${foundCat.categoryId}-${foundItem.id}`).checked=true;
+      }
+      if (linesDict.rarities.includes("Magic")) {
+        document.getElementById(`rarity-magic-${foundCat.categoryId}-${foundItem.id}`).checked=true;
+      }
+      if (linesDict.rarities.includes("Rare")) {
+        document.getElementById(`rarity-rare-${foundCat.categoryId}-${foundItem.id}`).checked=true;
+      }
+      if (linesDict.rarities.includes("Unique")) {
+        document.getElementById(`rarity-unique-${foundCat.categoryId}-${foundItem.id}`).checked=true;
+      }
+
+      if (linesDict.sockets>0) {
+        document.getElementById(`sockets-${foundCat.categoryId}-${foundItem.id}`).value=linesDict.sockets;
+      }
+      if (linesDict.quality>0) {
+        document.getElementById(`quality-${foundCat.categoryId}-${foundItem.id}`).value=linesDict.quality;
+      }
+      if (foundItem.usesItemLevel && linesDict.itemLevel>0) {
+        document.getElementById(`itemLevel-${foundCat.categoryId}-${foundItem.id}`).value=linesDict.itemLevel;
+      }
+      if (foundItem.isStackable && linesDict.stackSize>0) {
+        document.getElementById(`stackSize-${foundCat.categoryId}-${foundItem.id}`).value=linesDict.stackSize;
+      }
+      if (linesDict.areaOp && linesDict.areaVal>0) {
+        document.getElementById(`areaLevelOp-${foundCat.categoryId}-${foundItem.id}`).value=linesDict.areaOp;
+        document.getElementById(`areaLevelVal-${foundCat.categoryId}-${foundItem.id}`).value=linesDict.areaVal;
+      }
+
+      // parse colors -> hex
+      if (linesDict.textColor) {
+        const rgb=linesDict.textColor.split(" ").map(x=>parseInt(x,10));
+        if (rgb.length>=3) {
+          const cHex="#"+rgb.slice(0,3).map(x=> x.toString(16).padStart(2,"0")).join("");
+          document.getElementById(`textColor-${foundCat.categoryId}-${foundItem.id}`).value=cHex;
+        }
+      }
+      if (linesDict.borderColor) {
+        const rgb=linesDict.borderColor.split(" ").map(x=>parseInt(x,10));
+        if (rgb.length>=3) {
+          const cHex="#"+rgb.slice(0,3).map(x=> x.toString(16).padStart(2,"0")).join("");
+          document.getElementById(`borderColor-${foundCat.categoryId}-${foundItem.id}`).value=cHex;
+        }
+      }
+      if (linesDict.bgColor) {
+        const rgb=linesDict.bgColor.split(" ").map(x=>parseInt(x,10));
+        if (rgb.length>=3) {
+          const cHex="#"+rgb.slice(0,3).map(x=> x.toString(16).padStart(2,"0")).join("");
+          document.getElementById(`bgColor-${foundCat.categoryId}-${foundItem.id}`).value=cHex;
+        }
+      }
+      if (linesDict.fontSize) {
+        document.getElementById(`fontSize-${foundCat.categoryId}-${foundItem.id}`).value=linesDict.fontSize;
+      }
+      if (linesDict.alertSound) {
+        document.getElementById(`alertSound-${foundCat.categoryId}-${foundItem.id}`).value=linesDict.alertSound;
+        document.getElementById(`alertDuration-${foundCat.categoryId}-${foundItem.id}`).value=linesDict.alertDur;
+      }
+    }
+  }
+
+  alert(`Loaded filter with ${blocks.length} blocks total. Matched & set ${matchedCount} item(s) in the UI!`);
 }
 
 /***************************************************************
@@ -450,12 +613,12 @@ function init() {
   createCategorySections();
   activateCategory(0);
 
-  // If there's a button to load filter, we set its event
+  // If there's a "Load Filter from Text" button
   const loadBtn = document.getElementById("load-filter-button");
   if (loadBtn) {
-    loadBtn.addEventListener("click", ()=> {
-      const txt = document.getElementById("filter-load-text")?.value || "";
-      parseFilterText(txt);
+    loadBtn.addEventListener("click", () => {
+      const raw = document.getElementById("filter-load-text")?.value || "";
+      parseFilterText(raw);
     });
   }
 }
