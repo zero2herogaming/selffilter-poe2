@@ -6,7 +6,9 @@ function rgbaToHex(rgba) {
   const match = rgba.match(/\d+/g);
   if (!match) return "#ffffff";
   const [r, g, b] = match;
-  return `#${[r, g, b].map((x) => parseInt(x).toString(16).padStart(2, "0")).join("")}`;
+  return `#${[r, g, b]
+    .map((x) => parseInt(x).toString(16).padStart(2, "0"))
+    .join("")}`;
 }
 
 function hexToRGB(hex) {
@@ -18,104 +20,153 @@ function hexToRGB(hex) {
 }
 
 /***************************************************************
- * 2. DEFINE CATEGORIES & ITEM TYPES
- * Example: "Two-Handed Weapons" -> Bows, Crossbows, Quarterstaves, etc.
- * For each itemType, specify if it's stackable (stackSize relevant) 
- * and if itemLevel is relevant (gear vs. currency).
+ * 2. FULL CATEGORIES & SUB-ITEMS
+ * Each sub-item includes "isStackable" / "usesItemLevel" so we 
+ * only show relevant fields in the UI (StackSize vs. ItemLevel).
  ***************************************************************/
 const CATEGORIES = [
   {
-    categoryId: "twohand",
-    categoryName: "Two-Handed Weapons",
-    description: "Bows, Staves, Quarterstaves, Crossbows, etc. Typically item-level relevant gear.",
+    categoryId: "gems",
+    categoryName: "Gems",
+    description: "Skill Gems, Support Gems, Spirit Gems.",
     itemTypes: [
       {
         id: 1,
-        name: "Bows",
-        enabled: true,
-        showOrHide: "Show",
-        isStackable: false,
-        usesItemLevel: true,
-        colorSettings: {
-          textColor: "rgba(255,255,255,1)",
-          borderColor: "rgba(80,80,80,1)",
-          backgroundColor: "rgba(0,0,0,0)",
-          fontSize: 35,
-        },
-      },
-      {
-        id: 2,
-        name: "Crossbows",
-        enabled: false,
-        showOrHide: "Hide",
-        isStackable: false,
-        usesItemLevel: true,
-      },
-      {
-        id: 3,
-        name: "Quarterstaves",
-        enabled: true,
-        showOrHide: "Show",
-        isStackable: false,
-        usesItemLevel: true,
-      },
-      // ... add staves, axes, etc. as needed ...
-    ],
-  },
-  {
-    categoryId: "currency",
-    categoryName: "Currency",
-    description: "Stackable or consumable items (like Orbs, Gold). StackSize is relevant.",
-    itemTypes: [
-      {
-        id: 10,
-        name: "Gold",
-        enabled: true,
-        showOrHide: "Show",
-        isStackable: true,   // we show StackSize fields
-        usesItemLevel: false, // typically currency doesn't use itemLevel
-      },
-      {
-        id: 11,
-        name: "Essences",
-        enabled: false,
-        showOrHide: "Show",
-        isStackable: true,
-        usesItemLevel: false,
-      },
-    ],
-  },
-  {
-    categoryId: "gems",
-    categoryName: "Gems",
-    description: "Skill Gems, Support Gems, Spirit Gems. ItemLevel can matter sometimes.",
-    itemTypes: [
-      {
-        id: 20,
         name: "Skill Gems",
         enabled: true,
         showOrHide: "Show",
         isStackable: false,
-        usesItemLevel: true, // gem quality/level can matter
+        usesItemLevel: true, 
       },
       {
-        id: 21,
+        id: 2,
         name: "Support Gems",
         enabled: false,
         showOrHide: "Show",
         isStackable: false,
         usesItemLevel: true,
       },
+      {
+        id: 3,
+        name: "Spirit Gems",
+        enabled: false,
+        showOrHide: "Show",
+        isStackable: false,
+        usesItemLevel: true,
+      },
+    ],
+  },
+  {
+    categoryId: "weapons-onehand",
+    categoryName: "One-Handed Weapons",
+    description: "Claws, Daggers, Wands, One Hand Swords, One Hand Axes, One Hand Maces, Sceptres, Spears, Flails",
+    itemTypes: [
+      { id: 10, name: "Claws", enabled: false, showOrHide: "Show", isStackable: false, usesItemLevel: true },
+      { id: 11, name: "Daggers", enabled: false, showOrHide: "Show", isStackable: false, usesItemLevel: true },
+      { id: 12, name: "Wands", enabled: false, showOrHide: "Show", isStackable: false, usesItemLevel: true },
+      { id: 13, name: "One Hand Swords", enabled: false, showOrHide: "Show", isStackable: false, usesItemLevel: true },
+      { id: 14, name: "One Hand Axes", enabled: false, showOrHide: "Show", isStackable: false, usesItemLevel: true },
+      { id: 15, name: "One Hand Maces", enabled: false, showOrHide: "Show", isStackable: false, usesItemLevel: true },
+      { id: 16, name: "Sceptres", enabled: false, showOrHide: "Show", isStackable: false, usesItemLevel: true },
+      { id: 17, name: "Spears", enabled: false, showOrHide: "Show", isStackable: false, usesItemLevel: true },
+      { id: 18, name: "Flails", enabled: false, showOrHide: "Show", isStackable: false, usesItemLevel: true },
+    ],
+  },
+  {
+    categoryId: "weapons-twohand",
+    categoryName: "Two-Handed Weapons",
+    description: "Bows, Staves, Two Hand Swords, Two Hand Axes, Two Hand Maces, Quarterstaves, Crossbows, Traps, Fishing Rods",
+    itemTypes: [
+      { id: 20, name: "Bows", enabled: false, showOrHide: "Show", isStackable: false, usesItemLevel: true },
+      { id: 21, name: "Staves", enabled: false, showOrHide: "Show", isStackable: false, usesItemLevel: true },
+      { id: 22, name: "Two Hand Swords", enabled: false, showOrHide: "Show", isStackable: false, usesItemLevel: true },
+      { id: 23, name: "Two Hand Axes", enabled: false, showOrHide: "Show", isStackable: false, usesItemLevel: true },
+      { id: 24, name: "Two Hand Maces", enabled: false, showOrHide: "Show", isStackable: false, usesItemLevel: true },
+      { id: 25, name: "Quarterstaves", enabled: false, showOrHide: "Show", isStackable: false, usesItemLevel: true },
+      { id: 26, name: "Crossbows", enabled: false, showOrHide: "Hide", isStackable: false, usesItemLevel: true },
+      { id: 27, name: "Traps", enabled: false, showOrHide: "Show", isStackable: false, usesItemLevel: true },
+      { id: 28, name: "Fishing Rods", enabled: false, showOrHide: "Show", isStackable: false, usesItemLevel: true },
+    ],
+  },
+  {
+    categoryId: "weapons-offhand",
+    categoryName: "Off-hand Items",
+    description: "Quivers, Shields, Foci",
+    itemTypes: [
+      { id: 30, name: "Quivers", enabled: false, showOrHide: "Show", isStackable: false, usesItemLevel: true },
+      { id: 31, name: "Shields", enabled: false, showOrHide: "Show", isStackable: false, usesItemLevel: true },
+      { id: 32, name: "Foci", enabled: false, showOrHide: "Show", isStackable: false, usesItemLevel: true },
+    ],
+  },
+  {
+    categoryId: "armour",
+    categoryName: "Armour",
+    description: "Gloves, Boots, Body Armours, Helmets",
+    itemTypes: [
+      { id: 40, name: "Gloves", enabled: false, showOrHide: "Show", isStackable: false, usesItemLevel: true },
+      { id: 41, name: "Boots", enabled: false, showOrHide: "Show", isStackable: false, usesItemLevel: true },
+      { id: 42, name: "Body Armours", enabled: false, showOrHide: "Show", isStackable: false, usesItemLevel: true },
+      { id: 43, name: "Helmets", enabled: false, showOrHide: "Show", isStackable: false, usesItemLevel: true },
+    ],
+  },
+  {
+    categoryId: "jewellery",
+    categoryName: "Jewellery",
+    description: "Amulets, Rings, Belts",
+    itemTypes: [
+      { id: 50, name: "Amulets", enabled: false, showOrHide: "Show", isStackable: false, usesItemLevel: true },
+      { id: 51, name: "Rings", enabled: false, showOrHide: "Show", isStackable: false, usesItemLevel: true },
+      { id: 52, name: "Belts", enabled: false, showOrHide: "Show", isStackable: false, usesItemLevel: true },
+    ],
+  },
+  {
+    categoryId: "flasks",
+    categoryName: "Flasks",
+    description: "Flasks, Life Flasks, Mana Flasks, Charms",
+    itemTypes: [
+      { id: 60, name: "Flasks", enabled: false, showOrHide: "Show", isStackable: false, usesItemLevel: true },
+      { id: 61, name: "Life Flasks", enabled: false, showOrHide: "Show", isStackable: false, usesItemLevel: true },
+      { id: 62, name: "Mana Flasks", enabled: false, showOrHide: "Show", isStackable: false, usesItemLevel: true },
+      { id: 63, name: "Charms", enabled: false, showOrHide: "Show", isStackable: false, usesItemLevel: false }, 
+    ],
+  },
+  {
+    categoryId: "currency",
+    categoryName: "Currency",
+    description: "Stackable Currency, Distilled Emotions, Essence, Splinter, Catalysts",
+    itemTypes: [
+      { id: 70, name: "Stackable Currency", enabled: true, showOrHide: "Show", isStackable: true, usesItemLevel: false },
+      { id: 71, name: "Distilled Emotions", enabled: false, showOrHide: "Show", isStackable: true, usesItemLevel: false },
+      { id: 72, name: "Essence", enabled: false, showOrHide: "Show", isStackable: true, usesItemLevel: false },
+      { id: 73, name: "Splinter", enabled: false, showOrHide: "Show", isStackable: true, usesItemLevel: false },
+      { id: 74, name: "Catalysts", enabled: false, showOrHide: "Show", isStackable: true, usesItemLevel: false },
+    ],
+  },
+  {
+    categoryId: "waystones",
+    categoryName: "Waystones",
+    description: "Waystones, Map Fragments, Misc Map Items",
+    itemTypes: [
+      { id: 80, name: "Waystones", enabled: false, showOrHide: "Show", isStackable: false, usesItemLevel: false },
+      { id: 81, name: "Map Fragments", enabled: false, showOrHide: "Show", isStackable: true, usesItemLevel: false },
+      { id: 82, name: "Misc Map Items", enabled: false, showOrHide: "Show", isStackable: false, usesItemLevel: false },
+    ],
+  },
+  {
+    categoryId: "jewels",
+    categoryName: "Jewels",
+    description: "Generic Jewels (e.g. Abyss Jewels, Timeless Jewels, etc.)",
+    itemTypes: [
+      { id: 90, name: "Jewels", enabled: false, showOrHide: "Show", isStackable: false, usesItemLevel: true },
     ],
   },
 ];
 
 /***************************************************************
- * 3. CREATE TABS & SECTIONS
+ * 3. CREATE TABS AND CATEGORY SECTIONS
  ***************************************************************/
 function createTabs() {
   const tabContainer = document.getElementById("category-tabs");
-
   CATEGORIES.forEach((cat, index) => {
     const btn = document.createElement("button");
     btn.classList.add("tab-button");
@@ -127,10 +178,10 @@ function createTabs() {
 
 function createCategorySections() {
   const form = document.getElementById("filter-form");
-  CATEGORIES.forEach((cat, catIndex) => {
+  CATEGORIES.forEach((cat, idx) => {
     const section = document.createElement("div");
     section.classList.add("category-section");
-    if (catIndex === 0) section.classList.add("active");
+    if (idx === 0) section.classList.add("active");
 
     const heading = document.createElement("h2");
     heading.innerText = cat.categoryName;
@@ -140,10 +191,9 @@ function createCategorySections() {
     desc.innerText = cat.description;
     section.appendChild(desc);
 
-    // Now create a panel for each itemType
-    cat.itemTypes.forEach((type) => {
-      const typeDiv = createItemTypeHTML(cat.categoryId, type);
-      section.appendChild(typeDiv);
+    cat.itemTypes.forEach((item) => {
+      const itemDiv = createItemTypeHTML(cat.categoryId, item);
+      section.appendChild(itemDiv);
     });
 
     form.insertBefore(section, document.getElementById("generate-button"));
@@ -153,23 +203,21 @@ function createCategorySections() {
 function activateCategory(index) {
   const allSections = document.querySelectorAll(".category-section");
   const allButtons = document.querySelectorAll(".tab-button");
-
   allSections.forEach((sec) => sec.classList.remove("active"));
   allButtons.forEach((btn) => btn.classList.remove("active"));
-
   allSections[index].classList.add("active");
   allButtons[index].classList.add("active");
 }
 
 /***************************************************************
- * 4. BUILD HTML FOR EACH ITEM TYPE
- *   - Enable/Disable
- *   - Show/Hide
- *   - Rarity Checkboxes (Normal, Magic, Rare, Unique)
- *   - Min/Max AreaLevel
- *   - If usesItemLevel, show Min/Max ItemLevel
- *   - If isStackable, show Min/Max StackSize
- *   - Optional color, sound
+ * 4. BUILD THE HTML FOR EACH ITEM TYPE
+ *    - Enable/Disable
+ *    - Show/Hide
+ *    - Rarity checkboxes
+ *    - AreaLevel always optional
+ *    - If usesItemLevel: show itemLevel fields
+ *    - If isStackable: show stackSize fields
+ *    - Colors & sound
  ***************************************************************/
 function createItemTypeHTML(categoryId, item) {
   const container = document.createElement("div");
@@ -184,57 +232,57 @@ function createItemTypeHTML(categoryId, item) {
   let html = `
     <!-- Enable checkbox -->
     <label>
-      <input type="checkbox" id="enable-${categoryId}-${item.id}" ${item.enabled ? "checked" : ""}/>
+      <input type="checkbox" id="enable-${categoryId}-${item.id}" ${item.enabled?"checked":""}/>
       Enable
     </label>
 
-    <!-- Show/Hide dropdown -->
+    <!-- Show/Hide -->
     <label>
       Action:
       <select id="showOrHide-${categoryId}-${item.id}">
-        <option value="Show" ${item.showOrHide==="Show" ? "selected":""}>Show</option>
-        <option value="Hide" ${item.showOrHide==="Hide" ? "selected":""}>Hide</option>
+        <option value="Show" ${item.showOrHide==="Show"?"selected":""}>Show</option>
+        <option value="Hide" ${item.showOrHide==="Hide"?"selected":""}>Hide</option>
       </select>
     </label>
 
-    <!-- Rarity Checkboxes (multiple selection) -->
+    <!-- Rarity Checkboxes -->
     <label>Rarity:</label>
     <div style="margin-left: 20px;">
-      <label><input type="checkbox" id="rarity-normal-${categoryId}-${item.id}" /> Normal</label>
-      <label><input type="checkbox" id="rarity-magic-${categoryId}-${item.id}" /> Magic</label>
-      <label><input type="checkbox" id="rarity-rare-${categoryId}-${item.id}" /> Rare</label>
-      <label><input type="checkbox" id="rarity-unique-${categoryId}-${item.id}" /> Unique</label>
+      <label><input type="checkbox" id="rarity-normal-${categoryId}-${item.id}"/> Normal</label>
+      <label><input type="checkbox" id="rarity-magic-${categoryId}-${item.id}"/> Magic</label>
+      <label><input type="checkbox" id="rarity-rare-${categoryId}-${item.id}"/> Rare</label>
+      <label><input type="checkbox" id="rarity-unique-${categoryId}-${item.id}"/> Unique</label>
     </div>
 
-    <!-- Min/Max AreaLevel always relevant for dropping items -->
+    <!-- AreaLevel -->
     <label>Min AreaLevel:
-      <input type="number" id="minAreaLevel-${categoryId}-${item.id}" value="" min="0"/>
+      <input type="number" id="minAreaLevel-${categoryId}-${item.id}" min="0" value=""/>
     </label>
     <label>Max AreaLevel:
-      <input type="number" id="maxAreaLevel-${categoryId}-${item.id}" value="" min="0"/>
+      <input type="number" id="maxAreaLevel-${categoryId}-${item.id}" min="0" value=""/>
     </label>
   `;
 
-  // If item.usesItemLevel is true, show itemLevel inputs
+  // If usesItemLevel
   if (item.usesItemLevel) {
     html += `
       <label>Min ItemLevel:
-        <input type="number" id="minItemLevel-${categoryId}-${item.id}" value="" min="0"/>
+        <input type="number" id="minItemLevel-${categoryId}-${item.id}" min="0" value=""/>
       </label>
       <label>Max ItemLevel:
-        <input type="number" id="maxItemLevel-${categoryId}-${item.id}" value="" min="0"/>
+        <input type="number" id="maxItemLevel-${categoryId}-${item.id}" min="0" value=""/>
       </label>
     `;
   }
 
-  // If item.isStackable, show stackSize inputs
+  // If isStackable
   if (item.isStackable) {
     html += `
       <label>Min StackSize:
-        <input type="number" id="minStackSize-${categoryId}-${item.id}" value="" min="0"/>
+        <input type="number" id="minStackSize-${categoryId}-${item.id}" min="0" value=""/>
       </label>
       <label>Max StackSize:
-        <input type="number" id="maxStackSize-${categoryId}-${item.id}" value="" min="0"/>
+        <input type="number" id="maxStackSize-${categoryId}-${item.id}" min="0" value=""/>
       </label>
     `;
   }
@@ -245,7 +293,6 @@ function createItemTypeHTML(categoryId, item) {
     const borderC = rgbaToHex(item.colorSettings.borderColor);
     const bgC = rgbaToHex(item.colorSettings.backgroundColor);
     const fs = item.colorSettings.fontSize || 35;
-
     html += `
       <label>Text Color:
         <input type="color" id="textColor-${categoryId}-${item.id}" value="${textC}"/>
@@ -261,7 +308,7 @@ function createItemTypeHTML(categoryId, item) {
       </label>
     `;
   } else {
-    // optionally let user pick color anyway
+    // Default color inputs
     html += `
       <label>Text Color:
         <input type="color" id="textColor-${categoryId}-${item.id}" value="#ffffff"/>
@@ -278,7 +325,7 @@ function createItemTypeHTML(categoryId, item) {
     `;
   }
 
-  // Alert Sound
+  // Sound
   html += `
     <label>Alert Sound:
       <select id="alertSound-${categoryId}-${item.id}">
@@ -300,81 +347,73 @@ function createItemTypeHTML(categoryId, item) {
 }
 
 /***************************************************************
- * 5. GENERATE FILTER LOGIC
+ * 5. GENERATE THE FINAL FILTER
  ***************************************************************/
 function generateFilterContent() {
   let content = "";
 
   CATEGORIES.forEach((cat) => {
-    cat.itemTypes.forEach((type) => {
+    cat.itemTypes.forEach((item) => {
       // Check if enabled
-      const enableBox = document.getElementById(`enable-${cat.categoryId}-${type.id}`);
-      if (!enableBox || !enableBox.checked) return;
+      const enableEl = document.getElementById(`enable-${cat.categoryId}-${item.id}`);
+      if (!enableEl || !enableEl.checked) return;
 
       // Show or Hide
-      const showOrHide = document.getElementById(`showOrHide-${cat.categoryId}-${type.id}`).value;
+      const showOrHide = document.getElementById(`showOrHide-${cat.categoryId}-${item.id}`).value;
       let ruleBlock = `${showOrHide}\n`;
 
-      // Rarity Checkboxes
-      const normalCk = document.getElementById(`rarity-normal-${cat.categoryId}-${type.id}`).checked;
-      const magicCk  = document.getElementById(`rarity-magic-${cat.categoryId}-${type.id}`).checked;
-      const rareCk   = document.getElementById(`rarity-rare-${cat.categoryId}-${type.id}`).checked;
-      const uniqCk   = document.getElementById(`rarity-unique-${cat.categoryId}-${type.id}`).checked;
+      // Rarity checkboxes
+      const normalCk = document.getElementById(`rarity-normal-${cat.categoryId}-${item.id}`).checked;
+      const magicCk  = document.getElementById(`rarity-magic-${cat.categoryId}-${item.id}`).checked;
+      const rareCk   = document.getElementById(`rarity-rare-${cat.categoryId}-${item.id}`).checked;
+      const uniqCk   = document.getElementById(`rarity-unique-${cat.categoryId}-${item.id}`).checked;
 
-      // We might compile them into something like "Rarity = Normal Rare Unique"
       let rarities = [];
       if (normalCk) rarities.push("Normal");
       if (magicCk)  rarities.push("Magic");
       if (rareCk)   rarities.push("Rare");
       if (uniqCk)   rarities.push("Unique");
-
       if (rarities.length > 0) {
-        // If we want an OR condition, it's typically "Rarity = X Y Z" in PoE filters
-        // But PoE syntax is "Rarity Rare" vs "Rarity = Rare"? Officially it's "Rarity Rare" 
-        // for a single type. For multiple you do separate lines. 
-        // For demonstration, we do "Rarity = Normal Rare Unique" 
-        // or multiple "Rarity Normal" lines. Let's do a single line approach:
+        // PoE syntax for multiple rarities can be "Rarity Normal Rare Unique"
         ruleBlock += `  Rarity ${rarities.join(" ")}\n`;
       }
 
       // AreaLevel
-      const minAL = parseInt(document.getElementById(`minAreaLevel-${cat.categoryId}-${type.id}`).value || 0, 10);
-      const maxAL = parseInt(document.getElementById(`maxAreaLevel-${cat.categoryId}-${type.id}`).value || 0, 10);
+      const minAL = parseInt(document.getElementById(`minAreaLevel-${cat.categoryId}-${item.id}`).value || 0, 10);
+      const maxAL = parseInt(document.getElementById(`maxAreaLevel-${cat.categoryId}-${item.id}`).value || 0, 10);
       if (minAL > 0) ruleBlock += `  AreaLevel >= ${minAL}\n`;
       if (maxAL > 0 && maxAL >= minAL) ruleBlock += `  AreaLevel <= ${maxAL}\n`;
 
       // ItemLevel if usesItemLevel
-      if (type.usesItemLevel) {
-        const minIL = parseInt(document.getElementById(`minItemLevel-${cat.categoryId}-${type.id}`).value || 0, 10);
-        const maxIL = parseInt(document.getElementById(`maxItemLevel-${cat.categoryId}-${type.id}`).value || 0, 10);
+      if (item.usesItemLevel) {
+        const minIL = parseInt(document.getElementById(`minItemLevel-${cat.categoryId}-${item.id}`).value || 0, 10);
+        const maxIL = parseInt(document.getElementById(`maxItemLevel-${cat.categoryId}-${item.id}`).value || 0, 10);
         if (minIL > 0) ruleBlock += `  ItemLevel >= ${minIL}\n`;
         if (maxIL > 0 && maxIL >= minIL) ruleBlock += `  ItemLevel <= ${maxIL}\n`;
       }
 
       // StackSize if isStackable
-      if (type.isStackable) {
-        const minStack = parseInt(document.getElementById(`minStackSize-${cat.categoryId}-${type.id}`).value || 0, 10);
-        const maxStack = parseInt(document.getElementById(`maxStackSize-${cat.categoryId}-${type.id}`).value || 0, 10);
+      if (item.isStackable) {
+        const minStack = parseInt(document.getElementById(`minStackSize-${cat.categoryId}-${item.id}`).value || 0, 10);
+        const maxStack = parseInt(document.getElementById(`maxStackSize-${cat.categoryId}-${item.id}`).value || 0, 10);
         if (minStack > 0) ruleBlock += `  StackSize >= ${minStack}\n`;
         if (maxStack > 0 && maxStack >= minStack) ruleBlock += `  StackSize <= ${maxStack}\n`;
       }
 
-      // Class or BaseType
-      // Typically if "Bows" we do Class "Bow". 
-      // For demonstration we might do:
-      if (!type.isStackable) {
-        // gear-based items might use "Class"
-        ruleBlock += `  Class "${type.name}"\n`;
+      // Decide if we do Class or BaseType
+      // For gear (isStackable=false) we do Class "X"
+      // For currency (isStackable=true) we do BaseType "X"
+      if (item.isStackable) {
+        ruleBlock += `  BaseType "${item.name}"\n`;
       } else {
-        // stackable might be BaseType "Gold" or "Essence"
-        ruleBlock += `  BaseType "${type.name}"\n`;
+        ruleBlock += `  Class "${item.name}"\n`;
       }
 
       // Colors
-      const textVal = document.getElementById(`textColor-${cat.categoryId}-${type.id}`)?.value;
-      const borderVal = document.getElementById(`borderColor-${cat.categoryId}-${type.id}`)?.value;
-      const bgVal = document.getElementById(`bgColor-${cat.categoryId}-${type.id}`)?.value;
-      const fontVal = document.getElementById(`fontSize-${cat.categoryId}-${type.id}`)?.value;
+      const textVal   = document.getElementById(`textColor-${cat.categoryId}-${item.id}`)?.value;
+      const borderVal = document.getElementById(`borderColor-${cat.categoryId}-${item.id}`)?.value;
+      const bgVal     = document.getElementById(`bgColor-${cat.categoryId}-${item.id}`)?.value;
+      const fontVal   = document.getElementById(`fontSize-${cat.categoryId}-${item.id}`)?.value;
 
       if (textVal) ruleBlock += `  SetTextColor ${hexToRGB(textVal)}\n`;
       if (borderVal) ruleBlock += `  SetBorderColor ${hexToRGB(borderVal)}\n`;
@@ -384,9 +423,9 @@ function generateFilterContent() {
       if (fontVal) ruleBlock += `  SetFontSize ${fontVal}\n`;
 
       // Alert Sound
-      const aSound = document.getElementById(`alertSound-${cat.categoryId}-${type.id}`)?.value || "";
-      const aDur   = document.getElementById(`alertDuration-${cat.categoryId}-${type.id}`)?.value || "";
-      if (aSound !== "") {
+      const aSound = document.getElementById(`alertSound-${cat.categoryId}-${item.id}`).value;
+      const aDur   = document.getElementById(`alertDuration-${cat.categoryId}-${item.id}`).value;
+      if (aSound) {
         ruleBlock += `  PlayAlertSound ${aSound} ${aDur}\n`;
       }
 
@@ -399,12 +438,12 @@ function generateFilterContent() {
 }
 
 /***************************************************************
- * 6. INIT
+ * 6. INIT & EVENT LISTENERS
  ***************************************************************/
 function init() {
   createTabs();
   createCategorySections();
-  activateCategory(0); // Show first category by default
+  activateCategory(0); // default to first category
 }
 
 document.getElementById("filter-form").addEventListener("submit", function (e) {
@@ -412,6 +451,7 @@ document.getElementById("filter-form").addEventListener("submit", function (e) {
   const filterText = generateFilterContent();
   const blob = new Blob([filterText], { type: "text/plain" });
   const url = URL.createObjectURL(blob);
+
   const downloadLink = document.getElementById("download-link");
   downloadLink.href = url;
   downloadLink.download = "my-custom-filter.filter";
