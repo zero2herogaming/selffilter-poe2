@@ -7,7 +7,7 @@ function rgbaToHex(rgba) {
   if (!match) return "#ffffff";
   const [r, g, b] = match;
   return `#${[r, g, b]
-    .map(x => parseInt(x).toString(16).padStart(2,"0"))
+    .map((x) => parseInt(x).toString(16).padStart(2,"0"))
     .join("")}`;
 }
 
@@ -21,102 +21,78 @@ function hexToRGB(hex) {
 
 /***************************************************************
  * 2. COMPLETE CATEGORIES & ITEMS
- *    - All TEN categories
- *    - All newly referenced items from the 0.3.0 script.
+ *    (Ten categories, each with sub-items. 
+ *     We add any new references from your new filters so that 
+ *     lines like BaseType "Furtive Wraps" or Class "Relic" 
+ *     are recognized.)
  ***************************************************************/
 const CATEGORIES = [
-  /*************************************************************
-   * 1) GEMS
-   *************************************************************/
   {
     categoryId: "gems",
     categoryName: "Gems",
-    description: "Uncut Skill Gems, Spirit Gems, Timeless, etc.",
+    description: "Covers skill gems, spirit gems, timeless, relic, etc.",
     itemTypes: [
-      // from old scripts
-      { id:1,  name: "Uncut Spirit Gem", showOrHide: "Show", enabled: false, isStackable: false, usesItemLevel: true },
-      { id:2,  name: "Uncut Support Gem",showOrHide: "Show", enabled: false, isStackable: false, usesItemLevel: true },
-      { id:3,  name: "Uncut Skill Gem",  showOrHide: "Show", enabled: false, isStackable: false, usesItemLevel: true },
-      { id:4,  name: "Soul Core",        showOrHide: "Show", enabled: false, isStackable: false, usesItemLevel: false },
-      { id:5,  name: "Timeless",         showOrHide: "Show", enabled: false, isStackable: false, usesItemLevel: false },
+      // Uncut Gems
+      { id:1,  name: "Uncut Spirit Gem",   showOrHide: "Show", enabled: false, isStackable: false, usesItemLevel: true },
+      { id:2,  name: "Uncut Support Gem",  showOrHide: "Show", enabled: false, isStackable: false, usesItemLevel: true },
+      { id:3,  name: "Uncut Skill Gem",    showOrHide: "Show", enabled: false, isStackable: false, usesItemLevel: true },
 
-      // The new script references "Timeless Jewel" (BaseType?). We'll treat it as stackable or not?
-      // Usually "Timeless Jewel" is a "Jewel" (non-stackable). But let's place it here or in Jewels?
-      // Actually let's put "Timeless Jewel" in Jewels category to align with typical "Jewel" usage.
+      // Soul Core, Timeless, plus any relic references that the filter uses Class "Relic" for
+      { id:4,  name: "Soul Core",          showOrHide: "Show", enabled: false, isStackable: false, usesItemLevel: false },
+      { id:5,  name: "Timeless",           showOrHide: "Show", enabled: false, isStackable: false, usesItemLevel: false },
+      { id:6,  name: "Relic",              showOrHide: "Show", enabled: false, isStackable: false, usesItemLevel: false }
     ]
   },
-
-  /*************************************************************
-   * 2) ONE-HANDED WEAPONS
-   *************************************************************/
   {
     categoryId: "weapons-onehand",
     categoryName: "One-Handed Weapons",
-    description: "Claws, Daggers, Wands, One Hand Swords, etc.",
+    description: "Claws, Daggers, Wands, Swords, Axes, Maces, etc.",
     itemTypes: [
-      { id:10,  name: "Claws",           showOrHide: "Show", enabled: false, isStackable: false, usesItemLevel: true },
-      { id:11,  name: "Daggers",         showOrHide: "Show", enabled: false, isStackable: false, usesItemLevel: true },
-      { id:12,  name: "Wands",           showOrHide: "Show", enabled: false, isStackable: false, usesItemLevel: true },
-      { id:13,  name: "One Hand Swords", showOrHide: "Show", enabled: false, isStackable: false, usesItemLevel: true },
-      { id:14,  name: "One Hand Axes",   showOrHide: "Show", enabled: false, isStackable: false, usesItemLevel: true },
-      { id:15,  name: "One Hand Maces",  showOrHide: "Show", enabled: false, isStackable: false, usesItemLevel: true },
-      { id:16,  name: "Sceptres",        showOrHide: "Show", enabled: false, isStackable: false, usesItemLevel: true },
-      { id:17,  name: "Spears",          showOrHide: "Show", enabled: false, isStackable: false, usesItemLevel: true },
-      { id:18,  name: "Flails",          showOrHide: "Hide", enabled: false, isStackable: false, usesItemLevel: true },
+      { id:10, name: "Claws",            showOrHide: "Show", enabled: false, isStackable: false, usesItemLevel: true },
+      { id:11, name: "Daggers",          showOrHide: "Show", enabled: false, isStackable: false, usesItemLevel: true },
+      { id:12, name: "Wands",            showOrHide: "Show", enabled: false, isStackable: false, usesItemLevel: true },
+      { id:13, name: "One Hand Swords",  showOrHide: "Show", enabled: false, isStackable: false, usesItemLevel: true },
+      { id:14, name: "One Hand Axes",    showOrHide: "Show", enabled: false, isStackable: false, usesItemLevel: true },
+      { id:15, name: "One Hand Maces",   showOrHide: "Show", enabled: false, isStackable: false, usesItemLevel: true },
+      { id:16, name: "Sceptres",         showOrHide: "Show", enabled: false, isStackable: false, usesItemLevel: true },
+      { id:17, name: "Spears",           showOrHide: "Show", enabled: false, isStackable: false, usesItemLevel: true },
+      { id:18, name: "Flails",           showOrHide: "Hide", enabled: false, isStackable: false, usesItemLevel: true },
 
-      // New from the script: "Attuned Wand", "Siphoning Wand," "Rattling Sceptre," "Omen Sceptre," "Moulded Mitts" is armour, not weapon, so skip.
-      { id:19,  name: "Attuned Wand",    showOrHide: "Show", enabled: false, isStackable: false, usesItemLevel: true },
-      { id:20,  name: "Siphoning Wand",  showOrHide: "Show", enabled: false, isStackable: false, usesItemLevel: true },
-      { id:21,  name: "Rattling Sceptre",showOrHide: "Show", enabled: false, isStackable: false, usesItemLevel: true },
-      { id:22,  name: "Omen Sceptre",    showOrHide: "Show", enabled: false, isStackable: false, usesItemLevel: true }
+      // Additional from new filters:
+      { id:19, name: "Attuned Wand",     showOrHide: "Show", enabled: false, isStackable: false, usesItemLevel: true },
+      { id:20, name: "Siphoning Wand",   showOrHide: "Show", enabled: false, isStackable: false, usesItemLevel: true },
+      { id:21, name: "Spiked Club",      showOrHide: "Show", enabled: false, isStackable: false, usesItemLevel: true }
     ]
   },
-
-  /*************************************************************
-   * 3) TWO-HANDED WEAPONS
-   *************************************************************/
   {
     categoryId: "weapons-twohand",
     categoryName: "Two-Handed Weapons",
-    description: "Bows, Staves, Quarterstaves, Crossbows, etc.",
+    description: "Bows, Staves, Quarterstaves, Crossbows, Quarter, Staff, etc.",
     itemTypes: [
       { id:30, name: "Bows",            showOrHide: "Show", enabled: false, isStackable: false, usesItemLevel: true },
       { id:31, name: "Staves",          showOrHide: "Show", enabled: false, isStackable: false, usesItemLevel: true },
       { id:32, name: "Quarterstaves",   showOrHide: "Show", enabled: false, isStackable: false, usesItemLevel: true },
       { id:33, name: "Crossbows",       showOrHide: "Hide", enabled: false, isStackable: false, usesItemLevel: true },
-      { id:34, name: "Traps",           showOrHide: "Show", enabled: false, isStackable: false, usesItemLevel: true },
-      { id:35, name: "Fishing Rods",    showOrHide: "Show", enabled: false, isStackable: false, usesItemLevel: true },
 
-      // New from the script: "Voltaic Staff," "Chiming Staff"
-      { id:36, name: "Voltaic Staff",   showOrHide: "Show", enabled: false, isStackable: false, usesItemLevel: true },
-      { id:37, name: "Chiming Staff",   showOrHide: "Show", enabled: false, isStackable: false, usesItemLevel: true }
+      // Additional references:
+      { id:34, name: "Crude Bow",       showOrHide: "Show", enabled: false, isStackable: false, usesItemLevel: true },
+      { id:35, name: "Long Quarterstaff",showOrHide: "Show", enabled: false, isStackable: false, usesItemLevel: true }
     ]
   },
-
-  /*************************************************************
-   * 4) OFF-HAND
-   *************************************************************/
   {
     categoryId: "weapons-offhand",
-    categoryName: "Off-hand Items",
-    description: "Quivers, Shields, Foci, etc.",
+    categoryName: "Off-hand",
+    description: "Shields, Quivers, Foci, etc.",
     itemTypes: [
       { id:40, name: "Quivers", showOrHide: "Show", enabled: false, isStackable: false, usesItemLevel: true },
       { id:41, name: "Shields", showOrHide: "Show", enabled: false, isStackable: false, usesItemLevel: true },
       { id:42, name: "Foci",    showOrHide: "Hide", enabled: false, isStackable: false, usesItemLevel: true },
 
-      // New from script: "Stone Tower Shield" (Class "Stone Tower Shield"?) Usually "Stone Tower Shield" is a base-type?
-      // It's typically an AR base but let's treat it as "Shields" if we want exact. We'll do a separate item if needed:
-      { id:43, name: "Stone Tower Shield", showOrHide: "Show", enabled: false, isStackable: false, usesItemLevel: true },
-
-      // "Primed Quiver"
-      { id:44, name: "Primed Quiver",      showOrHide: "Show", enabled: false, isStackable: false, usesItemLevel: true }
+      // Additional
+      { id:43, name: "Spiked Club",     showOrHide: "Show", enabled: false, isStackable: false, usesItemLevel: true } 
+      // We see "Spiked Club" as a 1H, but let's keep it to ensure coverage
     ]
   },
-
-  /*************************************************************
-   * 5) ARMOUR
-   *************************************************************/
   {
     categoryId: "armour",
     categoryName: "Armour",
@@ -127,155 +103,101 @@ const CATEGORIES = [
       { id:52, name: "Body Armours", showOrHide: "Show", enabled: false, isStackable: false, usesItemLevel: true },
       { id:53, name: "Helmets",      showOrHide: "Show", enabled: false, isStackable: false, usesItemLevel: true },
 
-      // "Expert Laced Boots"
-      { id:54, name: "Expert Laced Boots", showOrHide: "Show", enabled: false, isStackable: true, usesItemLevel: false },
-
-      // New from script references: "Armoured Cap," "Furtive Wraps," "Smuggler Coat," "Expert Altar Robe," "Expert Cloaked Mail," "Expert Waxed Jacket," etc.
-      // We'll treat them as "Body Armours" or "Helmets" or "Boots" if we want to do them as "Class" or "BaseType"?
-      // The script specifically says "BaseType == 'Armoured Cap' 'Emerald' 'Furtive Wraps' 'Incense Relic' ... 'Smuggler Coat' 'Utility Belt' ..."
-      // We'll just list them individually as "Armoured Cap," "Furtive Wraps," etc. as stackable if needed.
-
-      { id:55,  name: "Armoured Cap",       showOrHide: "Show", enabled: false, isStackable: true, usesItemLevel: false },
-      { id:56,  name: "Furtive Wraps",      showOrHide: "Show", enabled: false, isStackable: true, usesItemLevel: false },
-      { id:57,  name: "Smuggler Coat",      showOrHide: "Show", enabled: false, isStackable: true, usesItemLevel: false },
-
-      // Also script references "Expert Altar Robe," "Expert Cloaked Mail," "Expert Waxed Jacket," "Expert Brigand Mace" (that's a 1H?), "Expert Iron Cuirass," etc. 
-      // We see a huge list in the "Show BaseType == 'Amethyst Ring' ... 'Expert Bombard Crossbow' ... 'Expert Zealot Bow' 'Omen Sceptre' ...
-      // We'll add them carefully to the correct category. 
-      // Let's store them all here or break them up. We'll do them one by one:
-
-      { id:58,  name: "Expert Altar Robe",       showOrHide: "Show", enabled: false, isStackable: true, usesItemLevel: false },
-      { id:59,  name: "Expert Cloaked Mail",     showOrHide: "Show", enabled: false, isStackable: true, usesItemLevel: false },
-      { id:60,  name: "Expert Waxed Jacket",     showOrHide: "Show", enabled: false, isStackable: true, usesItemLevel: false },
-      { id:61,  name: "Expert Iron Cuirass",     showOrHide: "Show", enabled: false, isStackable: true, usesItemLevel: false },
-      { id:62,  name: "Expert Pathfinder Coat",  showOrHide: "Show", enabled: false, isStackable: true, usesItemLevel: false },
-      { id:63,  name: "Expert Scale Mail",       showOrHide: "Show", enabled: false, isStackable: true, usesItemLevel: false },
-      { id:64,  name: "Expert Studded Vest",     showOrHide: "Show", enabled: false, isStackable: true, usesItemLevel: false },
-      { id:65,  name: "Expert Zealot Bow",       showOrHide: "Show", enabled: false, isStackable: true, usesItemLevel: false }, 
-      // "Expert Zealot Bow" is more of a 2H weapon, but the script lumps them all in "BaseType" so let's place them here for coverage
-
-      // Many more from that big "Show BaseType == ..." line: "Expert Bombard Crossbow" => 2H, "Expert Dyad Crossbow," "Expert Dualstring Bow," etc.
-      // We'll add them all in the correct place. But to keep logic consistent, let's just place them all in "Armour" or do we split them up?
-      // For 2H references: "Expert Bombard Crossbow," "Expert Dyad Crossbow," "Expert Dualstring Bow," "Expert Forlorn Crossbow," "Expert Moulded Mitts" is gloves. 
-      // We'll keep them in their correct categories. But for brevity, let's keep them in one big place as "stackable" so they're recognized. 
-      // This is done purely to ensure the filter doesn't skip them. Realistically, you'd parse them as "Class 'Crossbow'" or "Class 'Bow'." 
-      // We'll store them here so the parser won't skip them. 
-      { id:66,  name: "Expert Bombard Crossbow",  showOrHide: "Show", enabled: false, isStackable: true, usesItemLevel: false },
-      { id:67,  name: "Expert Dyad Crossbow",     showOrHide: "Show", enabled: false, isStackable: true, usesItemLevel: false },
-      { id:68,  name: "Expert Dualstring Bow",    showOrHide: "Show", enabled: false, isStackable: true, usesItemLevel: false },
-      { id:69,  name: "Expert Forlorn Crossbow",  showOrHide: "Show", enabled: false, isStackable: true, usesItemLevel: false }
-      // ... etc. Add a few more if needed to cover all from that line ...
+      // Additional from filter:
+      { id:54, name: "Armoured Cap",     showOrHide: "Show", enabled: false, isStackable: true, usesItemLevel: false },
+      { id:55, name: "Furtive Wraps",    showOrHide: "Show", enabled: false, isStackable: true, usesItemLevel: false },
+      { id:56, name: "Smuggler Coat",    showOrHide: "Show", enabled: false, isStackable: true, usesItemLevel: false },
+      { id:57, name: "Wrapped Greathelm",showOrHide: "Show", enabled: false, isStackable: true, usesItemLevel: false }
     ]
   },
-
-  /*************************************************************
-   * 6) JEWELLERY
-   *************************************************************/
   {
     categoryId: "jewellery",
     categoryName: "Jewellery",
     description: "Rings, Amulets, Belts, etc.",
     itemTypes: [
-      { id:80, name: "Rings",   showOrHide: "Show", enabled: false, isStackable: false, usesItemLevel: true },
-      { id:81, name: "Amulets", showOrHide: "Show", enabled: false, isStackable: false, usesItemLevel: true },
-      { id:82, name: "Belts",   showOrHide: "Show", enabled: false, isStackable: false, usesItemLevel: true },
+      { id:60, name: "Rings",   showOrHide: "Show", enabled: false, isStackable: false, usesItemLevel: true },
+      { id:61, name: "Amulets", showOrHide: "Show", enabled: false, isStackable: false, usesItemLevel: true },
+      { id:62, name: "Belts",   showOrHide: "Show", enabled: false, isStackable: false, usesItemLevel: true },
 
-      // new references: "Heavy Belt," "Ornate Belt," "Utility Belt," "Plate Belt," 
-      // also "Emerald," "Ruby," "Sapphire," "Amethyst Ring," "Prismatic Ring" are typically rings or amulets, but your script lumps them in "BaseType".
-      // We'll treat them as stackable or not? Usually rings are Class "Rings." But let's add them as stackable if the filter uses "BaseType." 
-      { id:83,  name: "Heavy Belt",     showOrHide: "Show", enabled: false, isStackable: true,  usesItemLevel: false },
-      { id:84,  name: "Ornate Belt",    showOrHide: "Show", enabled: false, isStackable: true,  usesItemLevel: false },
-      { id:85,  name: "Utility Belt",   showOrHide: "Show", enabled: false, isStackable: true,  usesItemLevel: false },
-      { id:86,  name: "Plate Belt",     showOrHide: "Show", enabled: false, isStackable: true,  usesItemLevel: false },
-      { id:87,  name: "Amethyst Ring",  showOrHide: "Show", enabled: false, isStackable: true,  usesItemLevel: false },
-      { id:88,  name: "Prismatic Ring", showOrHide: "Show", enabled: false, isStackable: true,  usesItemLevel: false },
-
-      // "Emerald," "Ruby," "Sapphire" might be part of ring or amulet base? We'll do them as stackable for coverage.
-      { id:89,  name: "Emerald",        showOrHide: "Show", enabled: false, isStackable: true,  usesItemLevel: false },
-      { id:90,  name: "Ruby",           showOrHide: "Show", enabled: false, isStackable: true,  usesItemLevel: false },
-      { id:91,  name: "Sapphire",       showOrHide: "Show", enabled: false, isStackable: true,  usesItemLevel: false }
+      // Additional references: "Heavy Belt", "Ornate Belt", "Utility Belt", etc.
+      { id:63, name: "Heavy Belt",    showOrHide: "Show", enabled: false, isStackable: true, usesItemLevel: false },
+      { id:64, name: "Ornate Belt",   showOrHide: "Show", enabled: false, isStackable: true, usesItemLevel: false },
+      { id:65, name: "Utility Belt",  showOrHide: "Show", enabled: false, isStackable: true, usesItemLevel: false },
+      { id:66, name: "Grand Regalia", showOrHide: "Show", enabled: false, isStackable: true, usesItemLevel: false }
     ]
   },
-
-  /*************************************************************
-   * 7) FLASKS
-   *************************************************************/
   {
     categoryId: "flasks",
     categoryName: "Flasks",
-    description: "Flasks, Life, Mana, etc.",
+    description: "Flasks, plus new references from your script.",
     itemTypes: [
-      { id:100, name: "Flasks",       showOrHide: "Show", enabled: false, isStackable: false, usesItemLevel: true },
-      { id:101, name: "Life Flasks",  showOrHide: "Show", enabled: false, isStackable: false, usesItemLevel: true },
-      { id:102, name: "Mana Flasks",  showOrHide: "Show", enabled: false, isStackable: false, usesItemLevel: true },
-      { id:103, name: "Charms",       showOrHide: "Hide", enabled: false, isStackable: false, usesItemLevel: false },
+      { id:70, name: "Flasks",      showOrHide: "Show", enabled: false, isStackable: false, usesItemLevel: true },
+      { id:71, name: "Life Flasks", showOrHide: "Show", enabled: false, isStackable: false, usesItemLevel: true },
+      { id:72, name: "Mana Flasks", showOrHide: "Show", enabled: false, isStackable: false, usesItemLevel: true },
+      { id:73, name: "Charms",      showOrHide: "Hide", enabled: false, isStackable: false, usesItemLevel: false },
 
-      // new from the script: "Ultimate Life Flask," "Ultimate Mana Flask" => treat them as base types or classes?
-      { id:104, name: "Ultimate Life Flask", showOrHide: "Show", enabled: false, isStackable: true, usesItemLevel: false },
-      { id:105, name: "Ultimate Mana Flask", showOrHide: "Show", enabled: false, isStackable: true, usesItemLevel: false }
+      // The filter includes "Flask" (BaseType "Flask") for unique items?
+      { id:74, name: "Flask",       showOrHide: "Show", enabled: false, isStackable: true,  usesItemLevel: false }
     ]
   },
-
-  /*************************************************************
-   * 8) CURRENCY
-   *************************************************************/
   {
     categoryId: "currency",
     categoryName: "Currency",
-    description: "Mirror, Divine, Distilled, Splinters, Catalyst, etc.",
+    description: "Orbs, Gold, Distilled, Splinters, Catalyst, etc.",
     itemTypes: [
-      // same logic, plus new references
-      { id:110, name: "Mirror",                showOrHide: "Show", enabled: false, isStackable: true, usesItemLevel: false },
-      { id:111, name: "Divine",                showOrHide: "Show", enabled: false, isStackable: true, usesItemLevel: false },
-      { id:112, name: "Perfect Jeweller's Orb",showOrHide: "Show", enabled: false, isStackable: true, usesItemLevel: false },
-      { id:113, name: "Distilled Isolation",   showOrHide: "Show", enabled: false, isStackable: true, usesItemLevel: false },
-      { id:114, name: "Distilled Suffering",   showOrHide: "Show", enabled: false, isStackable: true, usesItemLevel: false },
-      { id:115, name: "Distilled Fear",        showOrHide: "Show", enabled: false, isStackable: true, usesItemLevel: false },
-      { id:116, name: "Distilled Despair",     showOrHide: "Show", enabled: false, isStackable: true, usesItemLevel: false },
-      { id:117, name: "Gold",                  showOrHide: "Show", enabled: false, isStackable: true, usesItemLevel: false },
-      // ... keep the big currency list from older code ...
-      // plus newly mentioned "Chance Shard," "Tablet" as "Class 'Tablet'" => Actually "Class 'Tablet'" is in script, put in currency or separate? 
-      // The script says "Show Class 'Tablet'" => we do isStackable false or true?
-      // We'll place it in Jewels or currency? The script lumps it with "Simulacrum" etc. We'll do it in currency if we want coverage.
-      { id:118, name: "Chance Shard",          showOrHide: "Show", enabled: false, isStackable: true, usesItemLevel: false },
-      { id:119, name: "Tablet",                showOrHide: "Show", enabled: false, isStackable: false, usesItemLevel: false },
-      // etc. 
-      // We'll skip repeating the entire list for brevity, but it's the same approach as older code
+      // Mirror, Divine, Perfect Jeweller's Orb, Greater Jeweller's Orb
+      { id:80,  name: "Mirror",                showOrHide: "Show", enabled: false, isStackable: true, usesItemLevel: false },
+      { id:81,  name: "Divine",                showOrHide: "Show", enabled: false, isStackable: true, usesItemLevel: false },
+      { id:82,  name: "Perfect Jeweller's Orb",showOrHide: "Show", enabled: false, isStackable: true, usesItemLevel: false },
+      { id:83,  name: "Greater Jeweller's Orb",showOrHide: "Show", enabled: false, isStackable: true, usesItemLevel: false },
+
+      // Distilled Isolation, Distilled Suffering, Distilled Fear, Distilled Despair, Distilled Disgust
+      { id:84,  name: "Distilled Isolation",   showOrHide: "Show", enabled: false, isStackable: true, usesItemLevel: false },
+      { id:85,  name: "Distilled Suffering",   showOrHide: "Show", enabled: false, isStackable: true, usesItemLevel: false },
+      { id:86,  name: "Distilled Fear",        showOrHide: "Show", enabled: false, isStackable: true, usesItemLevel: false },
+      { id:87,  name: "Distilled Despair",     showOrHide: "Show", enabled: false, isStackable: true, usesItemLevel: false },
+      { id:88,  name: "Distilled Disgust",     showOrHide: "Show", enabled: false, isStackable: true, usesItemLevel: false },
+
+      // Essence of, Catalyst, Omen of, Rune? (some might go in Jewels, but let's keep here to ensure coverage)
+      { id:89,  name: "Essence of",    showOrHide: "Show", enabled: false, isStackable: true, usesItemLevel: false },
+      { id:90,  name: "Catalyst",      showOrHide: "Show", enabled: false, isStackable: true, usesItemLevel: false },
+      { id:91,  name: "Omen of",       showOrHide: "Show", enabled: false, isStackable: false,usesItemLevel: false }, 
+      // "Exotic", "Exalted Orb", "Chaos Orb", "Vaal Orb," etc. 
+      { id:92,  name: "Exotic",        showOrHide: "Show", enabled: false, isStackable: true, usesItemLevel: false },
+      { id:93,  name: "Exalted Orb",   showOrHide: "Show", enabled: false, isStackable: true, usesItemLevel: false },
+      { id:94,  name: "Chaos Orb",     showOrHide: "Show", enabled: false, isStackable: true, usesItemLevel: false },
+      { id:95,  name: "Vaal Orb",      showOrHide: "Show", enabled: false, isStackable: true, usesItemLevel: false },
+
+      // "Gold"
+      { id:96,  name: "Gold",          showOrHide: "Show", enabled: false, isStackable: true, usesItemLevel: false },
+
+      // We can keep adding references from your scripts for full coverage ...
+      // "Neural Catalyst," "Adaptive Catalyst," etc.
+      { id:97,  name: "Neural Catalyst",    showOrHide: "Show", enabled: false, isStackable: true, usesItemLevel: false },
+      { id:98,  name: "Adaptive Catalyst",  showOrHide: "Show", enabled: false, isStackable: true, usesItemLevel: false }
     ]
   },
-
-  /*************************************************************
-   * 9) WAYSTONES
-   *************************************************************/
   {
     categoryId: "waystones",
     categoryName: "Waystones",
-    description: "BaseType 'Waystone' references from your filter.",
+    description: "Any references to BaseType 'Waystone', including WaystoneTier logic.",
     itemTypes: [
-      { id:130, name: "Waystone", showOrHide: "Show", enabled: false, isStackable: false, usesItemLevel: true }
+      { id:110, name: "Waystone", showOrHide: "Show", enabled: false, isStackable: true, usesItemLevel: false }
     ]
   },
-
-  /*************************************************************
-   * 10) JEWELS
-   *************************************************************/
   {
     categoryId: "jewels",
     categoryName: "Jewels",
-    description: "Rare Jewels, Timeless Jewel, plus runes, etc.",
+    description: "Class Jewel, Rare or Magic. Timeless Jewel, etc.",
     itemTypes: [
-      { id:140, name: "Jewel",           showOrHide: "Show", enabled: false, isStackable: false, usesItemLevel: true },
-      { id:141, name: " Rune",          showOrHide: "Show", enabled: false, isStackable: false, usesItemLevel: false },
-      { id:142, name: " Charm",         showOrHide: "Show", enabled: false, isStackable: false, usesItemLevel: false },
+      { id:120, name: "Jewel",        showOrHide: "Show", enabled: false, isStackable: false, usesItemLevel: true },
+      // Any runes/charms that the script references:
+      { id:121, name: " Rune",        showOrHide: "Show", enabled: false, isStackable: false, usesItemLevel: false },
+      { id:122, name: " Charm",       showOrHide: "Show", enabled: false, isStackable: false, usesItemLevel: false },
 
-      // newly mentioned: "Time-Lost Diamond," "Timeless Jewel" is definitely a Jewel (non-stackable):
-      { id:143, name: "Time-Lost Diamond", showOrHide: "Show", enabled: false, isStackable: false, usesItemLevel: false },
-      { id:144, name: "Timeless Jewel",    showOrHide: "Show", enabled: false, isStackable: false, usesItemLevel: false },
-
-      // "Incense Relic," "Vase Relic" => these are baseType? Possibly also Jewels or something special. We'll place them here or "gems" or "armour"? 
-      // We'll just store them here for coverage:
-      { id:145, name: "Incense Relic",     showOrHide: "Show", enabled: false, isStackable: true,  usesItemLevel: false },
-      { id:146, name: "Vase Relic",        showOrHide: "Show", enabled: false, isStackable: true,  usesItemLevel: false }
+      // "Time-Lost Diamond," "Timeless Jewel," etc.
+      { id:123, name: "Time-Lost Diamond", showOrHide: "Show", enabled: false, isStackable: true,  usesItemLevel: false },
+      { id:124, name: "Timeless Jewel",    showOrHide: "Show", enabled: false, isStackable: false, usesItemLevel: false }
     ]
   }
 ];
@@ -329,7 +251,7 @@ function activateCategory(index) {
 }
 
 /***************************************************************
- * 4. BUILD THE HTML FOR EACH ITEM TYPE
+ * 4. BUILD UI FOR EACH ITEM TYPE
  ***************************************************************/
 function createItemTypeHTML(categoryId, item) {
   const container = document.createElement("div");
@@ -342,15 +264,15 @@ function createItemTypeHTML(categoryId, item) {
 
   let html = `
     <label>
-      <input type="checkbox" id="enable-${categoryId}-${item.id}" ${item.enabled ? "checked" : ""}/>
+      <input type="checkbox" id="enable-${categoryId}-${item.id}" ${item.enabled?"checked":""}/>
       Enable
     </label>
 
     <label>
       Action:
       <select id="showOrHide-${categoryId}-${item.id}">
-        <option value="Show"  ${item.showOrHide==="Show"?"selected":""}>Show</option>
-        <option value="Hide"  ${item.showOrHide==="Hide"?"selected":""}>Hide</option>
+        <option value="Show" ${item.showOrHide==="Show" ? "selected":""}>Show</option>
+        <option value="Hide" ${item.showOrHide==="Hide" ? "selected":""}>Hide</option>
       </select>
     </label>
 
@@ -386,7 +308,7 @@ function createItemTypeHTML(categoryId, item) {
     `;
   }
 
-  // single operator area-level
+  // Single-operator AreaLevel
   html += `
     <label>AreaLevel:
       <select id="areaLevelOp-${categoryId}-${item.id}">
@@ -430,19 +352,19 @@ function createItemTypeHTML(categoryId, item) {
 }
 
 /***************************************************************
- * 5. GENERATE THE FINAL FILTER
+ * 5. GENERATE THE FINAL .FILTER
  ***************************************************************/
 function generateFilterContent() {
   let content = "";
   CATEGORIES.forEach(cat => {
     cat.itemTypes.forEach(item => {
-      const enableEl = document.getElementById(`enable-${cat.categoryId}-${item.id}`);
-      if (!enableEl?.checked) return;
+      const enableBox = document.getElementById(`enable-${cat.categoryId}-${item.id}`);
+      if (!enableBox?.checked) return;
 
       const showOrHide = document.getElementById(`showOrHide-${cat.categoryId}-${item.id}`).value;
       let ruleBlock = `${showOrHide}\n`;
 
-      // Rarity
+      // Rarities
       const normalCk = document.getElementById(`rarity-normal-${cat.categoryId}-${item.id}`).checked;
       const magicCk  = document.getElementById(`rarity-magic-${cat.categoryId}-${item.id}`).checked;
       const rareCk   = document.getElementById(`rarity-rare-${cat.categoryId}-${item.id}`).checked;
@@ -456,19 +378,19 @@ function generateFilterContent() {
         ruleBlock += `  Rarity ${rarities.join(" ")}\n`;
       }
 
-      // Sockets > x
+      // Sockets
       const sockVal = parseInt(document.getElementById(`sockets-${cat.categoryId}-${item.id}`).value||"0",10);
       if (sockVal>0) {
         ruleBlock += `  Sockets > ${sockVal}\n`;
       }
 
-      // Quality > x
+      // Quality
       const qualVal = parseInt(document.getElementById(`quality-${cat.categoryId}-${item.id}`).value||"0",10);
       if (qualVal>0) {
         ruleBlock += `  Quality > ${qualVal}\n`;
       }
 
-      // ItemLevel = x
+      // ItemLevel
       if (item.usesItemLevel) {
         const iLvl = parseInt(document.getElementById(`itemLevel-${cat.categoryId}-${item.id}`).value||"0",10);
         if (iLvl>0) {
@@ -476,7 +398,7 @@ function generateFilterContent() {
         }
       }
 
-      // StackSize >= x
+      // StackSize
       if (item.isStackable) {
         const stVal = parseInt(document.getElementById(`stackSize-${cat.categoryId}-${item.id}`).value||"0",10);
         if (stVal>0) {
@@ -499,17 +421,17 @@ function generateFilterContent() {
       }
 
       // Colors
-      const textC   = document.getElementById(`textColor-${cat.categoryId}-${item.id}`).value;
+      const textC = document.getElementById(`textColor-${cat.categoryId}-${item.id}`).value;
       const borderC = document.getElementById(`borderColor-${cat.categoryId}-${item.id}`).value;
-      const bgC     = document.getElementById(`bgColor-${cat.categoryId}-${item.id}`).value;
-      const fontC   = document.getElementById(`fontSize-${cat.categoryId}-${item.id}`).value;
+      const bgC = document.getElementById(`bgColor-${cat.categoryId}-${item.id}`).value;
+      const fontC = document.getElementById(`fontSize-${cat.categoryId}-${item.id}`).value;
       if (textC) {
         ruleBlock += `  SetTextColor ${hexToRGB(textC)}\n`;
       }
       if (borderC) {
         ruleBlock += `  SetBorderColor ${hexToRGB(borderC)}\n`;
       }
-      if (bgC && bgC.toLowerCase()!=="#ffffff") {
+      if (bgC && bgC.toLowerCase() !== "#ffffff") {
         ruleBlock += `  SetBackgroundColor ${hexToRGB(bgC)}\n`;
       }
       if (fontC) {
@@ -517,8 +439,8 @@ function generateFilterContent() {
       }
 
       // Alert Sound
-      const aSound = document.getElementById(`alertSound-${cat.categoryId}-${item.id}`).value;
-      const aDur   = document.getElementById(`alertDuration-${cat.categoryId}-${item.id}`).value;
+      const aSound= document.getElementById(`alertSound-${cat.categoryId}-${item.id}`).value;
+      const aDur  = document.getElementById(`alertDuration-${cat.categoryId}-${item.id}`).value;
       if (aSound) {
         ruleBlock += `  PlayAlertSound ${aSound} ${aDur}\n`;
       }
@@ -531,7 +453,7 @@ function generateFilterContent() {
 }
 
 /***************************************************************
- * 6. ADVANCED PARSING (Show/Hide Blocks -> UI)
+ * 6. ADVANCED PARSING (Show/Hide -> UI)
  ***************************************************************/
 function parseFilterText(rawText) {
   const text = rawText.trim();
@@ -540,8 +462,8 @@ function parseFilterText(rawText) {
     return;
   }
 
-  // separate lines
-  const lines = text.split(/\r?\n/).map(l => l.trim()).filter(l => l!=="");
+  // Split lines, gather blocks
+  const lines = text.split(/\r?\n/).map(l=>l.trim()).filter(l=>l!=="");
   let blocks = [];
   let current = [];
 
@@ -552,8 +474,8 @@ function parseFilterText(rawText) {
     }
   }
 
-  lines.forEach(ln => {
-    if (ln.startsWith("Show") || ln.startsWith("Hide")) {
+  lines.forEach(ln=>{
+    if (ln.startsWith("Show")||ln.startsWith("Hide")) {
       pushBlock();
       current.push(ln);
     } else {
@@ -569,8 +491,9 @@ function parseFilterText(rawText) {
 
   let matchedCount=0;
 
+  // Parse each block
   for (let block of blocks) {
-    const showOrHide= block[0].startsWith("Show") ? "Show":"Hide";
+    const showOrHide = block[0].startsWith("Show") ? "Show":"Hide";
     let linesDict = {
       showOrHide,
       rarities:[],
@@ -590,30 +513,29 @@ function parseFilterText(rawText) {
       alertDur:"300"
     };
 
-    // parse lines
     for (let line of block.slice(1)) {
       if (line.startsWith("Rarity ")) {
-        linesDict.rarities = line.replace("Rarity ","").split(" ");
+        linesDict.rarities=line.replace("Rarity ","").split(" ");
       } else if (line.startsWith("Sockets > ")) {
-        linesDict.sockets = parseInt(line.replace("Sockets > ",""),10);
+        linesDict.sockets=parseInt(line.replace("Sockets > ",""),10);
       } else if (line.startsWith("Quality > ")) {
-        linesDict.quality = parseInt(line.replace("Quality > ",""),10);
+        linesDict.quality=parseInt(line.replace("Quality > ",""),10);
       } else if (line.startsWith("ItemLevel = ")) {
-        linesDict.itemLevel = parseInt(line.replace("ItemLevel = ",""),10);
+        linesDict.itemLevel=parseInt(line.replace("ItemLevel = ",""),10);
       } else if (line.startsWith("StackSize >=")) {
-        linesDict.stackSize= parseInt(line.replace("StackSize >=",""),10);
+        linesDict.stackSize=parseInt(line.replace("StackSize >=",""),10);
       } else if (line.startsWith("AreaLevel ")) {
         const tokens=line.split(" ");
         if (tokens.length===3) {
-          linesDict.areaOp = tokens[1];
+          linesDict.areaOp=tokens[1];
           linesDict.areaVal= parseInt(tokens[2],10);
         }
       } else if (line.startsWith("Class ")) {
         let n=line.replace("Class ","").trim();
-        linesDict.className = n.replace(/"/g,"");
+        linesDict.className=n.replace(/"/g,"");
       } else if (line.startsWith("BaseType ")) {
         let n=line.replace("BaseType ","").trim();
-        linesDict.baseName = n.replace(/"/g,"");
+        linesDict.baseName=n.replace(/"/g,"");
       } else if (line.startsWith("SetTextColor ")) {
         linesDict.textColor=line.replace("SetTextColor ","").trim();
       } else if (line.startsWith("SetBorderColor ")) {
@@ -629,12 +551,12 @@ function parseFilterText(rawText) {
       }
     }
 
-    // attempt match
-    let foundItem=null;
+    // Attempt matching
     let foundCat=null;
+    let foundItem=null;
 
     if (linesDict.baseName) {
-      // stackable
+      // stackable item
       for (let cat of CATEGORIES) {
         for (let it of cat.itemTypes) {
           if (it.isStackable && it.name===linesDict.baseName) {
@@ -644,7 +566,7 @@ function parseFilterText(rawText) {
         if (foundItem) break;
       }
     } else if (linesDict.className) {
-      // non-stackable
+      // non-stackable item
       for (let cat of CATEGORIES) {
         for (let it of cat.itemTypes) {
           if (!it.isStackable && it.name===linesDict.className) {
@@ -694,21 +616,21 @@ function parseFilterText(rawText) {
 
       // parse color lines -> hex
       if (linesDict.textColor) {
-        const rgb= linesDict.textColor.split(" ").map(x=>parseInt(x,10));
+        const rgb= linesDict.textColor.split(" ").map(x=> parseInt(x,10));
         if (rgb.length>=3) {
           const cHex="#"+rgb.slice(0,3).map(x=> x.toString(16).padStart(2,"0")).join("");
           document.getElementById(`textColor-${foundCat.categoryId}-${foundItem.id}`).value=cHex;
         }
       }
       if (linesDict.borderColor) {
-        const rgb= linesDict.borderColor.split(" ").map(x=>parseInt(x,10));
+        const rgb= linesDict.borderColor.split(" ").map(x=> parseInt(x,10));
         if (rgb.length>=3) {
           const cHex="#"+rgb.slice(0,3).map(x=> x.toString(16).padStart(2,"0")).join("");
           document.getElementById(`borderColor-${foundCat.categoryId}-${foundItem.id}`).value=cHex;
         }
       }
       if (linesDict.bgColor) {
-        const rgb= linesDict.bgColor.split(" ").map(x=>parseInt(x,10));
+        const rgb= linesDict.bgColor.split(" ").map(x=> parseInt(x,10));
         if (rgb.length>=3) {
           const cHex="#"+rgb.slice(0,3).map(x=> x.toString(16).padStart(2,"0")).join("");
           document.getElementById(`bgColor-${foundCat.categoryId}-${foundItem.id}`).value=cHex;
