@@ -6,11 +6,11 @@ function rgbaToHex(rgba) {
   const match = rgba.match(/\d+/g);
   if (!match) return "#ffffff";
   const [r, g, b] = match;
-  return `#${[r, g, b].map(x => parseInt(x).toString(16).padStart(2, "0")).join("")}`;
+  return `#${[r, g, b].map((x) => parseInt(x).toString(16).padStart(2, "0")).join("")}`;
 }
 
 function hexToRGB(hex) {
-  const bigint = parseInt(hex.replace('#', ''), 16);
+  const bigint = parseInt(hex.replace("#", ""), 16);
   const r = (bigint >> 16) & 255;
   const g = (bigint >> 8) & 255;
   const b = bigint & 255;
@@ -18,159 +18,100 @@ function hexToRGB(hex) {
 }
 
 /***************************************************************
- * 2. CATEGORIES WITH RULES
- * Example demonstration. You can add more sub-rules as needed.
- * Each rule has "showOrHide" that user can choose at runtime 
- * (Show or Hide).
+ * 2. DEFINE CATEGORIES & ITEM TYPES
+ * Example: "Two-Handed Weapons" -> Bows, Crossbows, Quarterstaves, etc.
+ * For each itemType, specify if it's stackable (stackSize relevant) 
+ * and if itemLevel is relevant (gear vs. currency).
  ***************************************************************/
 const CATEGORIES = [
   {
-    categoryId: "weapons-onehand",
-    categoryName: "Weapons: One-Handed",
-    description: "Claws, Daggers, Wands, One Hand Swords, One Hand Axes, One Hand Maces, Sceptres, Spears, Flails.",
-    rules: [
+    categoryId: "twohand",
+    categoryName: "Two-Handed Weapons",
+    description: "Bows, Staves, Quarterstaves, Crossbows, etc. Typically item-level relevant gear.",
+    itemTypes: [
       {
         id: 1,
-        name: "One Hand Swords",
+        name: "Bows",
         enabled: true,
-        showOrHide: "Show", // default
-        // advanced conditions, user can override in UI
-        conditions: {
-          class: "One Hand Swords",
-        },
+        showOrHide: "Show",
+        isStackable: false,
+        usesItemLevel: true,
         colorSettings: {
-          textColor: "rgba(255,180,0,1)",
-          borderColor: "rgba(255,180,0,1)",
-          backgroundColor: "rgba(0,0,0,0.5)",
-          fontSize: 40,
+          textColor: "rgba(255,255,255,1)",
+          borderColor: "rgba(80,80,80,1)",
+          backgroundColor: "rgba(0,0,0,0)",
+          fontSize: 35,
         },
       },
       {
         id: 2,
-        name: "Daggers",
+        name: "Crossbows",
         enabled: false,
-        showOrHide: "Show",
-        conditions: {
-          class: "Daggers",
-        },
+        showOrHide: "Hide",
+        isStackable: false,
+        usesItemLevel: true,
       },
-      // Add more for Claws, Wands, Axes, Maces, etc.
+      {
+        id: 3,
+        name: "Quarterstaves",
+        enabled: true,
+        showOrHide: "Show",
+        isStackable: false,
+        usesItemLevel: true,
+      },
+      // ... add staves, axes, etc. as needed ...
     ],
   },
   {
-    categoryId: "weapons-twohand",
-    categoryName: "Weapons: Two-Handed",
-    description: "Bows, Staves, Two Hand Swords, Two Hand Axes, Two Hand Maces, Quarterstaves, Crossbows, etc.",
-    rules: [
+    categoryId: "currency",
+    categoryName: "Currency",
+    description: "Stackable or consumable items (like Orbs, Gold). StackSize is relevant.",
+    itemTypes: [
       {
         id: 10,
-        name: "Two Hand Swords",
+        name: "Gold",
         enabled: true,
         showOrHide: "Show",
-        conditions: {
-          class: "Two Hand Swords",
-        },
+        isStackable: true,   // we show StackSize fields
+        usesItemLevel: false, // typically currency doesn't use itemLevel
       },
       {
         id: 11,
-        name: "Crossbows",
-        enabled: true,
-        showOrHide: "Hide",
-        conditions: {
-          class: "Crossbows",
-        },
+        name: "Essences",
+        enabled: false,
+        showOrHide: "Show",
+        isStackable: true,
+        usesItemLevel: false,
       },
-      // etc.
     ],
   },
   {
     categoryId: "gems",
     categoryName: "Gems",
-    description: "Skill Gems, Support Gems, Spirit Gems, etc.",
-    rules: [
+    description: "Skill Gems, Support Gems, Spirit Gems. ItemLevel can matter sometimes.",
+    itemTypes: [
       {
         id: 20,
         name: "Skill Gems",
         enabled: true,
         showOrHide: "Show",
-        conditions: {
-          baseTypes: ["Skill Gem"],
-        },
+        isStackable: false,
+        usesItemLevel: true, // gem quality/level can matter
       },
       {
         id: 21,
         name: "Support Gems",
         enabled: false,
         showOrHide: "Show",
-        conditions: {
-          baseTypes: ["Support Gem"],
-        },
-      },
-      {
-        id: 22,
-        name: "Spirit Gems",
-        enabled: true,
-        showOrHide: "Show",
-        conditions: {
-          baseTypes: ["Spirit Gem"],
-        },
-      },
-    ],
-  },
-  {
-    categoryId: "armour",
-    categoryName: "Armour",
-    description: "Gloves, Boots, Body Armours, Helmets.",
-    rules: [
-      {
-        id: 30,
-        name: "Helmets",
-        enabled: true,
-        showOrHide: "Show",
-        conditions: {
-          class: "Helmets",
-        },
-      },
-      {
-        id: 31,
-        name: "Body Armours",
-        enabled: true,
-        showOrHide: "Show",
-        conditions: {
-          class: "Body Armours",
-        },
-      },
-    ],
-  },
-  {
-    categoryId: "currency",
-    categoryName: "Currency",
-    description: "Stackable Currency, Distilled Emotions, Essences, Splinters, Catalysts, etc.",
-    rules: [
-      {
-        id: 40,
-        name: "Gold & Chaos (Stackable)",
-        enabled: true,
-        showOrHide: "Show",
-        conditions: {
-          class: "Stackable Currency",
-        },
-      },
-      {
-        id: 41,
-        name: "Catalysts",
-        enabled: false,
-        showOrHide: "Show",
-        conditions: {
-          baseTypes: ["Catalyst"],
-        },
+        isStackable: false,
+        usesItemLevel: true,
       },
     ],
   },
 ];
 
 /***************************************************************
- * 3. CREATE TABS + CREATE CATEGORY SECTIONS
+ * 3. CREATE TABS & SECTIONS
  ***************************************************************/
 function createTabs() {
   const tabContainer = document.getElementById("category-tabs");
@@ -186,11 +127,10 @@ function createTabs() {
 
 function createCategorySections() {
   const form = document.getElementById("filter-form");
-
-  CATEGORIES.forEach((cat, index) => {
+  CATEGORIES.forEach((cat, catIndex) => {
     const section = document.createElement("div");
     section.classList.add("category-section");
-    if (index === 0) section.classList.add("active");
+    if (catIndex === 0) section.classList.add("active");
 
     const heading = document.createElement("h2");
     heading.innerText = cat.categoryName;
@@ -200,9 +140,10 @@ function createCategorySections() {
     desc.innerText = cat.description;
     section.appendChild(desc);
 
-    cat.rules.forEach(rule => {
-      const ruleEl = createRuleHTML(cat.categoryId, rule);
-      section.appendChild(ruleEl);
+    // Now create a panel for each itemType
+    cat.itemTypes.forEach((type) => {
+      const typeDiv = createItemTypeHTML(cat.categoryId, type);
+      section.appendChild(typeDiv);
     });
 
     form.insertBefore(section, document.getElementById("generate-button"));
@@ -213,113 +154,134 @@ function activateCategory(index) {
   const allSections = document.querySelectorAll(".category-section");
   const allButtons = document.querySelectorAll(".tab-button");
 
-  allSections.forEach(sec => sec.classList.remove("active"));
-  allButtons.forEach(btn => btn.classList.remove("active"));
+  allSections.forEach((sec) => sec.classList.remove("active"));
+  allButtons.forEach((btn) => btn.classList.remove("active"));
 
   allSections[index].classList.add("active");
   allButtons[index].classList.add("active");
 }
 
 /***************************************************************
- * 4. BUILD THE RULE UI
- * Here we add:
- *  - "Enable" checkbox
- *  - "Show/Hide" dropdown
- *  - Rarity dropdown
- *  - min/max for AreaLevel, ItemLevel, StackSize
- *  - optional color & sound picks
+ * 4. BUILD HTML FOR EACH ITEM TYPE
+ *   - Enable/Disable
+ *   - Show/Hide
+ *   - Rarity Checkboxes (Normal, Magic, Rare, Unique)
+ *   - Min/Max AreaLevel
+ *   - If usesItemLevel, show Min/Max ItemLevel
+ *   - If isStackable, show Min/Max StackSize
+ *   - Optional color, sound
  ***************************************************************/
-function createRuleHTML(categoryId, rule) {
+function createItemTypeHTML(categoryId, item) {
   const container = document.createElement("div");
-  container.classList.add("rule");
+  container.classList.add("item-type");
 
   // Title
   const titleDiv = document.createElement("div");
-  titleDiv.classList.add("rule-title");
-  titleDiv.innerText = rule.name;
+  titleDiv.classList.add("item-type-title");
+  titleDiv.innerText = item.name;
   container.appendChild(titleDiv);
 
-  // Basic info
   let html = `
     <!-- Enable checkbox -->
     <label>
-      <input type="checkbox" id="enable-${categoryId}-${rule.id}" ${rule.enabled ? "checked" : ""} />
+      <input type="checkbox" id="enable-${categoryId}-${item.id}" ${item.enabled ? "checked" : ""}/>
       Enable
     </label>
 
     <!-- Show/Hide dropdown -->
     <label>
       Action:
-      <select id="showOrHide-${categoryId}-${rule.id}">
-        <option value="Show" ${rule.showOrHide==="Show" ? "selected" : ""}>Show</option>
-        <option value="Hide" ${rule.showOrHide==="Hide" ? "selected" : ""}>Hide</option>
+      <select id="showOrHide-${categoryId}-${item.id}">
+        <option value="Show" ${item.showOrHide==="Show" ? "selected":""}>Show</option>
+        <option value="Hide" ${item.showOrHide==="Hide" ? "selected":""}>Hide</option>
       </select>
     </label>
 
-    <!-- Rarity dropdown -->
-    <label>
-      Rarity:
-      <select id="rarity-${categoryId}-${rule.id}">
-        <option value="">Any</option>
-        <option value="Normal">Normal</option>
-        <option value="Magic">Magic</option>
-        <option value="Rare">Rare</option>
-        <option value="Unique">Unique</option>
-      </select>
-    </label>
+    <!-- Rarity Checkboxes (multiple selection) -->
+    <label>Rarity:</label>
+    <div style="margin-left: 20px;">
+      <label><input type="checkbox" id="rarity-normal-${categoryId}-${item.id}" /> Normal</label>
+      <label><input type="checkbox" id="rarity-magic-${categoryId}-${item.id}" /> Magic</label>
+      <label><input type="checkbox" id="rarity-rare-${categoryId}-${item.id}" /> Rare</label>
+      <label><input type="checkbox" id="rarity-unique-${categoryId}-${item.id}" /> Unique</label>
+    </div>
 
-    <!-- AreaLevel -->
+    <!-- Min/Max AreaLevel always relevant for dropping items -->
     <label>Min AreaLevel:
-      <input type="number" id="minAreaLevel-${categoryId}-${rule.id}" value="" min="0" />
+      <input type="number" id="minAreaLevel-${categoryId}-${item.id}" value="" min="0"/>
     </label>
     <label>Max AreaLevel:
-      <input type="number" id="maxAreaLevel-${categoryId}-${rule.id}" value="" min="0" />
-    </label>
-
-    <!-- ItemLevel -->
-    <label>Min ItemLevel:
-      <input type="number" id="minItemLevel-${categoryId}-${rule.id}" value="" min="0" />
-    </label>
-    <label>Max ItemLevel:
-      <input type="number" id="maxItemLevel-${categoryId}-${rule.id}" value="" min="0" />
-    </label>
-
-    <!-- StackSize -->
-    <label>Min StackSize:
-      <input type="number" id="minStackSize-${categoryId}-${rule.id}" value="" min="0" />
-    </label>
-    <label>Max StackSize:
-      <input type="number" id="maxStackSize-${categoryId}-${rule.id}" value="" min="0" />
+      <input type="number" id="maxAreaLevel-${categoryId}-${item.id}" value="" min="0"/>
     </label>
   `;
 
-  // Colors / Font
-  if (rule.colorSettings) {
-    const textC = rgbaToHex(rule.colorSettings.textColor);
-    const borderC = rgbaToHex(rule.colorSettings.borderColor);
-    const bgC = rgbaToHex(rule.colorSettings.backgroundColor);
-    const fSize = rule.colorSettings.fontSize || 35;
-
+  // If item.usesItemLevel is true, show itemLevel inputs
+  if (item.usesItemLevel) {
     html += `
-      <label>Text Color:
-        <input type="color" id="textColor-${categoryId}-${rule.id}" value="${textC}"/>
+      <label>Min ItemLevel:
+        <input type="number" id="minItemLevel-${categoryId}-${item.id}" value="" min="0"/>
       </label>
-      <label>Border Color:
-        <input type="color" id="borderColor-${categoryId}-${rule.id}" value="${borderC}"/>
-      </label>
-      <label>Background Color:
-        <input type="color" id="bgColor-${categoryId}-${rule.id}" value="${bgC}"/>
-      </label>
-      <label>Font Size:
-        <input type="number" id="fontSize-${categoryId}-${rule.id}" value="${fSize}" min="12" max="60"/>
+      <label>Max ItemLevel:
+        <input type="number" id="maxItemLevel-${categoryId}-${item.id}" value="" min="0"/>
       </label>
     `;
   }
 
-  // Alert Sound (optional)
+  // If item.isStackable, show stackSize inputs
+  if (item.isStackable) {
+    html += `
+      <label>Min StackSize:
+        <input type="number" id="minStackSize-${categoryId}-${item.id}" value="" min="0"/>
+      </label>
+      <label>Max StackSize:
+        <input type="number" id="maxStackSize-${categoryId}-${item.id}" value="" min="0"/>
+      </label>
+    `;
+  }
+
+  // Colors
+  if (item.colorSettings) {
+    const textC = rgbaToHex(item.colorSettings.textColor);
+    const borderC = rgbaToHex(item.colorSettings.borderColor);
+    const bgC = rgbaToHex(item.colorSettings.backgroundColor);
+    const fs = item.colorSettings.fontSize || 35;
+
+    html += `
+      <label>Text Color:
+        <input type="color" id="textColor-${categoryId}-${item.id}" value="${textC}"/>
+      </label>
+      <label>Border Color:
+        <input type="color" id="borderColor-${categoryId}-${item.id}" value="${borderC}"/>
+      </label>
+      <label>Background Color:
+        <input type="color" id="bgColor-${categoryId}-${item.id}" value="${bgC}"/>
+      </label>
+      <label>Font Size:
+        <input type="number" id="fontSize-${categoryId}-${item.id}" value="${fs}" min="12" max="60"/>
+      </label>
+    `;
+  } else {
+    // optionally let user pick color anyway
+    html += `
+      <label>Text Color:
+        <input type="color" id="textColor-${categoryId}-${item.id}" value="#ffffff"/>
+      </label>
+      <label>Border Color:
+        <input type="color" id="borderColor-${categoryId}-${item.id}" value="#ffffff"/>
+      </label>
+      <label>Background Color:
+        <input type="color" id="bgColor-${categoryId}-${item.id}" value="#000000"/>
+      </label>
+      <label>Font Size:
+        <input type="number" id="fontSize-${categoryId}-${item.id}" value="35" min="12" max="60"/>
+      </label>
+    `;
+  }
+
+  // Alert Sound
   html += `
     <label>Alert Sound:
-      <select id="alertSound-${categoryId}-${rule.id}">
+      <select id="alertSound-${categoryId}-${item.id}">
         <option value="">None</option>
         <option value="1">Alert 1</option>
         <option value="2">Alert 2</option>
@@ -329,7 +291,7 @@ function createRuleHTML(categoryId, rule) {
         <option value="10">Alert 10</option>
       </select>
       Duration:
-      <input type="number" id="alertDuration-${categoryId}-${rule.id}" value="300" min="50" max="1000"/>
+      <input type="number" id="alertDuration-${categoryId}-${item.id}" value="300" min="50" max="1000"/>
     </label>
   `;
 
@@ -338,91 +300,93 @@ function createRuleHTML(categoryId, rule) {
 }
 
 /***************************************************************
- * 5. GENERATE THE FILTER CONTENT
+ * 5. GENERATE FILTER LOGIC
  ***************************************************************/
 function generateFilterContent() {
   let content = "";
 
-  CATEGORIES.forEach(cat => {
-    cat.rules.forEach(rule => {
-      // If "enable" is not found or not checked, skip
-      const enableBox = document.getElementById(`enable-${cat.categoryId}-${rule.id}`);
+  CATEGORIES.forEach((cat) => {
+    cat.itemTypes.forEach((type) => {
+      // Check if enabled
+      const enableBox = document.getElementById(`enable-${cat.categoryId}-${type.id}`);
       if (!enableBox || !enableBox.checked) return;
 
-      // "ShowOrHide" from the dropdown
-      const showOrHideSel = document.getElementById(`showOrHide-${cat.categoryId}-${rule.id}`);
-      const blockType = showOrHideSel.value;
+      // Show or Hide
+      const showOrHide = document.getElementById(`showOrHide-${cat.categoryId}-${type.id}`).value;
+      let ruleBlock = `${showOrHide}\n`;
 
-      // Build the block
-      let ruleBlock = `${blockType}\n`;
+      // Rarity Checkboxes
+      const normalCk = document.getElementById(`rarity-normal-${cat.categoryId}-${type.id}`).checked;
+      const magicCk  = document.getElementById(`rarity-magic-${cat.categoryId}-${type.id}`).checked;
+      const rareCk   = document.getElementById(`rarity-rare-${cat.categoryId}-${type.id}`).checked;
+      const uniqCk   = document.getElementById(`rarity-unique-${cat.categoryId}-${type.id}`).checked;
 
-      // Rarity dropdown
-      const rarityVal = document.getElementById(`rarity-${cat.categoryId}-${rule.id}`).value;
-      if (rarityVal) {
-        ruleBlock += `  Rarity ${rarityVal}\n`;
+      // We might compile them into something like "Rarity = Normal Rare Unique"
+      let rarities = [];
+      if (normalCk) rarities.push("Normal");
+      if (magicCk)  rarities.push("Magic");
+      if (rareCk)   rarities.push("Rare");
+      if (uniqCk)   rarities.push("Unique");
+
+      if (rarities.length > 0) {
+        // If we want an OR condition, it's typically "Rarity = X Y Z" in PoE filters
+        // But PoE syntax is "Rarity Rare" vs "Rarity = Rare"? Officially it's "Rarity Rare" 
+        // for a single type. For multiple you do separate lines. 
+        // For demonstration, we do "Rarity = Normal Rare Unique" 
+        // or multiple "Rarity Normal" lines. Let's do a single line approach:
+        ruleBlock += `  Rarity ${rarities.join(" ")}\n`;
       }
 
       // AreaLevel
-      const minAL = parseInt(document.getElementById(`minAreaLevel-${cat.categoryId}-${rule.id}`).value || 0, 10);
-      const maxAL = parseInt(document.getElementById(`maxAreaLevel-${cat.categoryId}-${rule.id}`).value || 0, 10);
-      if (minAL > 0) {
-        ruleBlock += `  AreaLevel >= ${minAL}\n`;
-      }
-      if (maxAL > 0 && maxAL >= minAL) {
-        ruleBlock += `  AreaLevel <= ${maxAL}\n`;
+      const minAL = parseInt(document.getElementById(`minAreaLevel-${cat.categoryId}-${type.id}`).value || 0, 10);
+      const maxAL = parseInt(document.getElementById(`maxAreaLevel-${cat.categoryId}-${type.id}`).value || 0, 10);
+      if (minAL > 0) ruleBlock += `  AreaLevel >= ${minAL}\n`;
+      if (maxAL > 0 && maxAL >= minAL) ruleBlock += `  AreaLevel <= ${maxAL}\n`;
+
+      // ItemLevel if usesItemLevel
+      if (type.usesItemLevel) {
+        const minIL = parseInt(document.getElementById(`minItemLevel-${cat.categoryId}-${type.id}`).value || 0, 10);
+        const maxIL = parseInt(document.getElementById(`maxItemLevel-${cat.categoryId}-${type.id}`).value || 0, 10);
+        if (minIL > 0) ruleBlock += `  ItemLevel >= ${minIL}\n`;
+        if (maxIL > 0 && maxIL >= minIL) ruleBlock += `  ItemLevel <= ${maxIL}\n`;
       }
 
-      // ItemLevel
-      const minIL = parseInt(document.getElementById(`minItemLevel-${cat.categoryId}-${rule.id}`).value || 0, 10);
-      const maxIL = parseInt(document.getElementById(`maxItemLevel-${cat.categoryId}-${rule.id}`).value || 0, 10);
-      if (minIL > 0) {
-        ruleBlock += `  ItemLevel >= ${minIL}\n`;
-      }
-      if (maxIL > 0 && maxIL >= minIL) {
-        ruleBlock += `  ItemLevel <= ${maxIL}\n`;
+      // StackSize if isStackable
+      if (type.isStackable) {
+        const minStack = parseInt(document.getElementById(`minStackSize-${cat.categoryId}-${type.id}`).value || 0, 10);
+        const maxStack = parseInt(document.getElementById(`maxStackSize-${cat.categoryId}-${type.id}`).value || 0, 10);
+        if (minStack > 0) ruleBlock += `  StackSize >= ${minStack}\n`;
+        if (maxStack > 0 && maxStack >= minStack) ruleBlock += `  StackSize <= ${maxStack}\n`;
       }
 
-      // StackSize
-      const minStack = parseInt(document.getElementById(`minStackSize-${cat.categoryId}-${rule.id}`).value || 0, 10);
-      const maxStack = parseInt(document.getElementById(`maxStackSize-${cat.categoryId}-${rule.id}`).value || 0, 10);
-      if (minStack > 0) {
-        ruleBlock += `  StackSize >= ${minStack}\n`;
-      }
-      if (maxStack > 0 && maxStack >= minStack) {
-        ruleBlock += `  StackSize <= ${maxStack}\n`;
-      }
-
-      // "class" from the rule (conditions.class)
-      if (rule.conditions?.class) {
-        // Could be multiple classes (space separated)
-        const classes = rule.conditions.class.split(" ").map(cl => `"${cl}"`).join(" ");
-        ruleBlock += `  Class ${classes}\n`;
-      }
-      // "baseTypes" from the rule
-      if (rule.conditions?.baseTypes) {
-        const btStr = rule.conditions.baseTypes.map(bt => `"${bt}"`).join(" ");
-        ruleBlock += `  BaseType ${btStr}\n`;
+      // Class or BaseType
+      // Typically if "Bows" we do Class "Bow". 
+      // For demonstration we might do:
+      if (!type.isStackable) {
+        // gear-based items might use "Class"
+        ruleBlock += `  Class "${type.name}"\n`;
+      } else {
+        // stackable might be BaseType "Gold" or "Essence"
+        ruleBlock += `  BaseType "${type.name}"\n`;
       }
 
       // Colors
-      if (rule.colorSettings) {
-        const textVal = document.getElementById(`textColor-${cat.categoryId}-${rule.id}`)?.value;
-        const borderVal = document.getElementById(`borderColor-${cat.categoryId}-${rule.id}`)?.value;
-        const bgVal = document.getElementById(`bgColor-${cat.categoryId}-${rule.id}`)?.value;
-        const fontVal = document.getElementById(`fontSize-${cat.categoryId}-${rule.id}`)?.value;
+      const textVal = document.getElementById(`textColor-${cat.categoryId}-${type.id}`)?.value;
+      const borderVal = document.getElementById(`borderColor-${cat.categoryId}-${type.id}`)?.value;
+      const bgVal = document.getElementById(`bgColor-${cat.categoryId}-${type.id}`)?.value;
+      const fontVal = document.getElementById(`fontSize-${cat.categoryId}-${type.id}`)?.value;
 
-        if (textVal) ruleBlock += `  SetTextColor ${hexToRGB(textVal)}\n`;
-        if (borderVal) ruleBlock += `  SetBorderColor ${hexToRGB(borderVal)}\n`;
-        if (bgVal && bgVal.toLowerCase() !== "#ffffff") {
-          ruleBlock += `  SetBackgroundColor ${hexToRGB(bgVal)}\n`;
-        }
-        if (fontVal) ruleBlock += `  SetFontSize ${fontVal}\n`;
+      if (textVal) ruleBlock += `  SetTextColor ${hexToRGB(textVal)}\n`;
+      if (borderVal) ruleBlock += `  SetBorderColor ${hexToRGB(borderVal)}\n`;
+      if (bgVal && bgVal.toLowerCase() !== "#ffffff") {
+        ruleBlock += `  SetBackgroundColor ${hexToRGB(bgVal)}\n`;
       }
+      if (fontVal) ruleBlock += `  SetFontSize ${fontVal}\n`;
 
       // Alert Sound
-      const aSound = document.getElementById(`alertSound-${cat.categoryId}-${rule.id}`).value;
-      const aDur = document.getElementById(`alertDuration-${cat.categoryId}-${rule.id}`).value;
-      if (aSound && aDur && aSound !== "") {
+      const aSound = document.getElementById(`alertSound-${cat.categoryId}-${type.id}`)?.value || "";
+      const aDur   = document.getElementById(`alertDuration-${cat.categoryId}-${type.id}`)?.value || "";
+      if (aSound !== "") {
         ruleBlock += `  PlayAlertSound ${aSound} ${aDur}\n`;
       }
 
@@ -435,12 +399,12 @@ function generateFilterContent() {
 }
 
 /***************************************************************
- * 6. INIT & EVENT LISTENERS
+ * 6. INIT
  ***************************************************************/
 function init() {
   createTabs();
   createCategorySections();
-  activateCategory(0); // first tab active
+  activateCategory(0); // Show first category by default
 }
 
 document.getElementById("filter-form").addEventListener("submit", function (e) {
@@ -451,6 +415,7 @@ document.getElementById("filter-form").addEventListener("submit", function (e) {
   const downloadLink = document.getElementById("download-link");
   downloadLink.href = url;
   downloadLink.download = "my-custom-filter.filter";
+
   document.getElementById("download-section").style.display = "block";
 });
 
