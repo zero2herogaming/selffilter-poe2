@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>PoE2 Filter Builder (No Waystones)</title>
+  <title>PoE2 Filter Builder (No Waystones) - v1.0.0</title>
   <style>
     /* Overall Layout */
     body {
@@ -33,6 +33,11 @@
       margin: 0 0 0.5rem 0;
       font-size: 1.2rem;
       color: #222;
+    }
+    .version {
+      font-size: 0.85rem;
+      color: #777;
+      margin-bottom: 1rem;
     }
 
     /* RULE CARDS */
@@ -134,6 +139,7 @@
   <!-- LEFT: RULES & ADD RULE BUTTON -->
   <div id="left-panel">
     <h2>PoE2 Filter Rules (No Waystones)</h2>
+    <div class="version">Version v1.0.0</div>
     <button id="addRuleButton">+ Add Rule</button>
     <div id="rulesContainer"></div>
   </div>
@@ -148,7 +154,7 @@
 
   <script>
     /***************************************************************
-     * 1. Define ALL categories & items (NO WAYSTONES)
+     * 1. Define ALL categories & items (NO WAYSTONES) - v1.0.0
      ***************************************************************/
     const CATEGORIES = [
       {
@@ -522,7 +528,7 @@
         const header = document.createElement("div");
         header.classList.add("rule-header");
         const title = document.createElement("h3");
-        title.textContent = `Rule ${index+1}`;
+        title.textContent = `Rule ${index + 1}`;
         const removeBtn = document.createElement("button");
         removeBtn.textContent = "Remove";
         removeBtn.addEventListener("click", () => {
@@ -561,7 +567,7 @@
 
         function fillItemSelect(catId, ruleObj) {
           itemSelect.innerHTML = "";
-          const catObj = CATEGORIES.find(c=> c.id===catId);
+          const catObj = CATEGORIES.find(c => c.id === catId);
           if (!catObj) return;
           catObj.items.forEach(it => {
             const opt = document.createElement("option");
@@ -577,7 +583,7 @@
         const showHideLabel = document.createElement("label");
         showHideLabel.textContent = " Action: ";
         const showHideSel = document.createElement("select");
-        ["Show","Hide"].forEach(val => {
+        ["Show", "Hide"].forEach(val => {
           const opt = document.createElement("option");
           opt.value = val;
           opt.textContent = val;
@@ -588,7 +594,7 @@
         body.appendChild(showHideLabel);
 
         // 4) Rarities => hidden if isGemsCategory
-        const catObjRef = () => CATEGORIES.find(c=> c.id===rule.categoryId);
+        const catObjRef = () => CATEGORIES.find(c => c.id === rule.categoryId);
         const isGems = () => catObjRef()?.isGemsCategory === true;
 
         const rarityWrap = document.createElement("div");
@@ -627,9 +633,9 @@
         areaWrap.innerHTML = ` AreaLevel:
           <select>
             <option value="">None</option>
-            <option value=">=" ${rule.areaOp===">=" ? "selected" : ""}>>=</option>
-            <option value="<=" ${rule.areaOp==="<=" ? "selected" : ""}>&lt;=</option>
-            <option value="="  ${rule.areaOp==="="  ? "selected" : ""}>=</option>
+            <option value=">=" ${rule.areaOp === ">=" ? "selected" : ""}>>=</option>
+            <option value="<=" ${rule.areaOp === "<=" ? "selected" : ""}>&lt;=</option>
+            <option value="="  ${rule.areaOp === "="  ? "selected" : ""}>=</option>
           </select>
           <input type="number" style="width:50px;" value="${rule.areaVal}"/>
         `;
@@ -657,12 +663,12 @@
         alertWrap.innerHTML = ` AlertSound:
           <select>
             <option value="">None</option>
-            <option value="1"  ${rule.alertSound==="1" ?"selected":""}>1</option>
-            <option value="2"  ${rule.alertSound==="2" ?"selected":""}>2</option>
-            <option value="3"  ${rule.alertSound==="3" ?"selected":""}>3</option>
-            <option value="4"  ${rule.alertSound==="4" ?"selected":""}>4</option>
-            <option value="6"  ${rule.alertSound==="6" ?"selected":""}>6</option>
-            <option value="10" ${rule.alertSound==="10"?"selected":""}>10</option>
+            <option value="1"  ${rule.alertSound === "1"  ? "selected" : ""}>1</option>
+            <option value="2"  ${rule.alertSound === "2"  ? "selected" : ""}>2</option>
+            <option value="3"  ${rule.alertSound === "3"  ? "selected" : ""}>3</option>
+            <option value="4"  ${rule.alertSound === "4"  ? "selected" : ""}>4</option>
+            <option value="6"  ${rule.alertSound === "6"  ? "selected" : ""}>6</option>
+            <option value="10" ${rule.alertSound === "10" ? "selected" : ""}>10</option>
           </select>
           <input type="number" style="width:55px;" value="${rule.alertDur}" min="50" max="1000"/>
         `;
@@ -675,32 +681,32 @@
             Size:
             <select>
               <option value="">None</option>
-              <option value="0" ${rule.mmSize==="0"?"selected":""}>0</option>
-              <option value="1" ${rule.mmSize==="1"?"selected":""}>1</option>
-              <option value="2" ${rule.mmSize==="2"?"selected":""}>2</option>
-              <option value="3" ${rule.mmSize==="3"?"selected":""}>3</option>
+              <option value="0" ${rule.mmSize==="0" ? "selected" : ""}>0</option>
+              <option value="1" ${rule.mmSize==="1" ? "selected" : ""}>1</option>
+              <option value="2" ${rule.mmSize==="2" ? "selected" : ""}>2</option>
+              <option value="3" ${rule.mmSize==="3" ? "selected" : ""}>3</option>
             </select>
             Color:
             <select>
               <option value="">None</option>
-              <option value="White"  ${rule.mmColor==="White"?"selected":""}>White</option>
-              <option value="Red"    ${rule.mmColor==="Red"?"selected":""}>Red</option>
-              <option value="Blue"   ${rule.mmColor==="Blue"?"selected":""}>Blue</option>
-              <option value="Green"  ${rule.mmColor==="Green"?"selected":""}>Green</option>
-              <option value="Brown"  ${rule.mmColor==="Brown"?"selected":""}>Brown</option>
-              <option value="Yellow" ${rule.mmColor==="Yellow"?"selected":""}>Yellow</option>
-              <option value="Cyan"   ${rule.mmColor==="Cyan"?"selected":""}>Cyan</option>
-              <option value="Grey"   ${rule.mmColor==="Grey"?"selected":""}>Grey</option>
+              <option value="White"  ${rule.mmColor==="White" ? "selected" : ""}>White</option>
+              <option value="Red"    ${rule.mmColor==="Red"   ? "selected" : ""}>Red</option>
+              <option value="Blue"   ${rule.mmColor==="Blue"  ? "selected" : ""}>Blue</option>
+              <option value="Green"  ${rule.mmColor==="Green" ? "selected" : ""}>Green</option>
+              <option value="Brown"  ${rule.mmColor==="Brown" ? "selected" : ""}>Brown</option>
+              <option value="Yellow" ${rule.mmColor==="Yellow"? "selected" : ""}>Yellow</option>
+              <option value="Cyan"   ${rule.mmColor==="Cyan"  ? "selected" : ""}>Cyan</option>
+              <option value="Grey"   ${rule.mmColor==="Grey"  ? "selected" : ""}>Grey</option>
             </select>
             Shape:
             <select>
               <option value="">None</option>
-              <option value="Square"   ${rule.mmShape==="Square"?"selected":""}>Square</option>
-              <option value="Circle"   ${rule.mmShape==="Circle"?"selected":""}>Circle</option>
-              <option value="Star"     ${rule.mmShape==="Star"?"selected":""}>Star</option>
-              <option value="Diamond"  ${rule.mmShape==="Diamond"?"selected":""}>Diamond</option>
-              <option value="Triangle" ${rule.mmShape==="Triangle"?"selected":""}>Triangle</option>
-              <option value="Kite"     ${rule.mmShape==="Kite"?"selected":""}>Kite</option>
+              <option value="Square"   ${rule.mmShape==="Square"   ? "selected":""}>Square</option>
+              <option value="Circle"   ${rule.mmShape==="Circle"   ? "selected":""}>Circle</option>
+              <option value="Star"     ${rule.mmShape==="Star"     ? "selected":""}>Star</option>
+              <option value="Diamond"  ${rule.mmShape==="Diamond"  ? "selected":""}>Diamond</option>
+              <option value="Triangle" ${rule.mmShape==="Triangle" ? "selected":""}>Triangle</option>
+              <option value="Kite"     ${rule.mmShape==="Kite"     ? "selected":""}>Kite</option>
             </select>
           </label>
         `;
@@ -714,7 +720,6 @@
         // Category
         catSelect.addEventListener("change", () => {
           rule.categoryId = catSelect.value;
-          // reset item
           const newCatObj = CATEGORIES.find(c => c.id === rule.categoryId);
           if (newCatObj?.items?.length) {
             rule.itemName = newCatObj.items[0].name;
