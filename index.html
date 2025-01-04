@@ -4,579 +4,688 @@
   <meta charset="UTF-8" />
   <title>PoE2 Filter Builder</title>
   <style>
+    /* Overall Layout */
     body {
-      margin: 0; padding: 0;
-      font-family: sans-serif;
+      margin: 0; 
+      padding: 0;
+      font-family: Arial, sans-serif;
       display: flex;
       height: 100vh;
+      background: #f0f0f0;
+      color: #333;
+    }
+    #left-panel, #right-panel {
+      padding: 1rem;
+      overflow-y: auto;
     }
     #left-panel {
-      width: 40%;
-      background: #fafafa;
-      border-right: 1px solid #ccc;
-      padding: 1rem;
-      overflow-y: auto;
+      width: 45%;
+      background: #fff;
+      border-right: 2px solid #ccc;
     }
     #right-panel {
-      width: 60%;
-      background: #fff;
-      padding: 1rem;
-      overflow-y: auto;
-      display: flex; 
-      flex-direction: column;
+      width: 55%;
+      background: #f8f8f8;
     }
+
+    /* HEADINGS */
     h2 {
-      margin-top: 0;
+      margin: 0 0 0.5rem 0;
+      font-size: 1.2rem;
+      color: #222;
     }
-    label {
-      display: inline-block;
-      margin-right: 0.5rem;
-      margin-top: 0.3rem;
-    }
-    .rule-block {
-      padding: 0.5rem;
-      margin-bottom: 0.8rem;
-      border: 1px solid #ccc;
-      border-radius: 5px;
-      background: #f9f9f9;
+
+    /* RULE CARDS */
+    .rule-card {
+      background: #fafafa;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      margin-bottom: 1rem;
+      padding: 0.5rem 0.75rem;
     }
     .rule-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      font-weight: bold;
-      margin-bottom: 0.4rem;
+      margin-bottom: 0.5rem;
     }
-    .preview-area {
-      white-space: pre; 
+    .rule-header h3 {
+      margin: 0;
+      font-size: 1rem;
+      color: #444;
+    }
+    .rule-header button {
+      padding: 0.3rem 0.6rem;
+      font-size: 0.9rem;
+      border: 1px solid #ccc;
       background: #eee;
-      padding: 0.5rem;
-      height: 200px;
-      overflow-y: auto;
-      font-family: monospace;
-      margin-bottom: 1rem;
+      cursor: pointer;
+      border-radius: 4px;
     }
-    .row {
-      display: flex;
+    .rule-header button:hover {
+      background: #ddd;
+    }
+    .rule-body {
+      display: flex; 
       flex-wrap: wrap;
       gap: 1rem;
     }
-    .row > label {
-      min-width: 100px;
+    .rule-body label {
+      display: inline-block;
+      margin-right: 0.5rem;
+      margin-bottom: 0.3rem;
+      font-size: 0.9rem;
     }
-    button { cursor: pointer; }
-    select, input[type="color"], input[type="number"] { margin-right: 0.5rem; }
-    #download-section { display: none; margin-top: 1rem; }
+    .rule-body select, .rule-body input[type="number"], .rule-body input[type="color"] {
+      margin-right: 0.3rem;
+      font-size: 0.9rem;
+    }
+
+    /* BOTTOM BUTTONS / ETC. */
+    #addRuleButton {
+      display: inline-block;
+      margin-bottom: 1rem;
+      padding: 0.5rem 1rem;
+      background: #4caf50;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 0.95rem;
+    }
+    #addRuleButton:hover {
+      background: #45a045;
+    }
+
+    /* RIGHT PANEL PREVIEW */
+    #filterPreview {
+      white-space: pre;
+      background: #eee;
+      padding: 0.75rem;
+      height: calc(100% - 3.5rem);
+      overflow-y: auto;
+      font-family: monospace;
+      border: 1px solid #ccc;
+    }
+
+    /* DOWNLOAD */
+    #downloadBtn {
+      display: inline-block;
+      margin-top: 0.5rem;
+      padding: 0.5rem 1rem;
+      background: #2196f3;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 0.95rem;
+    }
+    #downloadBtn:hover {
+      background: #1e88e5;
+    }
+    #download-link {
+      display: none;
+    }
   </style>
 </head>
 <body>
-
-  <!-- LEFT PANEL: UI for adding new filter rules -->
+  <!-- LEFT: RULES & ADD RULE BUTTON -->
   <div id="left-panel">
-    <h2>Add a Filter Rule</h2>
-    <div class="row">
-      <!-- Category select -->
-      <label>Category:
-        <select id="categorySelect">
-          <!-- We'll fill this in JS with categories from a global array -->
-        </select>
-      </label>
+    <h2>PoE2 Filter Rules</h2>
+    <button id="addRuleButton">+ Add Rule</button>
+    <div id="rulesContainer"></div>
+  </div>
 
-      <!-- Item select -->
-      <label>Item:
-        <select id="itemSelect">
-          <!-- We'll fill this in JS after user picks a category -->
-        </select>
-      </label>
-    </div>
-
-    <div class="row">
-      <!-- Show/Hide -->
-      <label>Action:
-        <select id="showHideSelect">
-          <option value="Show">Show</option>
-          <option value="Hide">Hide</option>
-        </select>
-      </label>
-    </div>
-
-    <div class="row" id="rarityRow">
-      <!-- Rarity checkboxes (hidden for GEMS) -->
-      <label><input type="checkbox" id="rarityNormal"/> Normal</label>
-      <label><input type="checkbox" id="rarityMagic" /> Magic</label>
-      <label><input type="checkbox" id="rarityRare"  /> Rare</label>
-      <label><input type="checkbox" id="rarityUnique"/> Unique</label>
-    </div>
-
-    <div class="row" id="socketsRow">
-      <!-- Sockets > X (hidden for GEMS) -->
-      <label>Sockets >:
-        <input type="number" id="socketsInput" value="0" min="0" style="width:60px;" />
-      </label>
-    </div>
-
-    <div class="row">
-      <!-- Quality > X -->
-      <label>Quality >:
-        <input type="number" id="qualityInput" value="0" min="0" style="width:60px;"/>
-      </label>
-      <!-- ItemLevel? We'll decide dynamically if the item uses it -->
-      <label id="itemLevelLabel" style="display:none;">ItemLevel =:
-        <input type="number" id="itemLevelInput" value="0" min="0" style="width:60px;" />
-      </label>
-      <!-- StackSize? We'll decide if item is stackable -->
-      <label id="stackSizeLabel" style="display:none;">StackSize >=:
-        <input type="number" id="stackSizeInput" value="0" min="0" style="width:60px;"/>
-      </label>
-    </div>
-
-    <div class="row">
-      <!-- AreaLevel operator + value -->
-      <label>AreaLevel:
-        <select id="areaLevelOp">
-          <option value="">None</option>
-          <option value=">=">>=</option>
-          <option value="<="><=</option>
-          <option value="=">=</option>
-        </select>
-        <input type="number" id="areaLevelVal" value="0" min="0" style="width:60px;"/>
-      </label>
-    </div>
-
-    <div class="row">
-      <!-- Colors + FontSize -->
-      <label>Text Color:
-        <input type="color" id="textColorInput" value="#ffffff"/>
-      </label>
-      <label>Border Color:
-        <input type="color" id="borderColorInput" value="#ffffff"/>
-      </label>
-      <label>Background:
-        <input type="color" id="bgColorInput" value="#000000"/>
-      </label>
-      <label>Font Size:
-        <input type="number" id="fontSizeInput" value="35" min="12" max="60" style="width:50px;"/>
-      </label>
-    </div>
-
-    <div class="row">
-      <!-- Alert Sound -->
-      <label>Alert Sound:
-        <select id="alertSoundSelect">
-          <option value="">None</option>
-          <option value="1">Alert 1</option>
-          <option value="2">Alert 2</option>
-          <option value="3">Alert 3</option>
-          <option value="4">Alert 4</option>
-          <option value="6">Alert 6</option>
-          <option value="10">Alert 10</option>
-        </select>
-        <input type="number" id="alertDurationInput" value="300" min="50" max="1000" style="width:60px;"/>
-      </label>
-    </div>
-
-    <div class="row">
-      <!-- MinimapIcon fields -->
-      <label>Minimap Icon:</label>
-      <label>Size:
-        <select id="minimapSizeSelect">
-          <option value="">None</option>
-          <option value="0">0</option>
-          <option value="1">1</option>
-          <option value="2">2</option>
-          <option value="3">3</option>
-        </select>
-      </label>
-      <label>Color:
-        <select id="minimapColorSelect">
-          <option value="">None</option>
-          <option value="White">White</option>
-          <option value="Red">Red</option>
-          <option value="Blue">Blue</option>
-          <option value="Green">Green</option>
-          <option value="Brown">Brown</option>
-          <option value="Yellow">Yellow</option>
-          <option value="Cyan">Cyan</option>
-          <option value="Grey">Grey</option>
-        </select>
-      </label>
-      <label>Shape:
-        <select id="minimapShapeSelect">
-          <option value="">None</option>
-          <option value="Square">Square</option>
-          <option value="Circle">Circle</option>
-          <option value="Star">Star</option>
-          <option value="Diamond">Diamond</option>
-          <option value="Triangle">Triangle</option>
-          <option value="Kite">Kite</option>
-        </select>
-      </label>
-    </div>
-
-    <button id="addRuleButton" style="margin-top:1rem;">Add Rule</button>
-  </div><!-- /left-panel -->
-
-  <!-- RIGHT PANEL: Live Filter Preview + removable rules + download -->
+  <!-- RIGHT: PREVIEW & DOWNLOAD -->
   <div id="right-panel">
     <h2>Live Filter Preview</h2>
-    <!-- This is the text display for the entire filter -->
-    <div class="preview-area" id="filterPreview"></div>
+    <div id="filterPreview"></div>
+    <button id="downloadBtn">Download Filter</button>
+    <a id="download-link" href="#" download="my-filter.filter">Download Link</a>
+  </div>
 
-    <!-- Each rule is displayed as a block with a remove button -->
-    <div id="rulesList"></div>
+  <script>
+    /***************************************************************
+     * 1. Category Data
+     ***************************************************************/
+    // We'll define categories with items. 
+    // For brevity, we only show a few from your examples. 
+    // You can add more as needed.
+    const CATEGORIES = [
+      {
+        id: "gems",
+        name: "Gems (No Rarity / No Sockets)",
+        isGemsCategory: true,
+        items: [
+          { name: "Uncut Spirit Gem",    usesItemLevel: true,  isStackable: false },
+          { name: "Uncut Support Gem",   usesItemLevel: true,  isStackable: false },
+          { name: "Uncut Skill Gem",     usesItemLevel: true,  isStackable: false },
+          { name: "Soul Core",           usesItemLevel: false, isStackable: false },
+          { name: "Timeless",            usesItemLevel: false, isStackable: false },
+          { name: "Relic",               usesItemLevel: false, isStackable: false }
+        ]
+      },
+      {
+        id: "onehand",
+        name: "One-Handed Weapons",
+        isGemsCategory: false,
+        items: [
+          { name: "One Hand Maces", usesItemLevel: true, isStackable: false },
+          { name: "Attuned Wand",   usesItemLevel: true, isStackable: false },
+          { name: "Siphoning Wand", usesItemLevel: true, isStackable: false }
+        ]
+      },
+      {
+        id: "waystones",
+        name: "Waystones",
+        isGemsCategory: false,
+        items: [
+          { name: "Waystone", usesItemLevel: false, isStackable: true }
+        ]
+      },
+      {
+        id: "flasks",
+        name: "Flasks",
+        isGemsCategory: false,
+        items: [
+          { name: "Life Flask", usesItemLevel:false, isStackable:false },
+          { name: "Mana Flask", usesItemLevel:false, isStackable:false },
+          { name: "Ultimate Life Flask", usesItemLevel:false, isStackable:true },
+          { name: "Ultimate Mana Flask", usesItemLevel:false, isStackable:true }
+        ]
+      }
+      // TODO: Add more categories (Two-Handed, Off-hand, Armour, Jewellery, Currency, Jewels, etc.)
+    ];
 
-    <!-- Download -->
-    <div id="download-section">
-      <button id="downloadBtn">Download Filter</button>
-      <a id="download-link" href="#" download style="display:none;">Download Link</a>
-    </div>
-  </div><!-- /right-panel -->
+    /***************************************************************
+     * 2. The "rules" array holds all user-defined rules
+     ***************************************************************/
+    let rules = [];
 
-<script>
-/***************************************************************
- * 1. Data Structures
- ***************************************************************/
-// Example categories, including a "Gems" category with items that have no rarity/sockets
-const CATEGORIES = [
-  {
-    id: "gems",
-    name: "Gems",
-    isGemsCategory: true, // We'll use this to hide rarity/sockets
-    items: [
-      { name: "Uncut Spirit Gem",    usesItemLevel: true,  isStackable: false },
-      { name: "Uncut Support Gem",   usesItemLevel: true,  isStackable: false },
-      { name: "Uncut Skill Gem",     usesItemLevel: true,  isStackable: false },
-      { name: "Soul Core",           usesItemLevel: false, isStackable: false },
-      { name: "Timeless",            usesItemLevel: false, isStackable: false },
-      { name: "Relic",               usesItemLevel: false, isStackable: false }
-    ]
-  },
-  {
-    id: "onehand",
-    name: "One-Handed Weapons",
-    isGemsCategory: false, // normal
-    items: [
-      { name: "One Hand Maces", usesItemLevel: true, isStackable: false },
-      { name: "Attuned Wand",   usesItemLevel: true, isStackable: false },
-      { name: "Siphoning Wand", usesItemLevel: true, isStackable: false }
-    ]
-  },
-  {
-    id: "waystones",
-    name: "Waystones",
-    isGemsCategory: false,
-    items: [
-      { name: "Waystone", usesItemLevel: false, isStackable: true }
-    ]
-  }
-  // TODO: Add more categories if needed
-];
+    /***************************************************************
+     * 3. "Add Rule" => create a new rule card
+     ***************************************************************/
+    window.addEventListener("DOMContentLoaded", () => {
+      document.getElementById("addRuleButton").addEventListener("click", createRuleCard);
+      document.getElementById("downloadBtn").addEventListener("click", downloadFilter);
+      renderPreview(); // initially empty
+    });
 
-/***************************************************************
- * We'll maintain a 'rules' array. Each entry is an object with
- * all the user's chosen settings. We'll generate the final
- * filter text from 'rules'.
- ***************************************************************/
-let rules = [];
-
-/***************************************************************
- * 2. On Page Load: Populate Category & Item selects
- ***************************************************************/
-window.addEventListener("DOMContentLoaded", () => {
-  const categorySel = document.getElementById("categorySelect");
-  // Fill categories
-  CATEGORIES.forEach(cat => {
-    const opt = document.createElement("option");
-    opt.value = cat.id;
-    opt.textContent = cat.name;
-    categorySel.appendChild(opt);
-  });
-  // Then fill items
-  populateItems();
-  // Then check if 'gems' => hide rarity/sockets
-  updateFormVisibility();
-
-  // On category change => re-populate items
-  categorySel.addEventListener("change", () => {
-    populateItems();
-    updateFormVisibility();
-  });
-
-  // On item change => decide if item usesItemLevel, isStackable => show/hide
-  document.getElementById("itemSelect").addEventListener("change", updateFormVisibility);
-
-  // Add Rule button
-  document.getElementById("addRuleButton").addEventListener("click", addRule);
-
-  // Download button
-  document.getElementById("downloadBtn").addEventListener("click", () => {
-    const filterText = generateFullFilter();
-    const blob = new Blob([filterText], {type:"text/plain"});
-    const url = URL.createObjectURL(blob);
-    const link = document.getElementById("download-link");
-    link.href = url;
-    link.style.display = "inline";
-    link.click();
-  });
-});
-
-/***************************************************************
- * populateItems => based on category selection
- ***************************************************************/
-function populateItems() {
-  const categorySel = document.getElementById("categorySelect");
-  const itemSel = document.getElementById("itemSelect");
-  itemSel.innerHTML = "";
-  const cat = CATEGORIES.find(c => c.id === categorySel.value);
-  if (!cat) return;
-  cat.items.forEach(i => {
-    const opt = document.createElement("option");
-    opt.value = i.name;
-    opt.textContent = i.name;
-    itemSel.appendChild(opt);
-  });
-}
-
-/***************************************************************
- * updateFormVisibility => if category is gems => hide rarity/sockets
- * also check selected item to see if usesItemLevel or isStackable
- ***************************************************************/
-function updateFormVisibility() {
-  const categorySel = document.getElementById("categorySelect");
-  const itemSel = document.getElementById("itemSelect");
-  const cat = CATEGORIES.find(c => c.id === categorySel.value);
-  if (!cat) return;
-  const item = cat.items.find(i => i.name === itemSel.value);
-  if (!item) return;
-
-  // If it's a Gems category => hide rarityRow, socketsRow
-  document.getElementById("rarityRow").style.display   = cat.isGemsCategory ? "none" : "flex";
-  document.getElementById("socketsRow").style.display  = cat.isGemsCategory ? "none" : "flex";
-
-  // If item.usesItemLevel => show itemLevel label
-  const itemLevelLabel = document.getElementById("itemLevelLabel");
-  itemLevelLabel.style.display = item.usesItemLevel ? "inline-block" : "none";
-
-  // If item.isStackable => show stackSizeLabel
-  const stackLabel = document.getElementById("stackSizeLabel");
-  stackLabel.style.display = item.isStackable ? "inline-block" : "none";
-}
-
-/***************************************************************
- * addRule => gather form inputs => push into rules array => re-render
- ***************************************************************/
-function addRule() {
-  // gather
-  const catId = document.getElementById("categorySelect").value;
-  const cat   = CATEGORIES.find(c => c.id === catId);
-  const itemName = document.getElementById("itemSelect").value;
-  const itemObj  = cat.items.find(i => i.name===itemName);
-
-  const showHide = document.getElementById("showHideSelect").value;
-
-  let rarities = [];
-  if (!cat.isGemsCategory) {
-    if (document.getElementById("rarityNormal").checked) rarities.push("Normal");
-    if (document.getElementById("rarityMagic").checked)  rarities.push("Magic");
-    if (document.getElementById("rarityRare").checked)   rarities.push("Rare");
-    if (document.getElementById("rarityUnique").checked) rarities.push("Unique");
-  }
-  const socketsVal = cat.isGemsCategory ? 0 : parseInt(document.getElementById("socketsInput").value||"0",10);
-  const qualityVal = parseInt(document.getElementById("qualityInput").value||"0",10);
-  const itemLevelVal = itemObj.usesItemLevel ? parseInt(document.getElementById("itemLevelInput").value||"0",10) : 0;
-  const stackVal     = itemObj.isStackable ? parseInt(document.getElementById("stackSizeInput").value||"0",10) : 0;
-
-  const areaOp  = document.getElementById("areaLevelOp").value;
-  const areaVal = parseInt(document.getElementById("areaLevelVal").value||"0",10);
-
-  const textC   = document.getElementById("textColorInput").value;
-  const borderC = document.getElementById("borderColorInput").value;
-  const bgC     = document.getElementById("bgColorInput").value;
-  const fontC   = parseInt(document.getElementById("fontSizeInput").value||"35",10);
-
-  const alertSound   = document.getElementById("alertSoundSelect").value;
-  const alertDur     = parseInt(document.getElementById("alertDurationInput").value||"300",10);
-
-  // Minimap
-  const mmSize  = document.getElementById("minimapSizeSelect").value;
-  const mmColor = document.getElementById("minimapColorSelect").value;
-  const mmShape = document.getElementById("minimapShapeSelect").value;
-
-  // push to rules
-  const rule = {
-    categoryId: catId,
-    itemName,
-    showHide,
-    rarities,
-    socketsVal,
-    qualityVal,
-    itemLevelVal,
-    stackVal,
-    areaOp,
-    areaVal,
-    textC,
-    borderC,
-    bgC,
-    fontC,
-    alertSound,
-    alertDur,
-    mmSize,
-    mmColor,
-    mmShape
-  };
-  rules.push(rule);
-
-  // re-render
-  renderRules();
-  renderPreview();
-}
-
-/***************************************************************
- * renderRules => displays each rule with a remove button
- ***************************************************************/
-function renderRules() {
-  const rulesList = document.getElementById("rulesList");
-  rulesList.innerHTML = "";
-  rules.forEach((r, idx) => {
-    const div = document.createElement("div");
-    div.classList.add("rule-block");
-
-    const header = document.createElement("div");
-    header.classList.add("rule-header");
-    header.innerHTML = `<span>${r.showHide} - ${r.itemName}</span>`;
-    const removeBtn = document.createElement("button");
-    removeBtn.textContent = "Remove";
-    removeBtn.addEventListener("click", () => {
-      rules.splice(idx,1);
+    function createRuleCard() {
+      // We'll create a blank rule object
+      const newRule = {
+        categoryId: CATEGORIES[0].id, // default
+        itemName: CATEGORIES[0].items[0].name,
+        showHide: "Show",
+        rarities: [],
+        socketsVal: 0,
+        qualityVal: 0,
+        itemLevelVal: 0,
+        stackVal: 0,
+        areaOp: "",
+        areaVal: 0,
+        textC: "#ffffff",
+        borderC: "#ffffff",
+        bgC: "#000000",
+        fontC: 35,
+        alertSound: "",
+        alertDur: 300,
+        mmSize: "",
+        mmColor: "",
+        mmShape: ""
+      };
+      rules.push(newRule);
       renderRules();
       renderPreview();
-    });
-    header.appendChild(removeBtn);
-
-    div.appendChild(header);
-
-    // quick info about the rule
-    let info = "";
-    if (r.rarities && r.rarities.length>0) {
-      info += `Rarity: ${r.rarities.join(", ")}\n`;
-    }
-    if (r.socketsVal>0) {
-      info += `Sockets > ${r.socketsVal}\n`;
-    }
-    if (r.qualityVal>0) {
-      info += `Quality > ${r.qualityVal}\n`;
-    }
-    if (r.itemLevelVal>0) {
-      info += `ItemLevel = ${r.itemLevelVal}\n`;
-    }
-    if (r.stackVal>0) {
-      info += `StackSize >= ${r.stackVal}\n`;
-    }
-    if (r.areaOp && r.areaVal>0) {
-      info += `AreaLevel ${r.areaOp} ${r.areaVal}\n`;
-    }
-    // color
-    if (r.textC) { info += `TextColor: ${r.textC}\n`; }
-    if (r.borderC){info += `BorderColor: ${r.borderC}\n`; }
-    if (r.bgC && r.bgC.toLowerCase()!=="#ffffff") {
-      info += `Background: ${r.bgC}\n`;
-    }
-    if (r.fontC) {
-      info += `FontSize: ${r.fontC}\n`;
-    }
-    // alert
-    if (r.alertSound) {
-      info += `AlertSound: ${r.alertSound} (${r.alertDur}ms)\n`;
-    }
-    // minimap
-    if (r.mmSize && r.mmColor && r.mmShape) {
-      info += `MinimapIcon: ${r.mmSize} ${r.mmColor} ${r.mmShape}\n`;
     }
 
-    const infoPre = document.createElement("pre");
-    infoPre.textContent = info.trim();
-    div.appendChild(infoPre);
+    /***************************************************************
+     * 4. RENDER ALL RULE CARDS
+     ***************************************************************/
+    function renderRules() {
+      const container = document.getElementById("rulesContainer");
+      container.innerHTML = "";
+      rules.forEach((rule, index) => {
+        const card = document.createElement("div");
+        card.classList.add("rule-card");
 
-    rulesList.appendChild(div);
-  });
-}
+        // Card header
+        const header = document.createElement("div");
+        header.classList.add("rule-header");
+        const title = document.createElement("h3");
+        title.textContent = `Rule ${index+1}`;
+        const removeBtn = document.createElement("button");
+        removeBtn.textContent = "Remove";
+        removeBtn.addEventListener("click", () => {
+          rules.splice(index, 1);
+          renderRules();
+          renderPreview();
+        });
+        header.appendChild(title);
+        header.appendChild(removeBtn);
+        card.appendChild(header);
 
-/***************************************************************
- * renderPreview => shows the final item filter text in an area
- ***************************************************************/
-function renderPreview() {
-  const preview = document.getElementById("filterPreview");
-  preview.textContent = generateFullFilter();
-}
+        // Card body
+        const body = document.createElement("div");
+        body.classList.add("rule-body");
+        
+        // 1) Category
+        const catLabel = document.createElement("label");
+        catLabel.textContent = "Category: ";
+        const catSelect = document.createElement("select");
+        CATEGORIES.forEach(cat => {
+          const opt = document.createElement("option");
+          opt.value = cat.id;
+          opt.textContent = cat.name;
+          if (cat.id === rule.categoryId) opt.selected = true;
+          catSelect.appendChild(opt);
+        });
+        catLabel.appendChild(catSelect);
+        body.appendChild(catLabel);
 
-/***************************************************************
- * generateFullFilter => produces a text block for the entire filter
- ***************************************************************/
-function generateFullFilter() {
-  let content = "";
-  rules.forEach(r => {
-    // build a single block
-    let block = r.showHide + "\n";
+        // 2) Item
+        const itemLabel = document.createElement("label");
+        itemLabel.textContent = " Item: ";
+        const itemSelect = document.createElement("select");
+        itemLabel.appendChild(itemSelect);
+        body.appendChild(itemLabel);
 
-    if (r.rarities && r.rarities.length>0) {
-      block += `  Rarity ${r.rarities.join(" ")}\n`;
-    }
-    if (r.socketsVal>0) {
-      block += `  Sockets > ${r.socketsVal}\n`;
-    }
-    if (r.qualityVal>0) {
-      block += `  Quality > ${r.qualityVal}\n`;
-    }
-    if (r.itemLevelVal>0) {
-      block += `  ItemLevel = ${r.itemLevelVal}\n`;
-    }
-    if (r.stackVal>0) {
-      block += `  StackSize >= ${r.stackVal}\n`;
-    }
-    if (r.areaOp && r.areaVal>0) {
-      block += `  AreaLevel ${r.areaOp} ${r.areaVal}\n`;
-    }
-    // Class or BaseType => we assume if isStackable => BaseType, else => Class
-    // but let's just guess:
-    // Actually let's see if user isStackable from the category data. We'll do so:
-    const cat = CATEGORIES.find(c => c.id === r.categoryId);
-    if (!cat) return ""; 
-    const itemData = cat.items.find(i => i.name===r.itemName);
-    if (!itemData) return "";
-    if (itemData.isStackable) {
-      block += `  BaseType "${r.itemName}"\n`;
-    } else {
-      block += `  Class "${r.itemName}"\n`;
+        // a function to fill itemSelect based on the chosen category
+        function fillItemSelect(catId, ruleObj) {
+          itemSelect.innerHTML = "";
+          const catObj = CATEGORIES.find(c=> c.id===catId);
+          if (!catObj) return;
+          catObj.items.forEach(it => {
+            const opt = document.createElement("option");
+            opt.value = it.name;
+            opt.textContent = it.name;
+            if (it.name=== ruleObj.itemName) opt.selected = true;
+            itemSelect.appendChild(opt);
+          });
+        }
+        fillItemSelect(rule.categoryId, rule);
+
+        // 3) Show/Hide
+        const showHideLabel = document.createElement("label");
+        showHideLabel.textContent = " Action: ";
+        const showHideSel = document.createElement("select");
+        ["Show", "Hide"].forEach(val => {
+          const opt = document.createElement("option");
+          opt.value= val; 
+          opt.textContent = val;
+          if (val===rule.showHide) opt.selected=true;
+          showHideSel.appendChild(opt);
+        });
+        showHideLabel.appendChild(showHideSel);
+        body.appendChild(showHideLabel);
+
+        // 4) Rarity checkboxes (hidden if gems)
+        const catObjRef = ()=> CATEGORIES.find(c=> c.id===rule.categoryId);
+        const isGems = ()=> catObjRef()?.isGemsCategory===true;
+
+        const rarityWrap = document.createElement("div");
+        rarityWrap.style.display = isGems() ? "none" : "inline-block";
+        rarityWrap.innerHTML = `
+          <label><input type="checkbox" data-rarity="Normal"/> Normal</label>
+          <label><input type="checkbox" data-rarity="Magic" /> Magic</label>
+          <label><input type="checkbox" data-rarity="Rare"  /> Rare</label>
+          <label><input type="checkbox" data-rarity="Unique"/> Unique</label>
+        `;
+        // We'll set .checked based on rule.rarities
+        body.appendChild(rarityWrap);
+
+        // 5) Sockets > X (hidden if gems)
+        const socketsLabel = document.createElement("label");
+        socketsLabel.style.display = isGems() ? "none":"inline-block";
+        socketsLabel.innerHTML = ` Sockets >: <input type="number" style="width:50px;" value="${rule.socketsVal}"/>`;
+        body.appendChild(socketsLabel);
+
+        // 6) Quality
+        const qualityLabel = document.createElement("label");
+        qualityLabel.innerHTML = ` Quality >: <input type="number" style="width:50px;" value="${rule.qualityVal}" />`;
+        body.appendChild(qualityLabel);
+
+        // 7) itemLevel
+        const itemLevelLabel = document.createElement("label");
+        itemLevelLabel.innerHTML = ` ItemLevel =: <input type="number" style="width:50px;" value="${rule.itemLevelVal}"/>`;
+        // we'll decide if we show or hide this later
+        body.appendChild(itemLevelLabel);
+
+        // 8) stackSize
+        const stackLabel = document.createElement("label");
+        stackLabel.innerHTML = ` StackSize >=: <input type="number" style="width:50px;" value="${rule.stackVal}"/>`;
+        body.appendChild(stackLabel);
+
+        // 9) areaLevel
+        const areaWrap = document.createElement("label");
+        areaWrap.innerHTML = ` AreaLevel: 
+          <select>
+            <option value="">None</option>
+            <option value=">=" ${rule.areaOp===">="?"selected":""}>>=</option>
+            <option value="<=" ${rule.areaOp==="<="?"selected":""}>&lt;=</option>
+            <option value="="  ${rule.areaOp==="=" ?"selected":""}>=</option>
+          </select>
+          <input type="number" style="width:50px;" value="${rule.areaVal}"/>
+        `;
+        body.appendChild(areaWrap);
+
+        // 10) colors
+        const textColorLabel = document.createElement("label");
+        textColorLabel.innerHTML = ` TextColor: <input type="color" value="${rule.textC}"/>`;
+        body.appendChild(textColorLabel);
+
+        const borderColorLabel = document.createElement("label");
+        borderColorLabel.innerHTML = ` BorderColor: <input type="color" value="${rule.borderC}"/>`;
+        body.appendChild(borderColorLabel);
+
+        const bgColorLabel = document.createElement("label");
+        bgColorLabel.innerHTML = ` Background: <input type="color" value="${rule.bgC}"/>`;
+        body.appendChild(bgColorLabel);
+
+        const fontSizeLabel = document.createElement("label");
+        fontSizeLabel.innerHTML = ` FontSize: <input type="number" style="width:45px;" value="${rule.fontC}" min="12" max="60"/>`;
+        body.appendChild(fontSizeLabel);
+
+        // 11) Alert Sound
+        const alertWrap = document.createElement("label");
+        alertWrap.innerHTML = ` Alert Sound:
+          <select>
+            <option value="">None</option>
+            <option value="1"  ${rule.alertSound==="1" ?"selected":""}>1</option>
+            <option value="2"  ${rule.alertSound==="2" ?"selected":""}>2</option>
+            <option value="3"  ${rule.alertSound==="3" ?"selected":""}>3</option>
+            <option value="4"  ${rule.alertSound==="4" ?"selected":""}>4</option>
+            <option value="6"  ${rule.alertSound==="6" ?"selected":""}>6</option>
+            <option value="10" ${rule.alertSound==="10"?"selected":""}>10</option>
+          </select>
+          <input type="number" style="width:55px;" value="${rule.alertDur}" min="50" max="1000"/>
+        `;
+        body.appendChild(alertWrap);
+
+        // 12) MinimapIcon
+        const mmWrap = document.createElement("div");
+        mmWrap.innerHTML = `
+          <label>Minimap Icon:
+            Size:
+            <select>
+              <option value="">None</option>
+              <option value="0" ${rule.mmSize==="0"?"selected":""}>0</option>
+              <option value="1" ${rule.mmSize==="1"?"selected":""}>1</option>
+              <option value="2" ${rule.mmSize==="2"?"selected":""}>2</option>
+              <option value="3" ${rule.mmSize==="3"?"selected":""}>3</option>
+            </select>
+            Color:
+            <select>
+              <option value="">None</option>
+              <option value="White"  ${rule.mmColor==="White"?"selected":""}>White</option>
+              <option value="Red"    ${rule.mmColor==="Red"?"selected":""}>Red</option>
+              <option value="Blue"   ${rule.mmColor==="Blue"?"selected":""}>Blue</option>
+              <option value="Green"  ${rule.mmColor==="Green"?"selected":""}>Green</option>
+              <option value="Brown"  ${rule.mmColor==="Brown"?"selected":""}>Brown</option>
+              <option value="Yellow" ${rule.mmColor==="Yellow"?"selected":""}>Yellow</option>
+              <option value="Cyan"   ${rule.mmColor==="Cyan"?"selected":""}>Cyan</option>
+              <option value="Grey"   ${rule.mmColor==="Grey"?"selected":""}>Grey</option>
+            </select>
+            Shape:
+            <select>
+              <option value="">None</option>
+              <option value="Square"   ${rule.mmShape==="Square"?"selected":""}>Square</option>
+              <option value="Circle"   ${rule.mmShape==="Circle"?"selected":""}>Circle</option>
+              <option value="Star"     ${rule.mmShape==="Star"?"selected":""}>Star</option>
+              <option value="Diamond"  ${rule.mmShape==="Diamond"?"selected":""}>Diamond</option>
+              <option value="Triangle" ${rule.mmShape==="Triangle"?"selected":""}>Triangle</option>
+              <option value="Kite"     ${rule.mmShape==="Kite"?"selected":""}>Kite</option>
+            </select>
+          </label>
+        `;
+        body.appendChild(mmWrap);
+
+        // put the body in the card
+        card.appendChild(body);
+
+        // Append to container
+        container.appendChild(card);
+
+        // Now we attach event listeners to all these fields so that any change => update rule => re-render preview
+
+        // CatSelect => change items 
+        catSelect.addEventListener("change", ()=> {
+          rule.categoryId = catSelect.value;
+          // reset itemName to first in that cat
+          const newCatObj = CATEGORIES.find(c=> c.id===rule.categoryId);
+          if (newCatObj?.items?.length>0) {
+            rule.itemName = newCatObj.items[0].name;
+          }
+          // re-fill itemSelect
+          fillItemSelect(rule.categoryId, rule);
+          // update "isGemsCategory"
+          updateRaritySocketsVisibility(rarityWrap, socketsLabel, rule.categoryId);
+          updateItemLevelStackVisibility(itemLevelLabel, stackLabel, rule);
+          renderPreview();
+        });
+
+        // itemSelect => change rule.itemName
+        itemSelect.addEventListener("change", ()=> {
+          rule.itemName = itemSelect.value;
+          renderPreview();
+          updateItemLevelStackVisibility(itemLevelLabel, stackLabel, rule);
+        });
+
+        // showHideSel
+        showHideSel.addEventListener("change", ()=> {
+          rule.showHide = showHideSel.value;
+          renderPreview();
+        });
+
+        // handle rarities
+        rarityWrap.querySelectorAll('input[type="checkbox"]').forEach(cb => {
+          const rar = cb.getAttribute("data-rarity");
+          cb.checked = rule.rarities.includes(rar);
+          cb.addEventListener("change", ()=> {
+            if (cb.checked) {
+              if (!rule.rarities.includes(rar)) rule.rarities.push(rar);
+            } else {
+              rule.rarities = rule.rarities.filter(rn => rn!==rar);
+            }
+            renderPreview();
+          });
+        });
+
+        // sockets
+        const socketsInput = socketsLabel.querySelector('input[type="number"]');
+        socketsInput.addEventListener("change", ()=> {
+          rule.socketsVal = parseInt(socketsInput.value||"0",10);
+          renderPreview();
+        });
+
+        // quality
+        const qualityInput = qualityLabel.querySelector('input[type="number"]');
+        qualityInput.addEventListener("change", ()=> {
+          rule.qualityVal = parseInt(qualityInput.value||"0",10);
+          renderPreview();
+        });
+
+        // itemlevel
+        const lvlInput = itemLevelLabel.querySelector('input[type="number"]');
+        lvlInput.addEventListener("change", ()=> {
+          rule.itemLevelVal = parseInt(lvlInput.value||"0",10);
+          renderPreview();
+        });
+
+        // stacksize
+        const stInput = stackLabel.querySelector('input[type="number"]');
+        stInput.addEventListener("change", ()=> {
+          rule.stackVal = parseInt(stInput.value||"0",10);
+          renderPreview();
+        });
+
+        // areaLevel
+        const areaSel = areaWrap.querySelector('select');
+        const areaNum = areaWrap.querySelector('input[type="number"]');
+        areaSel.addEventListener("change", ()=> {
+          rule.areaOp = areaSel.value;
+          renderPreview();
+        });
+        areaNum.addEventListener("change", ()=> {
+          rule.areaVal = parseInt(areaNum.value||"0",10);
+          renderPreview();
+        });
+
+        // text color
+        const textColorInput = textColorLabel.querySelector('input[type="color"]');
+        textColorInput.addEventListener("change", ()=> {
+          rule.textC = textColorInput.value;
+          renderPreview();
+        });
+
+        // border color
+        const borderColorInput = borderColorLabel.querySelector('input[type="color"]');
+        borderColorInput.addEventListener("change", ()=> {
+          rule.borderC = borderColorInput.value;
+          renderPreview();
+        });
+
+        // background
+        const bgColorInput = bgColorLabel.querySelector('input[type="color"]');
+        bgColorInput.addEventListener("change", ()=> {
+          rule.bgC = bgColorInput.value;
+          renderPreview();
+        });
+
+        // font
+        const fontInput = fontSizeLabel.querySelector('input[type="number"]');
+        fontInput.addEventListener("change", ()=> {
+          rule.fontC = parseInt(fontInput.value||"35",10);
+          renderPreview();
+        });
+
+        // alert sound
+        const soundSel = alertWrap.querySelector('select');
+        const soundNum = alertWrap.querySelector('input[type="number"]');
+        soundSel.addEventListener("change", ()=> {
+          rule.alertSound = soundSel.value;
+          renderPreview();
+        });
+        soundNum.addEventListener("change", ()=> {
+          rule.alertDur = parseInt(soundNum.value||"300",10);
+          renderPreview();
+        });
+
+        // minimap
+        const mmSelects = mmWrap.querySelectorAll("select");
+        mmSelects[0].addEventListener("change", ()=> {
+          rule.mmSize = mmSelects[0].value;
+          renderPreview();
+        });
+        mmSelects[1].addEventListener("change", ()=> {
+          rule.mmColor= mmSelects[1].value;
+          renderPreview();
+        });
+        mmSelects[2].addEventListener("change", ()=> {
+          rule.mmShape= mmSelects[2].value;
+          renderPreview();
+        });
+
+        // after creation, we set up the initial visibility
+        updateRaritySocketsVisibility(rarityWrap, socketsLabel, rule.categoryId);
+        updateItemLevelStackVisibility(itemLevelLabel, stackLabel, rule);
+      });
     }
 
-    // Colors
-    if (r.textC) {
-      block += `  SetTextColor ${hexToRGB(r.textC)}\n`;
+    function updateRaritySocketsVisibility(rarityWrap, socketsLabel, catId) {
+      const cat = CATEGORIES.find(c=> c.id===catId);
+      if (!cat) return;
+      if (cat.isGemsCategory) {
+        rarityWrap.style.display = "none";
+        socketsLabel.style.display = "none";
+      } else {
+        rarityWrap.style.display = "inline-block";
+        socketsLabel.style.display = "inline-block";
+      }
     }
-    if (r.borderC) {
-      block += `  SetBorderColor ${hexToRGB(r.borderC)}\n`;
-    }
-    if (r.bgC && r.bgC.toLowerCase()!=="#ffffff") {
-      block += `  SetBackgroundColor ${hexToRGB(r.bgC)}\n`;
-    }
-    if (r.fontC) {
-      block += `  SetFontSize ${r.fontC}\n`;
-    }
-    // alert
-    if (r.alertSound) {
-      block += `  PlayAlertSound ${r.alertSound} ${r.alertDur}\n`;
-    }
-    // minimap
-    if (r.mmSize && r.mmColor && r.mmShape) {
-      block += `  MinimapIcon ${r.mmSize} ${r.mmColor} ${r.mmShape}\n`;
+    function updateItemLevelStackVisibility(itemLevelLabel, stackLabel, ruleObj) {
+      // find cat
+      const cat = CATEGORIES.find(c=> c.id===ruleObj.categoryId);
+      if (!cat) return;
+      const itemData = cat.items.find(i=> i.name=== ruleObj.itemName);
+      if (!itemData) return;
+      itemLevelLabel.style.display = itemData.usesItemLevel ? "inline-block":"none";
+      stackLabel.style.display = itemData.isStackable ? "inline-block":"none";
     }
 
-    block += "\n";
-    content += block;
-  });
-  return content.trim();
-}
-</script>
+    /***************************************************************
+     * 5. RENDER PREVIEW
+     ***************************************************************/
+    function renderPreview() {
+      const preview = document.getElementById("filterPreview");
+      preview.textContent = generateFullFilter();
+    }
 
+    function generateFullFilter() {
+      let content = "";
+      rules.forEach(r => {
+        let block = r.showHide+"\n";
+        if (r.rarities?.length>0) {
+          block += "  Rarity "+r.rarities.join(" ")+"\n";
+        }
+        if (r.socketsVal>0) {
+          block += `  Sockets > ${r.socketsVal}\n`;
+        }
+        if (r.qualityVal>0) {
+          block += `  Quality > ${r.qualityVal}\n`;
+        }
+        if (r.itemLevelVal>0) {
+          block += `  ItemLevel = ${r.itemLevelVal}\n`;
+        }
+        if (r.stackVal>0) {
+          block += `  StackSize >= ${r.stackVal}\n`;
+        }
+        if (r.areaOp && r.areaVal>0) {
+          block += `  AreaLevel ${r.areaOp} ${r.areaVal}\n`;
+        }
+        // find item data to know if isStackable => BaseType or Class
+        const cat = CATEGORIES.find(c=> c.id===r.categoryId);
+        const itemData = cat?.items.find(i=> i.name===r.itemName);
+        if (itemData && itemData.isStackable) {
+          block += `  BaseType "${r.itemName}"\n`;
+        } else {
+          block += `  Class "${r.itemName}"\n`;
+        }
+        if (r.textC) {
+          block += `  SetTextColor ${hexToRGB(r.textC)}\n`;
+        }
+        if (r.borderC) {
+          block += `  SetBorderColor ${hexToRGB(r.borderC)}\n`;
+        }
+        if (r.bgC && r.bgC.toLowerCase()!=="#ffffff") {
+          block += `  SetBackgroundColor ${hexToRGB(r.bgC)}\n`;
+        }
+        if (r.fontC) {
+          block += `  SetFontSize ${r.fontC}\n`;
+        }
+        if (r.alertSound) {
+          block += `  PlayAlertSound ${r.alertSound} ${r.alertDur}\n`;
+        }
+        if (r.mmSize && r.mmColor && r.mmShape) {
+          block += `  MinimapIcon ${r.mmSize} ${r.mmColor} ${r.mmShape}\n`;
+        }
+        block += "\n";
+        content += block;
+      });
+      return content.trim();
+    }
+
+    /***************************************************************
+     * 6. DOWNLOAD
+     ***************************************************************/
+    function downloadFilter() {
+      const filterText = generateFullFilter();
+      const blob = new Blob([filterText], { type:"text/plain" });
+      const url = URL.createObjectURL(blob);
+      const link = document.getElementById("download-link");
+      link.href = url;
+      link.click();
+    }
+  </script>
 </body>
 </html>
