@@ -6,7 +6,7 @@
   <style>
     /* Overall Layout */
     body {
-      margin: 0; 
+      margin: 0;
       padding: 0;
       font-family: Arial, sans-serif;
       display: flex;
@@ -66,7 +66,7 @@
       background: #ddd;
     }
     .rule-body {
-      display: flex; 
+      display: flex;
       flex-wrap: wrap;
       gap: 1rem;
     }
@@ -83,7 +83,7 @@
       font-size: 0.9rem;
     }
 
-    /* BOTTOM BUTTONS / ETC. */
+    /* ADD RULE BUTTON */
     #addRuleButton {
       display: inline-block;
       margin-bottom: 1rem;
@@ -148,8 +148,7 @@
 
   <script>
     /***************************************************************
-     * 1. Define ALL categories & items 
-     *    (Ignoring "Waystones" per your request)
+     * 1. Define ALL categories & items
      ***************************************************************/
     const CATEGORIES = [
       {
@@ -253,7 +252,6 @@
           { name: "Ultimate Mana Flask", usesItemLevel:false, isStackable:true }
         ]
       },
-      /* 8) Currency */
       {
         id: "currency",
         name: "Currency",
@@ -288,7 +286,6 @@
           { name: "Orb of Transmutation",  usesItemLevel:false,isStackable:true }
         ]
       },
-      /* 9) Jewels */
       {
         id: "jewels",
         name: "Jewels",
@@ -301,31 +298,29 @@
           { name: "Time-Lost Diamond", usesItemLevel:false, isStackable:true }
         ]
       },
-      /* 10) Fragments */
       {
         id: "fragments",
         name: "Fragments",
         isGemsCategory: false,
         items: [
           { name: "Transmutation Shard",        usesItemLevel:false,isStackable:true },
-          { name: "Chance Shard",              usesItemLevel:false,isStackable:true },
-          { name: "Regal Shard",               usesItemLevel:false,isStackable:true },
-          { name: "Artificer's Shard",         usesItemLevel:false,isStackable:true },
-          { name: "Scroll of Wisdom",          usesItemLevel:false,isStackable:true },
-          { name: "Breach Splinter",           usesItemLevel:false,isStackable:true },
-          { name: "Breachstone",               usesItemLevel:false,isStackable:true },
-          { name: "Simulacrum Splinter",       usesItemLevel:false,isStackable:true },
-          { name: "Simulacrum",                usesItemLevel:false,isStackable:true },
-          { name: "An Audience with the King", usesItemLevel:false,isStackable:true },
-          { name: "Cowardly Fate",             usesItemLevel:false,isStackable:true },
-          { name: "Deadly Fate",               usesItemLevel:false,isStackable:true },
-          { name: "Victorious Fate",           usesItemLevel:false,isStackable:true },
-          { name: "Ancient Crisis Fragment",   usesItemLevel:false,isStackable:true },
-          { name: "Faded Crisis Fragment",     usesItemLevel:false,isStackable:true },
-          { name: "Weathered Crisis Fragment", usesItemLevel:false,isStackable:true }
+          { name: "Chance Shard",               usesItemLevel:false,isStackable:true },
+          { name: "Regal Shard",                usesItemLevel:false,isStackable:true },
+          { name: "Artificer's Shard",          usesItemLevel:false,isStackable:true },
+          { name: "Scroll of Wisdom",           usesItemLevel:false,isStackable:true },
+          { name: "Breach Splinter",            usesItemLevel:false,isStackable:true },
+          { name: "Breachstone",                usesItemLevel:false,isStackable:true },
+          { name: "Simulacrum Splinter",        usesItemLevel:false,isStackable:true },
+          { name: "Simulacrum",                 usesItemLevel:false,isStackable:true },
+          { name: "An Audience with the King",  usesItemLevel:false,isStackable:true },
+          { name: "Cowardly Fate",              usesItemLevel:false,isStackable:true },
+          { name: "Deadly Fate",                usesItemLevel:false,isStackable:true },
+          { name: "Victorious Fate",            usesItemLevel:false,isStackable:true },
+          { name: "Ancient Crisis Fragment",    usesItemLevel:false,isStackable:true },
+          { name: "Faded Crisis Fragment",      usesItemLevel:false,isStackable:true },
+          { name: "Weathered Crisis Fragment",  usesItemLevel:false,isStackable:true }
         ]
       },
-      /* 11) Runes */
       {
         id: "runes",
         name: "Runes",
@@ -343,7 +338,6 @@
           { name: "Vision Rune",     usesItemLevel:false,isStackable:false }
         ]
       },
-      /* 12) Essences */
       {
         id: "essences",
         name: "Essences",
@@ -375,7 +369,6 @@
           { name: "Greater Essence of the Infinite",usesItemLevel:false,isStackable:true }
         ]
       },
-      /* 13) Soul Cores */
       {
         id: "soulcores",
         name: "Soul Cores",
@@ -398,7 +391,6 @@
           { name: "Soul Core of Zantipi",   usesItemLevel:false,isStackable:false }
         ]
       },
-      /* 14) Breach Catalysts */
       {
         id: "breachcatalysts",
         name: "Breach Catalysts",
@@ -418,7 +410,6 @@
           { name: "Adaptive Catalyst",false,true }
         ]
       },
-      /* 15) Expedition Coinage & Artifacts */
       {
         id: "expedition",
         name: "Expedition Coinage & Artifacts",
@@ -431,7 +422,6 @@
           { name: "Sun Artifact",false,true }
         ]
       },
-      /* 16) Ritual Omens */
       {
         id: "ritualomens",
         name: "Ritual Omens",
@@ -456,7 +446,6 @@
           { name: "Omen of Dextral Annulment",false,true }
         ]
       },
-      /* 17) Delirium Distillations */
       {
         id: "deliriumdistillations",
         name: "Delirium Distillations",
@@ -772,19 +761,19 @@
           rule.qualityVal = parseInt(qualityInput.value||"0",10);
           renderPreview();
         });
-        // itemlevel
+        // Itemlevel
         const lvlInput = itemLevelLabel.querySelector('input[type="number"]');
         lvlInput.addEventListener("change", ()=> {
           rule.itemLevelVal = parseInt(lvlInput.value||"0",10);
           renderPreview();
         });
-        // stacksize
+        // Stacksize
         const stInput = stackLabel.querySelector('input[type="number"]');
         stInput.addEventListener("change", ()=> {
           rule.stackVal = parseInt(stInput.value||"0",10);
           renderPreview();
         });
-        // arealevel
+        // Arealevel
         const areaSel = areaWrap.querySelector('select');
         const areaNum = areaWrap.querySelector('input[type="number"]');
         areaSel.addEventListener("change", ()=> {
