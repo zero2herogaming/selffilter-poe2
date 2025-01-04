@@ -2,55 +2,581 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>PoE2 - Custom Filter Builder</title>
-  <!-- Make sure style.css is present in the same folder, or update the path if needed -->
-  <link rel="stylesheet" href="style.css" />
+  <title>PoE2 Filter Builder</title>
+  <style>
+    body {
+      margin: 0; padding: 0;
+      font-family: sans-serif;
+      display: flex;
+      height: 100vh;
+    }
+    #left-panel {
+      width: 40%;
+      background: #fafafa;
+      border-right: 1px solid #ccc;
+      padding: 1rem;
+      overflow-y: auto;
+    }
+    #right-panel {
+      width: 60%;
+      background: #fff;
+      padding: 1rem;
+      overflow-y: auto;
+      display: flex; 
+      flex-direction: column;
+    }
+    h2 {
+      margin-top: 0;
+    }
+    label {
+      display: inline-block;
+      margin-right: 0.5rem;
+      margin-top: 0.3rem;
+    }
+    .rule-block {
+      padding: 0.5rem;
+      margin-bottom: 0.8rem;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      background: #f9f9f9;
+    }
+    .rule-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-weight: bold;
+      margin-bottom: 0.4rem;
+    }
+    .preview-area {
+      white-space: pre; 
+      background: #eee;
+      padding: 0.5rem;
+      height: 200px;
+      overflow-y: auto;
+      font-family: monospace;
+      margin-bottom: 1rem;
+    }
+    .row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+    .row > label {
+      min-width: 100px;
+    }
+    button { cursor: pointer; }
+    select, input[type="color"], input[type="number"] { margin-right: 0.5rem; }
+    #download-section { display: none; margin-top: 1rem; }
+  </style>
 </head>
 <body>
-  <header>
-    <h1>Path of Exile 2 - Custom Filter Builder</h1>
-    <p>
-      Use this tool to create or edit your own PoE2 filter. You can:
-    </p>
-    <ul>
-      <li><strong>Paste</strong> an existing filter into the box below to load its lines.</li>
-      <li><strong>Enable</strong> or <strong>disable</strong> specific sub-items, choose <strong>Show</strong> or <strong>Hide</strong>.</li>
-      <li>Select any combination of <strong>Rarities</strong> (Normal, Magic, Rare, Unique).</li>
-      <li>Specify <code>Sockets &gt; x</code>, <code>Quality &gt; x</code>, <code>ItemLevel = x</code>, or <code>AreaLevel &gt;= x</code> only if you want them.</li>
-      <li>Set <strong>colors</strong>, <strong>font size</strong>, or <strong>alert sounds</strong>.</li>
-    </ul>
-    <p>
-      When done, click <strong>"Generate My Filter!"</strong> to download a 
-      final <code>.filter</code> file ready for Path of Exile 2.
-    </p>
-  </header>
 
-  <!-- Section to load an existing filter -->
- <section id="load-filter-section">
-  <textarea id="filter-load-text"></textarea>
-  <button id="load-filter-button">Load Filter from Text</button>
-</section>
+  <!-- LEFT PANEL: UI for adding new filter rules -->
+  <div id="left-panel">
+    <h2>Add a Filter Rule</h2>
+    <div class="row">
+      <!-- Category select -->
+      <label>Category:
+        <select id="categorySelect">
+          <!-- We'll fill this in JS with categories from a global array -->
+        </select>
+      </label>
 
-  <!-- Tabs for categories (constructed via script.js) -->
-  <nav id="category-tabs">
-    <!-- script.js will create the buttons -->
-  </nav>
-
-  <main>
-    <form id="filter-form">
-      <!-- script.js will insert category sections here -->
-      <button type="submit" id="generate-button">Generate My Filter!</button>
-    </form>
-
-    <!-- Download section for the generated .filter -->
-    <div id="download-section" style="display: none; margin-top: 20px; text-align: center;">
-      <p>Your custom filter is ready! Download it below:</p>
-      <a id="download-link" href="#" download="my-custom-filter.filter">Download Filter</a>
+      <!-- Item select -->
+      <label>Item:
+        <select id="itemSelect">
+          <!-- We'll fill this in JS after user picks a category -->
+        </select>
+      </label>
     </div>
-  </main>
 
-  <!-- Link to your script (make sure script.js is in the same folder or correct path) -->
-  <script src="script.js"></script>
+    <div class="row">
+      <!-- Show/Hide -->
+      <label>Action:
+        <select id="showHideSelect">
+          <option value="Show">Show</option>
+          <option value="Hide">Hide</option>
+        </select>
+      </label>
+    </div>
+
+    <div class="row" id="rarityRow">
+      <!-- Rarity checkboxes (hidden for GEMS) -->
+      <label><input type="checkbox" id="rarityNormal"/> Normal</label>
+      <label><input type="checkbox" id="rarityMagic" /> Magic</label>
+      <label><input type="checkbox" id="rarityRare"  /> Rare</label>
+      <label><input type="checkbox" id="rarityUnique"/> Unique</label>
+    </div>
+
+    <div class="row" id="socketsRow">
+      <!-- Sockets > X (hidden for GEMS) -->
+      <label>Sockets >:
+        <input type="number" id="socketsInput" value="0" min="0" style="width:60px;" />
+      </label>
+    </div>
+
+    <div class="row">
+      <!-- Quality > X -->
+      <label>Quality >:
+        <input type="number" id="qualityInput" value="0" min="0" style="width:60px;"/>
+      </label>
+      <!-- ItemLevel? We'll decide dynamically if the item uses it -->
+      <label id="itemLevelLabel" style="display:none;">ItemLevel =:
+        <input type="number" id="itemLevelInput" value="0" min="0" style="width:60px;" />
+      </label>
+      <!-- StackSize? We'll decide if item is stackable -->
+      <label id="stackSizeLabel" style="display:none;">StackSize >=:
+        <input type="number" id="stackSizeInput" value="0" min="0" style="width:60px;"/>
+      </label>
+    </div>
+
+    <div class="row">
+      <!-- AreaLevel operator + value -->
+      <label>AreaLevel:
+        <select id="areaLevelOp">
+          <option value="">None</option>
+          <option value=">=">>=</option>
+          <option value="<="><=</option>
+          <option value="=">=</option>
+        </select>
+        <input type="number" id="areaLevelVal" value="0" min="0" style="width:60px;"/>
+      </label>
+    </div>
+
+    <div class="row">
+      <!-- Colors + FontSize -->
+      <label>Text Color:
+        <input type="color" id="textColorInput" value="#ffffff"/>
+      </label>
+      <label>Border Color:
+        <input type="color" id="borderColorInput" value="#ffffff"/>
+      </label>
+      <label>Background:
+        <input type="color" id="bgColorInput" value="#000000"/>
+      </label>
+      <label>Font Size:
+        <input type="number" id="fontSizeInput" value="35" min="12" max="60" style="width:50px;"/>
+      </label>
+    </div>
+
+    <div class="row">
+      <!-- Alert Sound -->
+      <label>Alert Sound:
+        <select id="alertSoundSelect">
+          <option value="">None</option>
+          <option value="1">Alert 1</option>
+          <option value="2">Alert 2</option>
+          <option value="3">Alert 3</option>
+          <option value="4">Alert 4</option>
+          <option value="6">Alert 6</option>
+          <option value="10">Alert 10</option>
+        </select>
+        <input type="number" id="alertDurationInput" value="300" min="50" max="1000" style="width:60px;"/>
+      </label>
+    </div>
+
+    <div class="row">
+      <!-- MinimapIcon fields -->
+      <label>Minimap Icon:</label>
+      <label>Size:
+        <select id="minimapSizeSelect">
+          <option value="">None</option>
+          <option value="0">0</option>
+          <option value="1">1</option>
+          <option value="2">2</option>
+          <option value="3">3</option>
+        </select>
+      </label>
+      <label>Color:
+        <select id="minimapColorSelect">
+          <option value="">None</option>
+          <option value="White">White</option>
+          <option value="Red">Red</option>
+          <option value="Blue">Blue</option>
+          <option value="Green">Green</option>
+          <option value="Brown">Brown</option>
+          <option value="Yellow">Yellow</option>
+          <option value="Cyan">Cyan</option>
+          <option value="Grey">Grey</option>
+        </select>
+      </label>
+      <label>Shape:
+        <select id="minimapShapeSelect">
+          <option value="">None</option>
+          <option value="Square">Square</option>
+          <option value="Circle">Circle</option>
+          <option value="Star">Star</option>
+          <option value="Diamond">Diamond</option>
+          <option value="Triangle">Triangle</option>
+          <option value="Kite">Kite</option>
+        </select>
+      </label>
+    </div>
+
+    <button id="addRuleButton" style="margin-top:1rem;">Add Rule</button>
+  </div><!-- /left-panel -->
+
+  <!-- RIGHT PANEL: Live Filter Preview + removable rules + download -->
+  <div id="right-panel">
+    <h2>Live Filter Preview</h2>
+    <!-- This is the text display for the entire filter -->
+    <div class="preview-area" id="filterPreview"></div>
+
+    <!-- Each rule is displayed as a block with a remove button -->
+    <div id="rulesList"></div>
+
+    <!-- Download -->
+    <div id="download-section">
+      <button id="downloadBtn">Download Filter</button>
+      <a id="download-link" href="#" download style="display:none;">Download Link</a>
+    </div>
+  </div><!-- /right-panel -->
+
+<script>
+/***************************************************************
+ * 1. Data Structures
+ ***************************************************************/
+// Example categories, including a "Gems" category with items that have no rarity/sockets
+const CATEGORIES = [
+  {
+    id: "gems",
+    name: "Gems",
+    isGemsCategory: true, // We'll use this to hide rarity/sockets
+    items: [
+      { name: "Uncut Spirit Gem",    usesItemLevel: true,  isStackable: false },
+      { name: "Uncut Support Gem",   usesItemLevel: true,  isStackable: false },
+      { name: "Uncut Skill Gem",     usesItemLevel: true,  isStackable: false },
+      { name: "Soul Core",           usesItemLevel: false, isStackable: false },
+      { name: "Timeless",            usesItemLevel: false, isStackable: false },
+      { name: "Relic",               usesItemLevel: false, isStackable: false }
+    ]
+  },
+  {
+    id: "onehand",
+    name: "One-Handed Weapons",
+    isGemsCategory: false, // normal
+    items: [
+      { name: "One Hand Maces", usesItemLevel: true, isStackable: false },
+      { name: "Attuned Wand",   usesItemLevel: true, isStackable: false },
+      { name: "Siphoning Wand", usesItemLevel: true, isStackable: false }
+    ]
+  },
+  {
+    id: "waystones",
+    name: "Waystones",
+    isGemsCategory: false,
+    items: [
+      { name: "Waystone", usesItemLevel: false, isStackable: true }
+    ]
+  }
+  // TODO: Add more categories if needed
+];
+
+/***************************************************************
+ * We'll maintain a 'rules' array. Each entry is an object with
+ * all the user's chosen settings. We'll generate the final
+ * filter text from 'rules'.
+ ***************************************************************/
+let rules = [];
+
+/***************************************************************
+ * 2. On Page Load: Populate Category & Item selects
+ ***************************************************************/
+window.addEventListener("DOMContentLoaded", () => {
+  const categorySel = document.getElementById("categorySelect");
+  // Fill categories
+  CATEGORIES.forEach(cat => {
+    const opt = document.createElement("option");
+    opt.value = cat.id;
+    opt.textContent = cat.name;
+    categorySel.appendChild(opt);
+  });
+  // Then fill items
+  populateItems();
+  // Then check if 'gems' => hide rarity/sockets
+  updateFormVisibility();
+
+  // On category change => re-populate items
+  categorySel.addEventListener("change", () => {
+    populateItems();
+    updateFormVisibility();
+  });
+
+  // On item change => decide if item usesItemLevel, isStackable => show/hide
+  document.getElementById("itemSelect").addEventListener("change", updateFormVisibility);
+
+  // Add Rule button
+  document.getElementById("addRuleButton").addEventListener("click", addRule);
+
+  // Download button
+  document.getElementById("downloadBtn").addEventListener("click", () => {
+    const filterText = generateFullFilter();
+    const blob = new Blob([filterText], {type:"text/plain"});
+    const url = URL.createObjectURL(blob);
+    const link = document.getElementById("download-link");
+    link.href = url;
+    link.style.display = "inline";
+    link.click();
+  });
+});
+
+/***************************************************************
+ * populateItems => based on category selection
+ ***************************************************************/
+function populateItems() {
+  const categorySel = document.getElementById("categorySelect");
+  const itemSel = document.getElementById("itemSelect");
+  itemSel.innerHTML = "";
+  const cat = CATEGORIES.find(c => c.id === categorySel.value);
+  if (!cat) return;
+  cat.items.forEach(i => {
+    const opt = document.createElement("option");
+    opt.value = i.name;
+    opt.textContent = i.name;
+    itemSel.appendChild(opt);
+  });
+}
+
+/***************************************************************
+ * updateFormVisibility => if category is gems => hide rarity/sockets
+ * also check selected item to see if usesItemLevel or isStackable
+ ***************************************************************/
+function updateFormVisibility() {
+  const categorySel = document.getElementById("categorySelect");
+  const itemSel = document.getElementById("itemSelect");
+  const cat = CATEGORIES.find(c => c.id === categorySel.value);
+  if (!cat) return;
+  const item = cat.items.find(i => i.name === itemSel.value);
+  if (!item) return;
+
+  // If it's a Gems category => hide rarityRow, socketsRow
+  document.getElementById("rarityRow").style.display   = cat.isGemsCategory ? "none" : "flex";
+  document.getElementById("socketsRow").style.display  = cat.isGemsCategory ? "none" : "flex";
+
+  // If item.usesItemLevel => show itemLevel label
+  const itemLevelLabel = document.getElementById("itemLevelLabel");
+  itemLevelLabel.style.display = item.usesItemLevel ? "inline-block" : "none";
+
+  // If item.isStackable => show stackSizeLabel
+  const stackLabel = document.getElementById("stackSizeLabel");
+  stackLabel.style.display = item.isStackable ? "inline-block" : "none";
+}
+
+/***************************************************************
+ * addRule => gather form inputs => push into rules array => re-render
+ ***************************************************************/
+function addRule() {
+  // gather
+  const catId = document.getElementById("categorySelect").value;
+  const cat   = CATEGORIES.find(c => c.id === catId);
+  const itemName = document.getElementById("itemSelect").value;
+  const itemObj  = cat.items.find(i => i.name===itemName);
+
+  const showHide = document.getElementById("showHideSelect").value;
+
+  let rarities = [];
+  if (!cat.isGemsCategory) {
+    if (document.getElementById("rarityNormal").checked) rarities.push("Normal");
+    if (document.getElementById("rarityMagic").checked)  rarities.push("Magic");
+    if (document.getElementById("rarityRare").checked)   rarities.push("Rare");
+    if (document.getElementById("rarityUnique").checked) rarities.push("Unique");
+  }
+  const socketsVal = cat.isGemsCategory ? 0 : parseInt(document.getElementById("socketsInput").value||"0",10);
+  const qualityVal = parseInt(document.getElementById("qualityInput").value||"0",10);
+  const itemLevelVal = itemObj.usesItemLevel ? parseInt(document.getElementById("itemLevelInput").value||"0",10) : 0;
+  const stackVal     = itemObj.isStackable ? parseInt(document.getElementById("stackSizeInput").value||"0",10) : 0;
+
+  const areaOp  = document.getElementById("areaLevelOp").value;
+  const areaVal = parseInt(document.getElementById("areaLevelVal").value||"0",10);
+
+  const textC   = document.getElementById("textColorInput").value;
+  const borderC = document.getElementById("borderColorInput").value;
+  const bgC     = document.getElementById("bgColorInput").value;
+  const fontC   = parseInt(document.getElementById("fontSizeInput").value||"35",10);
+
+  const alertSound   = document.getElementById("alertSoundSelect").value;
+  const alertDur     = parseInt(document.getElementById("alertDurationInput").value||"300",10);
+
+  // Minimap
+  const mmSize  = document.getElementById("minimapSizeSelect").value;
+  const mmColor = document.getElementById("minimapColorSelect").value;
+  const mmShape = document.getElementById("minimapShapeSelect").value;
+
+  // push to rules
+  const rule = {
+    categoryId: catId,
+    itemName,
+    showHide,
+    rarities,
+    socketsVal,
+    qualityVal,
+    itemLevelVal,
+    stackVal,
+    areaOp,
+    areaVal,
+    textC,
+    borderC,
+    bgC,
+    fontC,
+    alertSound,
+    alertDur,
+    mmSize,
+    mmColor,
+    mmShape
+  };
+  rules.push(rule);
+
+  // re-render
+  renderRules();
+  renderPreview();
+}
+
+/***************************************************************
+ * renderRules => displays each rule with a remove button
+ ***************************************************************/
+function renderRules() {
+  const rulesList = document.getElementById("rulesList");
+  rulesList.innerHTML = "";
+  rules.forEach((r, idx) => {
+    const div = document.createElement("div");
+    div.classList.add("rule-block");
+
+    const header = document.createElement("div");
+    header.classList.add("rule-header");
+    header.innerHTML = `<span>${r.showHide} - ${r.itemName}</span>`;
+    const removeBtn = document.createElement("button");
+    removeBtn.textContent = "Remove";
+    removeBtn.addEventListener("click", () => {
+      rules.splice(idx,1);
+      renderRules();
+      renderPreview();
+    });
+    header.appendChild(removeBtn);
+
+    div.appendChild(header);
+
+    // quick info about the rule
+    let info = "";
+    if (r.rarities && r.rarities.length>0) {
+      info += `Rarity: ${r.rarities.join(", ")}\n`;
+    }
+    if (r.socketsVal>0) {
+      info += `Sockets > ${r.socketsVal}\n`;
+    }
+    if (r.qualityVal>0) {
+      info += `Quality > ${r.qualityVal}\n`;
+    }
+    if (r.itemLevelVal>0) {
+      info += `ItemLevel = ${r.itemLevelVal}\n`;
+    }
+    if (r.stackVal>0) {
+      info += `StackSize >= ${r.stackVal}\n`;
+    }
+    if (r.areaOp && r.areaVal>0) {
+      info += `AreaLevel ${r.areaOp} ${r.areaVal}\n`;
+    }
+    // color
+    if (r.textC) { info += `TextColor: ${r.textC}\n`; }
+    if (r.borderC){info += `BorderColor: ${r.borderC}\n`; }
+    if (r.bgC && r.bgC.toLowerCase()!=="#ffffff") {
+      info += `Background: ${r.bgC}\n`;
+    }
+    if (r.fontC) {
+      info += `FontSize: ${r.fontC}\n`;
+    }
+    // alert
+    if (r.alertSound) {
+      info += `AlertSound: ${r.alertSound} (${r.alertDur}ms)\n`;
+    }
+    // minimap
+    if (r.mmSize && r.mmColor && r.mmShape) {
+      info += `MinimapIcon: ${r.mmSize} ${r.mmColor} ${r.mmShape}\n`;
+    }
+
+    const infoPre = document.createElement("pre");
+    infoPre.textContent = info.trim();
+    div.appendChild(infoPre);
+
+    rulesList.appendChild(div);
+  });
+}
+
+/***************************************************************
+ * renderPreview => shows the final item filter text in an area
+ ***************************************************************/
+function renderPreview() {
+  const preview = document.getElementById("filterPreview");
+  preview.textContent = generateFullFilter();
+}
+
+/***************************************************************
+ * generateFullFilter => produces a text block for the entire filter
+ ***************************************************************/
+function generateFullFilter() {
+  let content = "";
+  rules.forEach(r => {
+    // build a single block
+    let block = r.showHide + "\n";
+
+    if (r.rarities && r.rarities.length>0) {
+      block += `  Rarity ${r.rarities.join(" ")}\n`;
+    }
+    if (r.socketsVal>0) {
+      block += `  Sockets > ${r.socketsVal}\n`;
+    }
+    if (r.qualityVal>0) {
+      block += `  Quality > ${r.qualityVal}\n`;
+    }
+    if (r.itemLevelVal>0) {
+      block += `  ItemLevel = ${r.itemLevelVal}\n`;
+    }
+    if (r.stackVal>0) {
+      block += `  StackSize >= ${r.stackVal}\n`;
+    }
+    if (r.areaOp && r.areaVal>0) {
+      block += `  AreaLevel ${r.areaOp} ${r.areaVal}\n`;
+    }
+    // Class or BaseType => we assume if isStackable => BaseType, else => Class
+    // but let's just guess:
+    // Actually let's see if user isStackable from the category data. We'll do so:
+    const cat = CATEGORIES.find(c => c.id === r.categoryId);
+    if (!cat) return ""; 
+    const itemData = cat.items.find(i => i.name===r.itemName);
+    if (!itemData) return "";
+    if (itemData.isStackable) {
+      block += `  BaseType "${r.itemName}"\n`;
+    } else {
+      block += `  Class "${r.itemName}"\n`;
+    }
+
+    // Colors
+    if (r.textC) {
+      block += `  SetTextColor ${hexToRGB(r.textC)}\n`;
+    }
+    if (r.borderC) {
+      block += `  SetBorderColor ${hexToRGB(r.borderC)}\n`;
+    }
+    if (r.bgC && r.bgC.toLowerCase()!=="#ffffff") {
+      block += `  SetBackgroundColor ${hexToRGB(r.bgC)}\n`;
+    }
+    if (r.fontC) {
+      block += `  SetFontSize ${r.fontC}\n`;
+    }
+    // alert
+    if (r.alertSound) {
+      block += `  PlayAlertSound ${r.alertSound} ${r.alertDur}\n`;
+    }
+    // minimap
+    if (r.mmSize && r.mmColor && r.mmShape) {
+      block += `  MinimapIcon ${r.mmSize} ${r.mmColor} ${r.mmShape}\n`;
+    }
+
+    block += "\n";
+    content += block;
+  });
+  return content.trim();
+}
+</script>
+
 </body>
 </html>
