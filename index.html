@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>PoE2 Filter Builder</title>
+  <title>PoE2 Filter Builder (No Waystones)</title>
   <style>
     /* Overall Layout */
     body {
@@ -76,7 +76,9 @@
       margin-bottom: 0.3rem;
       font-size: 0.9rem;
     }
-    .rule-body select, .rule-body input[type="number"], .rule-body input[type="color"] {
+    .rule-body select,
+    .rule-body input[type="number"],
+    .rule-body input[type="color"] {
       margin-right: 0.3rem;
       font-size: 0.9rem;
     }
@@ -131,7 +133,7 @@
 <body>
   <!-- LEFT: RULES & ADD RULE BUTTON -->
   <div id="left-panel">
-    <h2>PoE2 Filter Rules</h2>
+    <h2>PoE2 Filter Rules (No Waystones)</h2>
     <button id="addRuleButton">+ Add Rule</button>
     <div id="rulesContainer"></div>
   </div>
@@ -146,11 +148,9 @@
 
   <script>
     /***************************************************************
-     * 1. Category Data
+     * 1. Define ALL categories & items 
+     *    (Ignoring "Waystones" per your request)
      ***************************************************************/
-    // We'll define categories with items. 
-    // For brevity, we only show a few from your examples. 
-    // You can add more as needed.
     const CATEGORIES = [
       {
         id: "gems",
@@ -170,17 +170,75 @@
         name: "One-Handed Weapons",
         isGemsCategory: false,
         items: [
-          { name: "One Hand Maces", usesItemLevel: true, isStackable: false },
-          { name: "Attuned Wand",   usesItemLevel: true, isStackable: false },
-          { name: "Siphoning Wand", usesItemLevel: true, isStackable: false }
+          { name: "Claws",             usesItemLevel:true,  isStackable:false },
+          { name: "Daggers",           usesItemLevel:true,  isStackable:false },
+          { name: "Wands",             usesItemLevel:true,  isStackable:false },
+          { name: "One Hand Swords",   usesItemLevel:true,  isStackable:false },
+          { name: "One Hand Axes",     usesItemLevel:true,  isStackable:false },
+          { name: "One Hand Maces",    usesItemLevel:true,  isStackable:false },
+          { name: "Sceptres",          usesItemLevel:true,  isStackable:false },
+          { name: "Spears",            usesItemLevel:true,  isStackable:false },
+          { name: "Flails",            usesItemLevel:true,  isStackable:false },
+          { name: "Attuned Wand",      usesItemLevel:true,  isStackable:false },
+          { name: "Siphoning Wand",    usesItemLevel:true,  isStackable:false },
+          { name: "Spiked Club",       usesItemLevel:true,  isStackable:false }
         ]
       },
       {
-        id: "waystones",
-        name: "Waystones",
+        id: "twohand",
+        name: "Two-Handed Weapons",
         isGemsCategory: false,
         items: [
-          { name: "Waystone", usesItemLevel: false, isStackable: true }
+          { name: "Bows",             usesItemLevel:true, isStackable:false },
+          { name: "Staves",           usesItemLevel:true, isStackable:false },
+          { name: "Quarterstaves",    usesItemLevel:true, isStackable:false },
+          { name: "Crossbows",        usesItemLevel:true, isStackable:false },
+          { name: "Crude Bow",        usesItemLevel:true, isStackable:false },
+          { name: "Long Quarterstaff",usesItemLevel:true, isStackable:false }
+        ]
+      },
+      {
+        id: "offhand",
+        name: "Off-hand Items",
+        isGemsCategory: false,
+        items: [
+          { name: "Quivers",            usesItemLevel:true,  isStackable:false },
+          { name: "Shields",            usesItemLevel:true,  isStackable:false },
+          { name: "Foci",               usesItemLevel:true,  isStackable:false },
+          { name: "Stone Tower Shield", usesItemLevel:false, isStackable:true }
+        ]
+      },
+      {
+        id: "armour",
+        name: "Armour",
+        isGemsCategory: false,
+        items: [
+          { name: "Gloves",            usesItemLevel:true,  isStackable:false },
+          { name: "Boots",             usesItemLevel:true,  isStackable:false },
+          { name: "Body Armours",      usesItemLevel:true,  isStackable:false },
+          { name: "Helmets",           usesItemLevel:true,  isStackable:false },
+          { name: "Armoured Cap",      usesItemLevel:false, isStackable:true },
+          { name: "Furtive Wraps",     usesItemLevel:false, isStackable:true },
+          { name: "Smuggler Coat",     usesItemLevel:false, isStackable:true },
+          { name: "Wrapped Greathelm", usesItemLevel:false, isStackable:true }
+        ]
+      },
+      {
+        id: "jewellery",
+        name: "Jewellery",
+        isGemsCategory: false,
+        items: [
+          { name: "Rings",         usesItemLevel:true,  isStackable:false },
+          { name: "Amulets",       usesItemLevel:true,  isStackable:false },
+          { name: "Belts",         usesItemLevel:true,  isStackable:false },
+          { name: "Heavy Belt",    usesItemLevel:false, isStackable:true },
+          { name: "Ornate Belt",   usesItemLevel:false, isStackable:true },
+          { name: "Utility Belt",  usesItemLevel:false, isStackable:true },
+          { name: "Grand Regalia", usesItemLevel:false, isStackable:true },
+          { name: "Breach Ring",   usesItemLevel:false, isStackable:true },
+          { name: "Emerald",       usesItemLevel:false, isStackable:true },
+          { name: "Ruby",          usesItemLevel:false, isStackable:true },
+          { name: "Sapphire",      usesItemLevel:false, isStackable:true }
         ]
       },
       {
@@ -188,17 +246,238 @@
         name: "Flasks",
         isGemsCategory: false,
         items: [
-          { name: "Life Flask", usesItemLevel:false, isStackable:false },
-          { name: "Mana Flask", usesItemLevel:false, isStackable:false },
+          { name: "Flask",               usesItemLevel:true,  isStackable:true },
+          { name: "Life Flasks",         usesItemLevel:false, isStackable:false },
+          { name: "Mana Flasks",         usesItemLevel:false, isStackable:false },
           { name: "Ultimate Life Flask", usesItemLevel:false, isStackable:true },
           { name: "Ultimate Mana Flask", usesItemLevel:false, isStackable:true }
         ]
+      },
+      /* 8) Currency */
+      {
+        id: "currency",
+        name: "Currency",
+        isGemsCategory: false,
+        items: [
+          { name: "Mirror",                usesItemLevel:false,isStackable:true },
+          { name: "Divine",                usesItemLevel:false,isStackable:true },
+          { name: "Perfect Jeweller's Orb",usesItemLevel:false,isStackable:true },
+          { name: "Greater Jeweller's Orb",usesItemLevel:false,isStackable:true },
+          { name: "Distilled Isolation",   usesItemLevel:false,isStackable:true },
+          { name: "Distilled Suffering",   usesItemLevel:false,isStackable:true },
+          { name: "Distilled Fear",        usesItemLevel:false,isStackable:true },
+          { name: "Distilled Despair",     usesItemLevel:false,isStackable:true },
+          { name: "Distilled Disgust",     usesItemLevel:false,isStackable:true },
+          { name: "Catalyst",              usesItemLevel:false,isStackable:true },
+          { name: "Essence of",            usesItemLevel:false,isStackable:true },
+          { name: "Chaos Orb",             usesItemLevel:false,isStackable:true },
+          { name: "Exotic",                usesItemLevel:false,isStackable:true },
+          { name: "Exalted Orb",           usesItemLevel:false,isStackable:true },
+          { name: "Vaal Orb",              usesItemLevel:false,isStackable:true },
+          { name: "Gemcutter's Prism",     usesItemLevel:false,isStackable:true },
+          { name: "Gold",                  usesItemLevel:false,isStackable:true },
+          { name: "Neural Catalyst",       usesItemLevel:false,isStackable:true },
+          { name: "Adaptive Catalyst",     usesItemLevel:false,isStackable:true },
+          { name: " Artifact",             usesItemLevel:false,isStackable:true },
+          { name: "Arcanist's Etcher",     usesItemLevel:false,isStackable:true },
+          { name: "Blacksmith's Whetstone",usesItemLevel:false,isStackable:true },
+          { name: "Artificer's Orb",       usesItemLevel:false,isStackable:true },
+          { name: "Regal Orb",             usesItemLevel:false,isStackable:true },
+          { name: "Shard",                 usesItemLevel:false,isStackable:true },
+          { name: "Aug",                   usesItemLevel:false,isStackable:true },
+          { name: "Orb of Transmutation",  usesItemLevel:false,isStackable:true }
+        ]
+      },
+      /* 9) Jewels */
+      {
+        id: "jewels",
+        name: "Jewels",
+        isGemsCategory: false,
+        items: [
+          { name: "Jewel",             usesItemLevel:true,  isStackable:false },
+          { name: " Rune",             usesItemLevel:false, isStackable:false },
+          { name: " Charm",            usesItemLevel:false, isStackable:false },
+          { name: "Timeless Jewel",    usesItemLevel:false, isStackable:false },
+          { name: "Time-Lost Diamond", usesItemLevel:false, isStackable:true }
+        ]
+      },
+      /* 10) Fragments */
+      {
+        id: "fragments",
+        name: "Fragments",
+        isGemsCategory: false,
+        items: [
+          { name: "Transmutation Shard",        usesItemLevel:false,isStackable:true },
+          { name: "Chance Shard",              usesItemLevel:false,isStackable:true },
+          { name: "Regal Shard",               usesItemLevel:false,isStackable:true },
+          { name: "Artificer's Shard",         usesItemLevel:false,isStackable:true },
+          { name: "Scroll of Wisdom",          usesItemLevel:false,isStackable:true },
+          { name: "Breach Splinter",           usesItemLevel:false,isStackable:true },
+          { name: "Breachstone",               usesItemLevel:false,isStackable:true },
+          { name: "Simulacrum Splinter",       usesItemLevel:false,isStackable:true },
+          { name: "Simulacrum",                usesItemLevel:false,isStackable:true },
+          { name: "An Audience with the King", usesItemLevel:false,isStackable:true },
+          { name: "Cowardly Fate",             usesItemLevel:false,isStackable:true },
+          { name: "Deadly Fate",               usesItemLevel:false,isStackable:true },
+          { name: "Victorious Fate",           usesItemLevel:false,isStackable:true },
+          { name: "Ancient Crisis Fragment",   usesItemLevel:false,isStackable:true },
+          { name: "Faded Crisis Fragment",     usesItemLevel:false,isStackable:true },
+          { name: "Weathered Crisis Fragment", usesItemLevel:false,isStackable:true }
+        ]
+      },
+      /* 11) Runes */
+      {
+        id: "runes",
+        name: "Runes",
+        isGemsCategory: false,
+        items: [
+          { name: "Desert Rune",     usesItemLevel:false,isStackable:false },
+          { name: "Glacial Rune",    usesItemLevel:false,isStackable:false },
+          { name: "Storm Rune",      usesItemLevel:false,isStackable:false },
+          { name: "Iron Rune",       usesItemLevel:false,isStackable:false },
+          { name: "Body Rune",       usesItemLevel:false,isStackable:false },
+          { name: "Mind Rune",       usesItemLevel:false,isStackable:false },
+          { name: "Rebirth Rune",    usesItemLevel:false,isStackable:false },
+          { name: "Inspiration Rune",usesItemLevel:false,isStackable:false },
+          { name: "Stone Rune",      usesItemLevel:false,isStackable:false },
+          { name: "Vision Rune",     usesItemLevel:false,isStackable:false }
+        ]
+      },
+      /* 12) Essences */
+      {
+        id: "essences",
+        name: "Essences",
+        isGemsCategory: false,
+        items: [
+          { name: "Essence of the Body",            usesItemLevel:false,isStackable:true },
+          { name: "Essence of the Mind",            usesItemLevel:false,isStackable:true },
+          { name: "Essence of Enhancement",         usesItemLevel:false,isStackable:true },
+          { name: "Essence of Torment",             usesItemLevel:false,isStackable:true },
+          { name: "Essence of Flames",              usesItemLevel:false,isStackable:true },
+          { name: "Essence of Ice",                 usesItemLevel:false,isStackable:true },
+          { name: "Essence of Electricity",         usesItemLevel:false,isStackable:true },
+          { name: "Essence of Ruin",                usesItemLevel:false,isStackable:true },
+          { name: "Essence of Battle",              usesItemLevel:false,isStackable:true },
+          { name: "Essence of Sorcery",             usesItemLevel:false,isStackable:true },
+          { name: "Essence of Haste",               usesItemLevel:false,isStackable:true },
+          { name: "Essence of the Infinite",        usesItemLevel:false,isStackable:true },
+          { name: "Greater Essence of the Body",    usesItemLevel:false,isStackable:true },
+          { name: "Greater Essence of the Mind",    usesItemLevel:false,isStackable:true },
+          { name: "Greater Essence of Enhancement", usesItemLevel:false,isStackable:true },
+          { name: "Greater Essence of Torment",     usesItemLevel:false,isStackable:true },
+          { name: "Greater Essence of Flames",      usesItemLevel:false,isStackable:true },
+          { name: "Greater Essence of Ice",         usesItemLevel:false,isStackable:true },
+          { name: "Greater Essence of Electricity", usesItemLevel:false,isStackable:true },
+          { name: "Greater Essence of Ruin",        usesItemLevel:false,isStackable:true },
+          { name: "Greater Essence of Battle",      usesItemLevel:false,isStackable:true },
+          { name: "Greater Essence of Sorcery",     usesItemLevel:false,isStackable:true },
+          { name: "Greater Essence of Haste",       usesItemLevel:false,isStackable:true },
+          { name: "Greater Essence of the Infinite",usesItemLevel:false,isStackable:true }
+        ]
+      },
+      /* 13) Soul Cores */
+      {
+        id: "soulcores",
+        name: "Soul Cores",
+        isGemsCategory: false,
+        items: [
+          { name: "Soul Core of Tacati",    usesItemLevel:false,isStackable:false },
+          { name: "Soul Core of Opiloti",   usesItemLevel:false,isStackable:false },
+          { name: "Soul Core of Jiquani",   usesItemLevel:false,isStackable:false },
+          { name: "Soul Core of Zalatl",    usesItemLevel:false,isStackable:false },
+          { name: "Soul Core of Citaqualotl", usesItemLevel:false,isStackable:false },
+          { name: "Soul Core of Puhuarte",  usesItemLevel:false,isStackable:false },
+          { name: "Soul Core of Tzamoto",   usesItemLevel:false,isStackable:false },
+          { name: "Soul Core of Xopec",     usesItemLevel:false,isStackable:false },
+          { name: "Soul Core of Azcapa",    usesItemLevel:false,isStackable:false },
+          { name: "Soul Core of Topotante",usesItemLevel:false,isStackable:false },
+          { name: "Soul Core of Quipolatl",usesItemLevel:false,isStackable:false },
+          { name: "Soul Core of Ticaba",    usesItemLevel:false,isStackable:false },
+          { name: "Soul Core of Atmohua",   usesItemLevel:false,isStackable:false },
+          { name: "Soul Core of Cholotl",   usesItemLevel:false,isStackable:false },
+          { name: "Soul Core of Zantipi",   usesItemLevel:false,isStackable:false }
+        ]
+      },
+      /* 14) Breach Catalysts */
+      {
+        id: "breachcatalysts",
+        name: "Breach Catalysts",
+        isGemsCategory: false,
+        items: [
+          { name: "Flesh Catalyst",false,true },
+          { name: "Neural Catalyst",false,true },
+          { name: "Carapace Catalyst",false,true },
+          { name: "Uul-Netol's Catalyst",false,true },
+          { name: "Xoph's Catalyst",false,true },
+          { name: "Tul's Catalyst",false,true },
+          { name: "Esh's Catalyst",false,true },
+          { name: "Chayula's Catalyst",false,true },
+          { name: "Reaver Catalyst",false,true },
+          { name: "Sibilant Catalyst",false,true },
+          { name: "Skittering Catalyst",false,true },
+          { name: "Adaptive Catalyst",false,true }
+        ]
+      },
+      /* 15) Expedition Coinage & Artifacts */
+      {
+        id: "expedition",
+        name: "Expedition Coinage & Artifacts",
+        isGemsCategory: false,
+        items: [
+          { name: "Exotic Coinage",false,true },
+          { name: "Broken Circle Artifact",false,true },
+          { name: "Black Scythe Artifact",false,true },
+          { name: "Order Artifact",false,true },
+          { name: "Sun Artifact",false,true }
+        ]
+      },
+      /* 16) Ritual Omens */
+      {
+        id: "ritualomens",
+        name: "Ritual Omens",
+        isGemsCategory: false,
+        items: [
+          { name: "Omen of Refreshment",false,true },
+          { name: "Omen of Resurgence",false,true },
+          { name: "Omen of Amelioration",false,true },
+          { name: "Omen of Whittling",false,true },
+          { name: "Omen of Sinistral Erasure",false,true },
+          { name: "Omen of Dextral Erasure",false,true },
+          { name: "Omen of Sinistral Alchemy",false,true },
+          { name: "Omen of Dextral Alchemy",false,true },
+          { name: "Omen of Sinistral Coronation",false,true },
+          { name: "Omen of Dextral Coronation",false,true },
+          { name: "Omen of Corruption",false,true },
+          { name: "Omen of Greater Exaltation",false,true },
+          { name: "Omen of Sinistral Exaltation",false,true },
+          { name: "Omen of Dextral Exaltation",false,true },
+          { name: "Omen of Greater Annulment",false,true },
+          { name: "Omen of Sinistral Annulment",false,true },
+          { name: "Omen of Dextral Annulment",false,true }
+        ]
+      },
+      /* 17) Delirium Distillations */
+      {
+        id: "deliriumdistillations",
+        name: "Delirium Distillations",
+        isGemsCategory: false,
+        items: [
+          { name: "Distilled Ire",false,true },
+          { name: "Distilled Guilt",false,true },
+          { name: "Distilled Greed",false,true },
+          { name: "Distilled Paranoia",false,true },
+          { name: "Distilled Envy",false,true },
+          { name: "Distilled Disgust",false,true },
+          { name: "Distilled Despair",false,true },
+          { name: "Distilled Fear",false,true },
+          { name: "Distilled Suffering",false,true },
+          { name: "Distilled Isolation",false,true }
+        ]
       }
-      // TODO: Add more categories (Two-Handed, Off-hand, Armour, Jewellery, Currency, Jewels, etc.)
     ];
 
     /***************************************************************
-     * 2. The "rules" array holds all user-defined rules
+     * 2. The 'rules' array holds all user-defined rules
      ***************************************************************/
     let rules = [];
 
@@ -212,27 +491,28 @@
     });
 
     function createRuleCard() {
-      // We'll create a blank rule object
+      // We'll create a blank rule object with default values
+      const defaultCat = CATEGORIES[0];
       const newRule = {
-        categoryId: CATEGORIES[0].id, // default
-        itemName: CATEGORIES[0].items[0].name,
-        showHide: "Show",
-        rarities: [],
+        categoryId: defaultCat.id,
+        itemName:   defaultCat.items[0].name,
+        showHide:   "Show",
+        rarities:   [],
         socketsVal: 0,
         qualityVal: 0,
         itemLevelVal: 0,
-        stackVal: 0,
-        areaOp: "",
-        areaVal: 0,
-        textC: "#ffffff",
-        borderC: "#ffffff",
-        bgC: "#000000",
-        fontC: 35,
+        stackVal:   0,
+        areaOp:     "",
+        areaVal:    0,
+        textC:      "#ffffff",
+        borderC:    "#ffffff",
+        bgC:        "#000000",
+        fontC:      35,
         alertSound: "",
-        alertDur: 300,
-        mmSize: "",
-        mmColor: "",
-        mmShape: ""
+        alertDur:   300,
+        mmSize:     "",
+        mmColor:    "",
+        mmShape:    ""
       };
       rules.push(newRule);
       renderRules();
@@ -249,7 +529,7 @@
         const card = document.createElement("div");
         card.classList.add("rule-card");
 
-        // Card header
+        // Header
         const header = document.createElement("div");
         header.classList.add("rule-header");
         const title = document.createElement("h3");
@@ -265,7 +545,7 @@
         header.appendChild(removeBtn);
         card.appendChild(header);
 
-        // Card body
+        // Body
         const body = document.createElement("div");
         body.classList.add("rule-body");
         
@@ -290,7 +570,6 @@
         itemLabel.appendChild(itemSelect);
         body.appendChild(itemLabel);
 
-        // a function to fill itemSelect based on the chosen category
         function fillItemSelect(catId, ruleObj) {
           itemSelect.innerHTML = "";
           const catObj = CATEGORIES.find(c=> c.id===catId);
@@ -309,9 +588,9 @@
         const showHideLabel = document.createElement("label");
         showHideLabel.textContent = " Action: ";
         const showHideSel = document.createElement("select");
-        ["Show", "Hide"].forEach(val => {
+        ["Show","Hide"].forEach(val => {
           const opt = document.createElement("option");
-          opt.value= val; 
+          opt.value = val;
           opt.textContent = val;
           if (val===rule.showHide) opt.selected=true;
           showHideSel.appendChild(opt);
@@ -319,22 +598,21 @@
         showHideLabel.appendChild(showHideSel);
         body.appendChild(showHideLabel);
 
-        // 4) Rarity checkboxes (hidden if gems)
-        const catObjRef = ()=> CATEGORIES.find(c=> c.id===rule.categoryId);
+        // 4) Rarities => hidden if isGemsCategory
+        const catObjRef = () => CATEGORIES.find(c=> c.id===rule.categoryId);
         const isGems = ()=> catObjRef()?.isGemsCategory===true;
 
         const rarityWrap = document.createElement("div");
-        rarityWrap.style.display = isGems() ? "none" : "inline-block";
+        rarityWrap.style.display = isGems() ? "none":"inline-block";
         rarityWrap.innerHTML = `
           <label><input type="checkbox" data-rarity="Normal"/> Normal</label>
           <label><input type="checkbox" data-rarity="Magic" /> Magic</label>
           <label><input type="checkbox" data-rarity="Rare"  /> Rare</label>
           <label><input type="checkbox" data-rarity="Unique"/> Unique</label>
         `;
-        // We'll set .checked based on rule.rarities
         body.appendChild(rarityWrap);
 
-        // 5) Sockets > X (hidden if gems)
+        // 5) Sockets => hidden if gems
         const socketsLabel = document.createElement("label");
         socketsLabel.style.display = isGems() ? "none":"inline-block";
         socketsLabel.innerHTML = ` Sockets >: <input type="number" style="width:50px;" value="${rule.socketsVal}"/>`;
@@ -342,13 +620,12 @@
 
         // 6) Quality
         const qualityLabel = document.createElement("label");
-        qualityLabel.innerHTML = ` Quality >: <input type="number" style="width:50px;" value="${rule.qualityVal}" />`;
+        qualityLabel.innerHTML = ` Quality >: <input type="number" style="width:50px;" value="${rule.qualityVal}"/>`;
         body.appendChild(qualityLabel);
 
         // 7) itemLevel
         const itemLevelLabel = document.createElement("label");
         itemLevelLabel.innerHTML = ` ItemLevel =: <input type="number" style="width:50px;" value="${rule.itemLevelVal}"/>`;
-        // we'll decide if we show or hide this later
         body.appendChild(itemLevelLabel);
 
         // 8) stackSize
@@ -358,18 +635,18 @@
 
         // 9) areaLevel
         const areaWrap = document.createElement("label");
-        areaWrap.innerHTML = ` AreaLevel: 
+        areaWrap.innerHTML = ` AreaLevel:
           <select>
             <option value="">None</option>
             <option value=">=" ${rule.areaOp===">="?"selected":""}>>=</option>
             <option value="<=" ${rule.areaOp==="<="?"selected":""}>&lt;=</option>
-            <option value="="  ${rule.areaOp==="=" ?"selected":""}>=</option>
+            <option value="="  ${rule.areaOp==="="?"selected":""}>=</option>
           </select>
           <input type="number" style="width:50px;" value="${rule.areaVal}"/>
         `;
         body.appendChild(areaWrap);
 
-        // 10) colors
+        // 10) Colors + Font
         const textColorLabel = document.createElement("label");
         textColorLabel.innerHTML = ` TextColor: <input type="color" value="${rule.textC}"/>`;
         body.appendChild(textColorLabel);
@@ -388,7 +665,7 @@
 
         // 11) Alert Sound
         const alertWrap = document.createElement("label");
-        alertWrap.innerHTML = ` Alert Sound:
+        alertWrap.innerHTML = ` AlertSound:
           <select>
             <option value="">None</option>
             <option value="1"  ${rule.alertSound==="1" ?"selected":""}>1</option>
@@ -440,86 +717,74 @@
         `;
         body.appendChild(mmWrap);
 
-        // put the body in the card
         card.appendChild(body);
-
-        // Append to container
         container.appendChild(card);
 
-        // Now we attach event listeners to all these fields so that any change => update rule => re-render preview
+        // Attach event listeners:
 
-        // CatSelect => change items 
+        // Category
         catSelect.addEventListener("change", ()=> {
           rule.categoryId = catSelect.value;
-          // reset itemName to first in that cat
+          // reset item to first in that cat
           const newCatObj = CATEGORIES.find(c=> c.id===rule.categoryId);
           if (newCatObj?.items?.length>0) {
             rule.itemName = newCatObj.items[0].name;
           }
-          // re-fill itemSelect
           fillItemSelect(rule.categoryId, rule);
-          // update "isGemsCategory"
           updateRaritySocketsVisibility(rarityWrap, socketsLabel, rule.categoryId);
           updateItemLevelStackVisibility(itemLevelLabel, stackLabel, rule);
           renderPreview();
         });
-
-        // itemSelect => change rule.itemName
+        // Item
         itemSelect.addEventListener("change", ()=> {
           rule.itemName = itemSelect.value;
-          renderPreview();
           updateItemLevelStackVisibility(itemLevelLabel, stackLabel, rule);
+          renderPreview();
         });
-
-        // showHideSel
+        // Show/Hide
         showHideSel.addEventListener("change", ()=> {
           rule.showHide = showHideSel.value;
           renderPreview();
         });
-
-        // handle rarities
-        rarityWrap.querySelectorAll('input[type="checkbox"]').forEach(cb => {
+        // Rarity checkboxes
+        const cbs = rarityWrap.querySelectorAll('input[type="checkbox"]');
+        cbs.forEach(cb => {
           const rar = cb.getAttribute("data-rarity");
           cb.checked = rule.rarities.includes(rar);
           cb.addEventListener("change", ()=> {
             if (cb.checked) {
               if (!rule.rarities.includes(rar)) rule.rarities.push(rar);
             } else {
-              rule.rarities = rule.rarities.filter(rn => rn!==rar);
+              rule.rarities = rule.rarities.filter(rr=> rr!==rar);
             }
             renderPreview();
           });
         });
-
-        // sockets
+        // Sockets
         const socketsInput = socketsLabel.querySelector('input[type="number"]');
         socketsInput.addEventListener("change", ()=> {
           rule.socketsVal = parseInt(socketsInput.value||"0",10);
           renderPreview();
         });
-
-        // quality
+        // Quality
         const qualityInput = qualityLabel.querySelector('input[type="number"]');
         qualityInput.addEventListener("change", ()=> {
           rule.qualityVal = parseInt(qualityInput.value||"0",10);
           renderPreview();
         });
-
         // itemlevel
         const lvlInput = itemLevelLabel.querySelector('input[type="number"]');
         lvlInput.addEventListener("change", ()=> {
           rule.itemLevelVal = parseInt(lvlInput.value||"0",10);
           renderPreview();
         });
-
         // stacksize
         const stInput = stackLabel.querySelector('input[type="number"]');
         stInput.addEventListener("change", ()=> {
           rule.stackVal = parseInt(stInput.value||"0",10);
           renderPreview();
         });
-
-        // areaLevel
+        // arealevel
         const areaSel = areaWrap.querySelector('select');
         const areaNum = areaWrap.querySelector('input[type="number"]');
         areaSel.addEventListener("change", ()=> {
@@ -530,47 +795,41 @@
           rule.areaVal = parseInt(areaNum.value||"0",10);
           renderPreview();
         });
-
         // text color
-        const textColorInput = textColorLabel.querySelector('input[type="color"]');
-        textColorInput.addEventListener("change", ()=> {
-          rule.textC = textColorInput.value;
+        const textCInput = textColorLabel.querySelector('input[type="color"]');
+        textCInput.addEventListener("change", ()=> {
+          rule.textC = textCInput.value;
           renderPreview();
         });
-
         // border color
-        const borderColorInput = borderColorLabel.querySelector('input[type="color"]');
-        borderColorInput.addEventListener("change", ()=> {
-          rule.borderC = borderColorInput.value;
+        const borderCInput = borderColorLabel.querySelector('input[type="color"]');
+        borderCInput.addEventListener("change", ()=> {
+          rule.borderC = borderCInput.value;
           renderPreview();
         });
-
-        // background
-        const bgColorInput = bgColorLabel.querySelector('input[type="color"]');
-        bgColorInput.addEventListener("change", ()=> {
-          rule.bgC = bgColorInput.value;
+        // bg color
+        const bgCInput = bgColorLabel.querySelector('input[type="color"]');
+        bgCInput.addEventListener("change", ()=> {
+          rule.bgC = bgCInput.value;
           renderPreview();
         });
-
-        // font
-        const fontInput = fontSizeLabel.querySelector('input[type="number"]');
-        fontInput.addEventListener("change", ()=> {
-          rule.fontC = parseInt(fontInput.value||"35",10);
+        // font size
+        const fontCInput = fontSizeLabel.querySelector('input[type="number"]');
+        fontCInput.addEventListener("change", ()=> {
+          rule.fontC = parseInt(fontCInput.value||"35",10);
           renderPreview();
         });
-
         // alert sound
-        const soundSel = alertWrap.querySelector('select');
-        const soundNum = alertWrap.querySelector('input[type="number"]');
-        soundSel.addEventListener("change", ()=> {
-          rule.alertSound = soundSel.value;
+        const sel2 = alertWrap.querySelector('select');
+        const dur2 = alertWrap.querySelector('input[type="number"]');
+        sel2.addEventListener("change", ()=> {
+          rule.alertSound = sel2.value;
           renderPreview();
         });
-        soundNum.addEventListener("change", ()=> {
-          rule.alertDur = parseInt(soundNum.value||"300",10);
+        dur2.addEventListener("change", ()=> {
+          rule.alertDur = parseInt(dur2.value||"300",10);
           renderPreview();
         });
-
         // minimap
         const mmSelects = mmWrap.querySelectorAll("select");
         mmSelects[0].addEventListener("change", ()=> {
@@ -586,7 +845,7 @@
           renderPreview();
         });
 
-        // after creation, we set up the initial visibility
+        // init visibility
         updateRaritySocketsVisibility(rarityWrap, socketsLabel, rule.categoryId);
         updateItemLevelStackVisibility(itemLevelLabel, stackLabel, rule);
       });
@@ -595,22 +854,18 @@
     function updateRaritySocketsVisibility(rarityWrap, socketsLabel, catId) {
       const cat = CATEGORIES.find(c=> c.id===catId);
       if (!cat) return;
-      if (cat.isGemsCategory) {
-        rarityWrap.style.display = "none";
-        socketsLabel.style.display = "none";
-      } else {
-        rarityWrap.style.display = "inline-block";
-        socketsLabel.style.display = "inline-block";
-      }
+      const isGems = cat.isGemsCategory===true;
+      rarityWrap.style.display  = isGems ? "none":"inline-block";
+      socketsLabel.style.display= isGems ? "none":"inline-block";
     }
+
     function updateItemLevelStackVisibility(itemLevelLabel, stackLabel, ruleObj) {
-      // find cat
       const cat = CATEGORIES.find(c=> c.id===ruleObj.categoryId);
       if (!cat) return;
-      const itemData = cat.items.find(i=> i.name=== ruleObj.itemName);
+      const itemData = cat.items.find(i=> i.name===ruleObj.itemName);
       if (!itemData) return;
       itemLevelLabel.style.display = itemData.usesItemLevel ? "inline-block":"none";
-      stackLabel.style.display = itemData.isStackable ? "inline-block":"none";
+      stackLabel.style.display     = itemData.isStackable   ? "inline-block":"none";
     }
 
     /***************************************************************
@@ -624,48 +879,54 @@
     function generateFullFilter() {
       let content = "";
       rules.forEach(r => {
-        let block = r.showHide+"\n";
+        let block = r.showHide + "\n";
+
+        // Rarities
         if (r.rarities?.length>0) {
-          block += "  Rarity "+r.rarities.join(" ")+"\n";
+          block += "  Rarity " + r.rarities.join(" ") + "\n";
         }
+        // Sockets
         if (r.socketsVal>0) {
           block += `  Sockets > ${r.socketsVal}\n`;
         }
+        // Quality
         if (r.qualityVal>0) {
           block += `  Quality > ${r.qualityVal}\n`;
         }
+        // ItemLevel
         if (r.itemLevelVal>0) {
           block += `  ItemLevel = ${r.itemLevelVal}\n`;
         }
+        // StackSize
         if (r.stackVal>0) {
           block += `  StackSize >= ${r.stackVal}\n`;
         }
+        // AreaLevel
         if (r.areaOp && r.areaVal>0) {
           block += `  AreaLevel ${r.areaOp} ${r.areaVal}\n`;
         }
-        // find item data to know if isStackable => BaseType or Class
+        // Class or BaseType
         const cat = CATEGORIES.find(c=> c.id===r.categoryId);
         const itemData = cat?.items.find(i=> i.name===r.itemName);
-        if (itemData && itemData.isStackable) {
+        if (itemData?.isStackable) {
           block += `  BaseType "${r.itemName}"\n`;
         } else {
           block += `  Class "${r.itemName}"\n`;
         }
-        if (r.textC) {
-          block += `  SetTextColor ${hexToRGB(r.textC)}\n`;
-        }
-        if (r.borderC) {
-          block += `  SetBorderColor ${hexToRGB(r.borderC)}\n`;
-        }
-        if (r.bgC && r.bgC.toLowerCase()!=="#ffffff") {
+
+        // Colors
+        block += `  SetTextColor ${hexToRGB(r.textC)}\n`;
+        block += `  SetBorderColor ${hexToRGB(r.borderC)}\n`;
+        if (r.bgC.toLowerCase()!=="#ffffff") {
           block += `  SetBackgroundColor ${hexToRGB(r.bgC)}\n`;
         }
-        if (r.fontC) {
-          block += `  SetFontSize ${r.fontC}\n`;
-        }
+        block += `  SetFontSize ${r.fontC}\n`;
+
+        // Alert Sound
         if (r.alertSound) {
           block += `  PlayAlertSound ${r.alertSound} ${r.alertDur}\n`;
         }
+        // Minimap
         if (r.mmSize && r.mmColor && r.mmShape) {
           block += `  MinimapIcon ${r.mmSize} ${r.mmColor} ${r.mmShape}\n`;
         }
@@ -676,7 +937,7 @@
     }
 
     /***************************************************************
-     * 6. DOWNLOAD
+     * 6. DOWNLOAD FILTER
      ***************************************************************/
     function downloadFilter() {
       const filterText = generateFullFilter();
@@ -685,6 +946,17 @@
       const link = document.getElementById("download-link");
       link.href = url;
       link.click();
+    }
+
+    /***************************************************************
+     * Extra Utils
+     ***************************************************************/
+    function hexToRGB(hex) {
+      const bigint = parseInt(hex.replace("#",""),16);
+      const r = (bigint >> 16) & 255;
+      const g = (bigint >> 8) & 255;
+      const b = bigint & 255;
+      return `${r} ${g} ${b} 255`;
     }
   </script>
 </body>
