@@ -20,9 +20,8 @@ function hexToRGB(hex) {
 }
 
 /***************************************************************
- * 2. BASE CATEGORIES & ITEMS
- *    We'll create a new final category for "Unrecognized Lines"
- *    so we can place leftover lines into the UI as well.
+ * 2. BASE CATEGORIES & ITEMS (10 + unrecognized)
+ *    Adding "Breach Ring" specifically in Jewellery as sub-item.
  ***************************************************************/
 let CATEGORIES = [
   {
@@ -100,16 +99,20 @@ let CATEGORIES = [
   {
     categoryId: "jewellery",
     categoryName: "Jewellery",
-    description: "Rings, Amulets, Belts, etc.",
+    description: "Rings, Amulets, Belts, including a sub-section for Breach Rings.",
     itemTypes: [
-      { id:60, name: "Rings",   showOrHide: "Show", enabled: false, isStackable: false, usesItemLevel: true },
-      { id:61, name: "Amulets", showOrHide: "Show", enabled: false, isStackable: false, usesItemLevel: true },
-      { id:62, name: "Belts",   showOrHide: "Show", enabled: false, isStackable: false, usesItemLevel: true },
+      { id:60, name: "Rings",       showOrHide: "Show", enabled: false, isStackable: false, usesItemLevel: true },
+      { id:61, name: "Amulets",     showOrHide: "Show", enabled: false, isStackable: false, usesItemLevel: true },
+      { id:62, name: "Belts",       showOrHide: "Show", enabled: false, isStackable: false, usesItemLevel: true },
+
       // Additional from new scripts
       { id:63, name: "Heavy Belt",    showOrHide: "Show", enabled: false, isStackable: true, usesItemLevel: false },
       { id:64, name: "Ornate Belt",   showOrHide: "Show", enabled: false, isStackable: true, usesItemLevel: false },
       { id:65, name: "Utility Belt",  showOrHide: "Show", enabled: false, isStackable: true, usesItemLevel: false },
-      { id:66, name: "Grand Regalia", showOrHide: "Show", enabled: false, isStackable: true, usesItemLevel: false }
+      { id:66, name: "Grand Regalia", showOrHide: "Show", enabled: false, isStackable: true, usesItemLevel: false },
+
+      // new sub-item specifically for "Breach Ring"
+      { id:67, name: "Breach Ring",   showOrHide: "Show", enabled: false, isStackable: true, usesItemLevel: false }
     ]
   },
   {
@@ -134,13 +137,11 @@ let CATEGORIES = [
       { id:81,  name: "Divine",                showOrHide: "Show", enabled: false, isStackable: true, usesItemLevel: false },
       { id:82,  name: "Perfect Jeweller's Orb",showOrHide: "Show", enabled: false, isStackable: true, usesItemLevel: false },
       { id:83,  name: "Greater Jeweller's Orb",showOrHide: "Show", enabled: false, isStackable: true, usesItemLevel: false },
-
       { id:84,  name: "Distilled Isolation",   showOrHide: "Show", enabled: false, isStackable: true, usesItemLevel: false },
       { id:85,  name: "Distilled Suffering",   showOrHide: "Show", enabled: false, isStackable: true, usesItemLevel: false },
       { id:86,  name: "Distilled Fear",        showOrHide: "Show", enabled: false, isStackable: true, usesItemLevel: false },
       { id:87,  name: "Distilled Despair",     showOrHide: "Show", enabled: false, isStackable: true, usesItemLevel: false },
       { id:88,  name: "Distilled Disgust",     showOrHide: "Show", enabled: false, isStackable: true, usesItemLevel: false },
-
       { id:89,  name: "Catalyst",              showOrHide: "Show", enabled: false, isStackable: true, usesItemLevel: false },
       { id:90,  name: "Essence of",            showOrHide: "Show", enabled: false, isStackable: true, usesItemLevel: false },
       { id:91,  name: "Chaos Orb",             showOrHide: "Show", enabled: false, isStackable: true, usesItemLevel: false },
@@ -149,7 +150,6 @@ let CATEGORIES = [
       { id:94,  name: "Vaal Orb",              showOrHide: "Show", enabled: false, isStackable: true, usesItemLevel: false },
       { id:95,  name: "Gemcutter's Prism",     showOrHide: "Show", enabled: false, isStackable: true, usesItemLevel: false },
       { id:96,  name: "Gold",                  showOrHide: "Show", enabled: false, isStackable: true, usesItemLevel: false },
-
       { id:97,  name: "Neural Catalyst",       showOrHide: "Show", enabled: false, isStackable: true, usesItemLevel: false },
       { id:98,  name: "Adaptive Catalyst",     showOrHide: "Show", enabled: false, isStackable: true, usesItemLevel: false }
     ]
@@ -176,19 +176,13 @@ let CATEGORIES = [
   }
 ];
 
-/***************************************************************
- * 2B. "UNRECOGNIZED LINES" CATEGORY
- *    We'll add this category at the end, which we'll dynamically
- *    populate with leftover lines as separate items.
- ***************************************************************/
+// A final "unrecognized" category for leftover lines
 let UNRECOGNIZED_CATEGORY = {
   categoryId: "unrecognized",
   categoryName: "Unrecognized Lines",
-  description: "Lines from the filter that we couldn't parse or match. Enable them to include them raw in the final filter.",
+  description: "Lines from the filter that we couldn’t parse. Enable them to include them raw in the final filter.",
   itemTypes: []
 };
-
-// We'll push it at the end of the array:
 CATEGORIES.push(UNRECOGNIZED_CATEGORY);
 
 /***************************************************************
@@ -212,14 +206,17 @@ function createCategorySections() {
     section.classList.add("category-section");
     if (idx === 0) section.classList.add("active");
 
+    // heading
     const heading = document.createElement("h2");
     heading.innerText = cat.categoryName;
     section.appendChild(heading);
 
+    // desc
     const desc = document.createElement("p");
     desc.innerText = cat.description;
     section.appendChild(desc);
 
+    // items
     cat.itemTypes.forEach((item) => {
       const itemEl = createItemTypeHTML(cat.categoryId, item);
       section.appendChild(itemEl);
@@ -241,16 +238,46 @@ function activateCategory(index) {
 
 /***************************************************************
  * 4. BUILD THE HTML FOR EACH ITEM TYPE
+ *    We'll add a "Preview" box that updates as user changes 
+ *    text color, border color, bg color, and font size.
  ***************************************************************/
 function createItemTypeHTML(categoryId, item) {
   const container = document.createElement("div");
   container.classList.add("item-type");
 
+  // Title
   const titleDiv = document.createElement("div");
   titleDiv.classList.add("item-type-title");
   titleDiv.innerText = item.name;
   container.appendChild(titleDiv);
 
+  // We'll add a "preview" div
+  const previewDiv = document.createElement("div");
+  previewDiv.classList.add("preview-box");
+  previewDiv.innerText = "Preview";
+  // default style
+  previewDiv.style.color = "#ffffff";
+  previewDiv.style.border = "1px solid #ffffff";
+  previewDiv.style.backgroundColor = "#000000";
+  previewDiv.style.fontSize = "35px";
+  previewDiv.style.padding = "4px";
+  previewDiv.style.marginBottom = "8px";
+  container.appendChild(previewDiv);
+
+  // We'll make an event handler that updates preview on each input
+  function updatePreview() {
+    const textC   = document.getElementById(`textColor-${categoryId}-${item.id}`).value;
+    const borderC = document.getElementById(`borderColor-${categoryId}-${item.id}`).value;
+    const bgC     = document.getElementById(`bgColor-${categoryId}-${item.id}`).value;
+    const fontC   = document.getElementById(`fontSize-${categoryId}-${item.id}`).value;
+
+    previewDiv.style.color = textC;
+    previewDiv.style.border = `1px solid ${borderC}`;
+    previewDiv.style.backgroundColor = bgC;
+    previewDiv.style.fontSize = `${fontC}px`;
+  }
+
+  // We'll attach the event handler after we build the inputs
   let html = `
     <label>
       <input type="checkbox" id="enable-${categoryId}-${item.id}" ${item.enabled?"checked":""}/>
@@ -265,7 +292,6 @@ function createItemTypeHTML(categoryId, item) {
       </select>
     </label>
 
-    <!-- Rarity -->
     <label>Rarity:</label>
     <div style="margin-left:20px;">
       <label><input type="checkbox" id="rarity-normal-${categoryId}-${item.id}"/> Normal</label>
@@ -274,7 +300,6 @@ function createItemTypeHTML(categoryId, item) {
       <label><input type="checkbox" id="rarity-unique-${categoryId}-${item.id}"/> Unique</label>
     </div>
 
-    <!-- Sockets, Quality -->
     <label>Sockets >:
       <input type="number" id="sockets-${categoryId}-${item.id}" value="" min="0"/>
     </label>
@@ -299,7 +324,7 @@ function createItemTypeHTML(categoryId, item) {
     `;
   }
 
-  // Single operator area-level
+  // area-level
   html += `
     <label>AreaLevel:
       <select id="areaLevelOp-${categoryId}-${item.id}">
@@ -311,21 +336,22 @@ function createItemTypeHTML(categoryId, item) {
       <input type="number" id="areaLevelVal-${categoryId}-${item.id}" value="" min="0"/>
     </label>
 
-    <!-- Colors & Font -->
     <label>Text Color:
       <input type="color" id="textColor-${categoryId}-${item.id}" value="#ffffff"/>
     </label>
+
     <label>Border Color:
       <input type="color" id="borderColor-${categoryId}-${item.id}" value="#ffffff"/>
     </label>
+
     <label>Background Color:
       <input type="color" id="bgColor-${categoryId}-${item.id}" value="#000000"/>
     </label>
+
     <label>Font Size:
       <input type="number" id="fontSize-${categoryId}-${item.id}" value="35" min="12" max="60"/>
     </label>
 
-    <!-- Alert Sound -->
     <label>Alert Sound:
       <select id="alertSound-${categoryId}-${item.id}">
         <option value="">None</option>
@@ -340,31 +366,40 @@ function createItemTypeHTML(categoryId, item) {
     </label>
   `;
 
-  container.innerHTML += html;
+  const wrapper = document.createElement("div");
+  wrapper.innerHTML = html;
+  container.appendChild(wrapper);
+
+  // We'll attach 'change' events to relevant inputs to update the preview
+  const textColorEl = wrapper.querySelector(`#textColor-${categoryId}-${item.id}`);
+  const borderColorEl = wrapper.querySelector(`#borderColor-${categoryId}-${item.id}`);
+  const bgColorEl = wrapper.querySelector(`#bgColor-${categoryId}-${item.id}`);
+  const fontSizeEl = wrapper.querySelector(`#fontSize-${categoryId}-${item.id}`);
+
+  [textColorEl, borderColorEl, bgColorEl, fontSizeEl].forEach(el => {
+    el.addEventListener("change", updatePreview);
+  });
+
   return container;
 }
 
 /***************************************************************
  * 5. GENERATE THE FINAL .FILTER
- *    This now includes leftover lines from "Unrecognized Lines"
  ***************************************************************/
 function generateFilterContent() {
   let content = "";
-  
   CATEGORIES.forEach(cat => {
     cat.itemTypes.forEach(item => {
       const enableEl = document.getElementById(`enable-${cat.categoryId}-${item.id}`);
       if (!enableEl?.checked) return;
 
-      // If this is an unrecognized leftover line => just dump the raw lines
-      // We'll store them in item.rawLines if we created them that way.
-      if (cat.categoryId === "unrecognized" && item.rawLines) {
-        // We assume each leftover line belongs to a "Show" or "Hide" block
+      // If unrecognized
+      if (cat.categoryId==="unrecognized" && item.rawLines) {
         content += item.rawLines.join("\n") + "\n\n";
         return;
       }
 
-      // Otherwise, standard item logic
+      // Otherwise standard
       const showOrHide = document.getElementById(`showOrHide-${cat.categoryId}-${item.id}`).value;
       let ruleBlock = `${showOrHide}\n`;
 
@@ -387,13 +422,11 @@ function generateFilterContent() {
       if (sockVal>0) {
         ruleBlock += `  Sockets > ${sockVal}\n`;
       }
-
       // Quality
       const qualVal = parseInt(document.getElementById(`quality-${cat.categoryId}-${item.id}`).value||"0",10);
       if (qualVal>0) {
         ruleBlock += `  Quality > ${qualVal}\n`;
       }
-
       // ItemLevel
       if (item.usesItemLevel) {
         const iLvl = parseInt(document.getElementById(`itemLevel-${cat.categoryId}-${item.id}`).value||"0",10);
@@ -401,7 +434,6 @@ function generateFilterContent() {
           ruleBlock += `  ItemLevel = ${iLvl}\n`;
         }
       }
-
       // StackSize
       if (item.isStackable) {
         const stVal = parseInt(document.getElementById(`stackSize-${cat.categoryId}-${item.id}`).value||"0",10);
@@ -409,14 +441,12 @@ function generateFilterContent() {
           ruleBlock += `  StackSize >= ${stVal}\n`;
         }
       }
-
       // AreaLevel
       const areaOp  = document.getElementById(`areaLevelOp-${cat.categoryId}-${item.id}`).value;
       const areaVal = parseInt(document.getElementById(`areaLevelVal-${cat.categoryId}-${item.id}`).value||"0",10);
       if (areaOp && areaVal>0) {
         ruleBlock += `  AreaLevel ${areaOp} ${areaVal}\n`;
       }
-
       // Class or BaseType
       if (item.isStackable) {
         ruleBlock += `  BaseType "${item.name}"\n`;
@@ -441,8 +471,7 @@ function generateFilterContent() {
       if (fontC) {
         ruleBlock += `  SetFontSize ${fontC}\n`;
       }
-
-      // Alert Sound
+      // Alert sound
       const aSound= document.getElementById(`alertSound-${cat.categoryId}-${item.id}`).value;
       const aDur  = document.getElementById(`alertDuration-${cat.categoryId}-${item.id}`).value;
       if (aSound) {
@@ -453,12 +482,12 @@ function generateFilterContent() {
       content += ruleBlock;
     });
   });
-
   return content;
 }
 
 /***************************************************************
- * 6. PARSE FILTER TEXT (WITH UNRECOGNIZED LINES -> UI)
+ * 6. PARSE FILTER TEXT (WITH UNRECOGNIZED LINES -> UI) 
+ *    + # Comments ignored 
  ***************************************************************/
 function parseFilterText(rawText) {
   const text = rawText.trim();
@@ -467,14 +496,16 @@ function parseFilterText(rawText) {
     return;
   }
 
-  // We'll keep track of leftover lines as "unrecognized items"
-  // We dynamically create them in the "unrecognized" category.
-  // Reset that category's itemTypes each time we load a new filter.
+  // Reset unrecognized category
   const unrecognizedCat = CATEGORIES.find(c => c.categoryId==="unrecognized");
   unrecognizedCat.itemTypes = [];
 
-  // standard parse
-  const lines = text.split(/\r?\n/).map(l => l.trim()).filter(l=>l!=="");
+  // Split lines ignoring # comments
+  const lines = text
+    .split(/\r?\n/)
+    .map(l => l.trim())
+    .filter(l => l!=="" && !l.startsWith("#"));
+
   let blocks = [];
   let current = [];
 
@@ -496,7 +527,7 @@ function parseFilterText(rawText) {
   pushBlock();
 
   if (blocks.length===0) {
-    alert("No 'Show' or 'Hide' lines found. This filter may not match the expected format.");
+    alert("No 'Show' or 'Hide' lines found. Possibly all lines were # comments or blank.");
     return;
   }
 
@@ -524,73 +555,68 @@ function parseFilterText(rawText) {
       alertDur: "300"
     };
 
-    // We'll parse recognized lines, store leftover lines if unrecognized
     let leftover = [];
-
     for (let line of block.slice(1)) {
       let recognized = false;
       if (line.startsWith("Rarity ")) {
         linesDict.rarities=line.replace("Rarity ","").split(" ");
-        recognized = true;
+        recognized=true;
       } else if (line.startsWith("Sockets > ")) {
         linesDict.sockets=parseInt(line.replace("Sockets > ",""),10);
-        recognized = true;
+        recognized=true;
       } else if (line.startsWith("Quality > ")) {
         linesDict.quality=parseInt(line.replace("Quality > ",""),10);
-        recognized = true;
+        recognized=true;
       } else if (line.startsWith("ItemLevel = ")) {
         linesDict.itemLevel=parseInt(line.replace("ItemLevel = ",""),10);
-        recognized = true;
+        recognized=true;
       } else if (line.startsWith("StackSize >=")) {
         linesDict.stackSize=parseInt(line.replace("StackSize >=",""),10);
-        recognized = true;
+        recognized=true;
       } else if (line.startsWith("AreaLevel ")) {
         const tokens=line.split(" ");
         if (tokens.length===3) {
           linesDict.areaOp=tokens[1];
           linesDict.areaVal=parseInt(tokens[2],10);
-          recognized = true;
+          recognized=true;
         }
       } else if (line.startsWith("Class ")) {
         let n=line.replace("Class ","").trim();
         linesDict.className=n.replace(/"/g,"");
-        recognized = true;
+        recognized=true;
       } else if (line.startsWith("BaseType ")) {
         let n=line.replace("BaseType ","").trim();
         linesDict.baseName=n.replace(/"/g,"");
-        recognized = true;
+        recognized=true;
       } else if (line.startsWith("SetTextColor ")) {
         linesDict.textColor=line.replace("SetTextColor ","").trim();
-        recognized = true;
+        recognized=true;
       } else if (line.startsWith("SetBorderColor ")) {
         linesDict.borderColor=line.replace("SetBorderColor ","").trim();
-        recognized = true;
+        recognized=true;
       } else if (line.startsWith("SetBackgroundColor ")) {
         linesDict.bgColor=line.replace("SetBackgroundColor ","").trim();
-        recognized = true;
+        recognized=true;
       } else if (line.startsWith("SetFontSize ")) {
         linesDict.fontSize=line.replace("SetFontSize ","").trim();
-        recognized = true;
+        recognized=true;
       } else if (line.startsWith("PlayAlertSound ")) {
         const parts=line.replace("PlayAlertSound ","").split(" ");
         linesDict.alertSound= parts[0];
         if (parts[1]) linesDict.alertDur= parts[1];
-        recognized = true;
-      } 
-      // If not recognized, store it as leftover
+        recognized=true;
+      }
+
       if (!recognized) leftover.push(line);
     }
 
     // Attempt match
-    let foundCat = null;
-    let foundItem = null;
+    let foundCat=null;
+    let foundItem=null;
 
     if (linesDict.baseName) {
-      // isStackable
       for (let cat of CATEGORIES) {
-        // skip unrecognized category
         if (cat.categoryId==="unrecognized") continue;
-
         for (let it of cat.itemTypes) {
           if (it.isStackable && it.name===linesDict.baseName) {
             foundCat=cat; foundItem=it; break;
@@ -599,10 +625,8 @@ function parseFilterText(rawText) {
         if (foundItem) break;
       }
     } else if (linesDict.className) {
-      // non-stackable
       for (let cat of CATEGORIES) {
         if (cat.categoryId==="unrecognized") continue;
-
         for (let it of cat.itemTypes) {
           if (!it.isStackable && it.name===linesDict.className) {
             foundCat=cat; foundItem=it; break;
@@ -613,12 +637,11 @@ function parseFilterText(rawText) {
     }
 
     if (foundItem) {
-      // we matched
       matchedCount++;
+      // enable
       document.getElementById(`enable-${foundCat.categoryId}-${foundItem.id}`).checked=true;
       document.getElementById(`showOrHide-${foundCat.categoryId}-${foundItem.id}`).value= linesDict.showOrHide;
 
-      // rarities
       if (linesDict.rarities.includes("Normal")) {
         document.getElementById(`rarity-normal-${foundCat.categoryId}-${foundItem.id}`).checked=true;
       }
@@ -632,18 +655,17 @@ function parseFilterText(rawText) {
         document.getElementById(`rarity-unique-${foundCat.categoryId}-${foundItem.id}`).checked=true;
       }
 
-      // sockets, quality, iLvl, stackSize
       if (linesDict.sockets>0) {
-        document.getElementById(`sockets-${foundCat.categoryId}-${foundItem.id}`).value= linesDict.sockets;
+        document.getElementById(`sockets-${foundCat.categoryId}-${foundItem.id}`).value=linesDict.sockets;
       }
       if (linesDict.quality>0) {
-        document.getElementById(`quality-${foundCat.categoryId}-${foundItem.id}`).value= linesDict.quality;
+        document.getElementById(`quality-${foundCat.categoryId}-${foundItem.id}`).value=linesDict.quality;
       }
       if (foundItem.usesItemLevel && linesDict.itemLevel>0) {
-        document.getElementById(`itemLevel-${foundCat.categoryId}-${foundItem.id}`).value= linesDict.itemLevel;
+        document.getElementById(`itemLevel-${foundCat.categoryId}-${foundItem.id}`).value=linesDict.itemLevel;
       }
       if (foundItem.isStackable && linesDict.stackSize>0) {
-        document.getElementById(`stackSize-${foundCat.categoryId}-${foundItem.id}`).value= linesDict.stackSize;
+        document.getElementById(`stackSize-${foundCat.categoryId}-${foundItem.id}`).value=linesDict.stackSize;
       }
       if (linesDict.areaOp && linesDict.areaVal>0) {
         document.getElementById(`areaLevelOp-${foundCat.categoryId}-${foundItem.id}`).value= linesDict.areaOp;
@@ -680,67 +702,47 @@ function parseFilterText(rawText) {
         document.getElementById(`alertDuration-${foundCat.categoryId}-${foundItem.id}`).value= linesDict.alertDur;
       }
 
-      // leftover lines => we move them to unrecognized category
-      if (leftover.length>0) {
-        leftover.forEach(line => {
-          addUnrecognizedLine(line, showOrHide);
-        });
-      }
-
+      // leftover lines => add them to unrecognized as separate items
+      leftover.forEach(l => addUnrecognizedLine(l, linesDict.showOrHide));
     } else {
-      // entire block or partial block is unmatched
+      // entire block unmatched
       unmatchedCount++;
-      // We'll store the entire block in unrecognized category
-      const rawLines = [block[0], ...leftover];
-      addUnrecognizedBlock(rawLines);
+      addUnrecognizedBlock(block);
     }
   }
 
-  let msg = `Loaded filter with ${blocks.length} blocks total.\nMatched: ${matchedCount} blocks/items.`;
-  if (unmatchedCount>0) {
-    msg += `\nUnmatched blocks: ${unmatchedCount}. See 'Unrecognized Lines' category.`;
-  }
-  alert(msg);
-  
-  // Rebuild UI for unrecognized lines, so they appear now:
+  // update UI for unrecognized lines
   rebuildUnrecognizedUI();
+
+  const msg = `Loaded filter with ${blocks.length} blocks.
+Matched ${matchedCount} blocks/items. Unmatched: ${unmatchedCount} blocks => see "Unrecognized Lines" category.`;
+  alert(msg);
 }
 
 /***************************************************************
  * 6B. UTILS for "Unrecognized Lines"
  ***************************************************************/
-/**
- * Adds a single leftover line to unrecognized category.
- * We'll store it as an item with an ID and rawLines=[the leftover].
- */
 function addUnrecognizedLine(line, showOrHide="Show") {
-  const cat = CATEGORIES.find(c=> c.categoryId==="unrecognized");
-  const newId = Date.now() + Math.floor(Math.random()*10000);
-  cat.itemTypes.push({
+  const unrecognizedCat = CATEGORIES.find(c=> c.categoryId==="unrecognized");
+  const newId = Date.now()+Math.floor(Math.random()*10000);
+  unrecognizedCat.itemTypes.push({
     id: newId,
-    name: line,             // we'll display the leftover line
-    showOrHide,            // from block
-    enabled: false,        
-    isStackable: false,    
-    usesItemLevel: false,  
-    rawLines: [ showOrHide, line ] // store them as a block
+    name: line,
+    showOrHide,
+    enabled: false,
+    isStackable: false,
+    usesItemLevel: false,
+    rawLines: [ showOrHide, line ] // minimal block
   });
 }
-
-/**
- * Adds an entire unmatched block (including the first line Show/Hide 
- * plus leftover lines) to unrecognized category as raw lines.
- */
 function addUnrecognizedBlock(rawLines) {
-  const cat = CATEGORIES.find(c=> c.categoryId==="unrecognized");
-  const newId = Date.now() + Math.floor(Math.random()*10000);
+  const unrecognizedCat = CATEGORIES.find(c=> c.categoryId==="unrecognized");
+  const newId = Date.now()+Math.floor(Math.random()*10000);
+  const showOrHide = rawLines[0].startsWith("Show")? "Show":"Hide";
 
-  // The block has first line Show/Hide, then the rest
-  const showOrHide = rawLines[0].startsWith("Show") ? "Show":"Hide";
-
-  cat.itemTypes.push({
+  unrecognizedCat.itemTypes.push({
     id: newId,
-    name: rawLines.join("\\n"), // for UI label, we can show them concatenated
+    name: rawLines.join("\\n"), 
     showOrHide,
     enabled: false,
     isStackable: false,
@@ -748,28 +750,16 @@ function addUnrecognizedBlock(rawLines) {
     rawLines
   });
 }
-
-/**
- * After we've added unrecognized lines, we must reconstruct
- * the "Unrecognized Lines" category UI.
- */
 function rebuildUnrecognizedUI() {
-  // Find the unrecognized category
   const catIndex = CATEGORIES.findIndex(c=> c.categoryId==="unrecognized");
   if (catIndex<0) return;
-
-  const unrecognizedCat = CATEGORIES[catIndex];
-  // find the existing category-section in the DOM
-  const sections = document.querySelectorAll(".category-section");
-  if (!sections[catIndex]) return;
-
-  const section = sections[catIndex];
-  // clear everything below the heading & desc
+  const section = document.querySelectorAll(".category-section")[catIndex];
+  if (!section) return;
   while (section.children.length>2) {
     section.removeChild(section.lastChild);
   }
 
-  // Rebuild
+  const unrecognizedCat = CATEGORIES[catIndex];
   unrecognizedCat.itemTypes.forEach(item => {
     const itemEl = createItemTypeHTML(unrecognizedCat.categoryId, item);
     section.appendChild(itemEl);
@@ -793,7 +783,6 @@ function init() {
   }
 }
 
-// Generate & download final filter
 document.getElementById("filter-form").addEventListener("submit", function(e) {
   e.preventDefault();
   const filterText = generateFilterContent();
