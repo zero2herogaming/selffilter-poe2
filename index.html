@@ -148,7 +148,7 @@
 
   <script>
     /***************************************************************
-     * 1. Define ALL categories & items
+     * 1. Define ALL categories & items (NO WAYSTONES)
      ***************************************************************/
     const CATEGORIES = [
       {
@@ -156,12 +156,12 @@
         name: "Gems (No Rarity / No Sockets)",
         isGemsCategory: true,
         items: [
-          { name: "Uncut Spirit Gem",    usesItemLevel: true,  isStackable: false },
-          { name: "Uncut Support Gem",   usesItemLevel: true,  isStackable: false },
-          { name: "Uncut Skill Gem",     usesItemLevel: true,  isStackable: false },
-          { name: "Soul Core",           usesItemLevel: false, isStackable: false },
-          { name: "Timeless",            usesItemLevel: false, isStackable: false },
-          { name: "Relic",               usesItemLevel: false, isStackable: false }
+          { name: "Uncut Spirit Gem", usesItemLevel: true,  isStackable: false },
+          { name: "Uncut Support Gem", usesItemLevel: true,  isStackable: false },
+          { name: "Uncut Skill Gem",   usesItemLevel: true,  isStackable: false },
+          { name: "Soul Core",        usesItemLevel: false, isStackable: false },
+          { name: "Timeless",         usesItemLevel: false, isStackable: false },
+          { name: "Relic",            usesItemLevel: false, isStackable: false }
         ]
       },
       {
@@ -169,18 +169,18 @@
         name: "One-Handed Weapons",
         isGemsCategory: false,
         items: [
-          { name: "Claws",             usesItemLevel:true,  isStackable:false },
-          { name: "Daggers",           usesItemLevel:true,  isStackable:false },
-          { name: "Wands",             usesItemLevel:true,  isStackable:false },
-          { name: "One Hand Swords",   usesItemLevel:true,  isStackable:false },
-          { name: "One Hand Axes",     usesItemLevel:true,  isStackable:false },
-          { name: "One Hand Maces",    usesItemLevel:true,  isStackable:false },
-          { name: "Sceptres",          usesItemLevel:true,  isStackable:false },
-          { name: "Spears",            usesItemLevel:true,  isStackable:false },
-          { name: "Flails",            usesItemLevel:true,  isStackable:false },
-          { name: "Attuned Wand",      usesItemLevel:true,  isStackable:false },
-          { name: "Siphoning Wand",    usesItemLevel:true,  isStackable:false },
-          { name: "Spiked Club",       usesItemLevel:true,  isStackable:false }
+          { name: "Claws",             usesItemLevel:true, isStackable:false },
+          { name: "Daggers",           usesItemLevel:true, isStackable:false },
+          { name: "Wands",             usesItemLevel:true, isStackable:false },
+          { name: "One Hand Swords",   usesItemLevel:true, isStackable:false },
+          { name: "One Hand Axes",     usesItemLevel:true, isStackable:false },
+          { name: "One Hand Maces",    usesItemLevel:true, isStackable:false },
+          { name: "Sceptres",          usesItemLevel:true, isStackable:false },
+          { name: "Spears",            usesItemLevel:true, isStackable:false },
+          { name: "Flails",            usesItemLevel:true, isStackable:false },
+          { name: "Attuned Wand",      usesItemLevel:true, isStackable:false },
+          { name: "Siphoning Wand",    usesItemLevel:true, isStackable:false },
+          { name: "Spiked Club",       usesItemLevel:true, isStackable:false }
         ]
       },
       {
@@ -567,7 +567,7 @@
             const opt = document.createElement("option");
             opt.value = it.name;
             opt.textContent = it.name;
-            if (it.name=== ruleObj.itemName) opt.selected = true;
+            if (it.name === ruleObj.itemName) opt.selected = true;
             itemSelect.appendChild(opt);
           });
         }
@@ -581,7 +581,7 @@
           const opt = document.createElement("option");
           opt.value = val;
           opt.textContent = val;
-          if (val===rule.showHide) opt.selected=true;
+          if (val === rule.showHide) opt.selected = true;
           showHideSel.appendChild(opt);
         });
         showHideLabel.appendChild(showHideSel);
@@ -589,10 +589,10 @@
 
         // 4) Rarities => hidden if isGemsCategory
         const catObjRef = () => CATEGORIES.find(c=> c.id===rule.categoryId);
-        const isGems = ()=> catObjRef()?.isGemsCategory===true;
+        const isGems = () => catObjRef()?.isGemsCategory === true;
 
         const rarityWrap = document.createElement("div");
-        rarityWrap.style.display = isGems() ? "none":"inline-block";
+        rarityWrap.style.display = isGems() ? "none" : "inline-block";
         rarityWrap.innerHTML = `
           <label><input type="checkbox" data-rarity="Normal"/> Normal</label>
           <label><input type="checkbox" data-rarity="Magic" /> Magic</label>
@@ -603,7 +603,7 @@
 
         // 5) Sockets => hidden if gems
         const socketsLabel = document.createElement("label");
-        socketsLabel.style.display = isGems() ? "none":"inline-block";
+        socketsLabel.style.display = isGems() ? "none" : "inline-block";
         socketsLabel.innerHTML = ` Sockets >: <input type="number" style="width:50px;" value="${rule.socketsVal}"/>`;
         body.appendChild(socketsLabel);
 
@@ -627,9 +627,9 @@
         areaWrap.innerHTML = ` AreaLevel:
           <select>
             <option value="">None</option>
-            <option value=">=" ${rule.areaOp===">="?"selected":""}>>=</option>
-            <option value="<=" ${rule.areaOp==="<="?"selected":""}>&lt;=</option>
-            <option value="="  ${rule.areaOp==="="?"selected":""}>=</option>
+            <option value=">=" ${rule.areaOp===">=" ? "selected" : ""}>>=</option>
+            <option value="<=" ${rule.areaOp==="<=" ? "selected" : ""}>&lt;=</option>
+            <option value="="  ${rule.areaOp==="="  ? "selected" : ""}>=</option>
           </select>
           <input type="number" style="width:50px;" value="${rule.areaVal}"/>
         `;
@@ -709,14 +709,14 @@
         card.appendChild(body);
         container.appendChild(card);
 
-        // Attach event listeners:
+        /*** EVENT LISTENERS ***/
 
         // Category
-        catSelect.addEventListener("change", ()=> {
+        catSelect.addEventListener("change", () => {
           rule.categoryId = catSelect.value;
-          // reset item to first in that cat
-          const newCatObj = CATEGORIES.find(c=> c.id===rule.categoryId);
-          if (newCatObj?.items?.length>0) {
+          // reset item
+          const newCatObj = CATEGORIES.find(c => c.id === rule.categoryId);
+          if (newCatObj?.items?.length) {
             rule.itemName = newCatObj.items[0].name;
           }
           fillItemSelect(rule.categoryId, rule);
@@ -724,137 +724,147 @@
           updateItemLevelStackVisibility(itemLevelLabel, stackLabel, rule);
           renderPreview();
         });
+
         // Item
-        itemSelect.addEventListener("change", ()=> {
+        itemSelect.addEventListener("change", () => {
           rule.itemName = itemSelect.value;
           updateItemLevelStackVisibility(itemLevelLabel, stackLabel, rule);
           renderPreview();
         });
+
         // Show/Hide
-        showHideSel.addEventListener("change", ()=> {
+        showHideSel.addEventListener("change", () => {
           rule.showHide = showHideSel.value;
           renderPreview();
         });
+
         // Rarity checkboxes
         const cbs = rarityWrap.querySelectorAll('input[type="checkbox"]');
         cbs.forEach(cb => {
           const rar = cb.getAttribute("data-rarity");
           cb.checked = rule.rarities.includes(rar);
-          cb.addEventListener("change", ()=> {
+          cb.addEventListener("change", () => {
             if (cb.checked) {
               if (!rule.rarities.includes(rar)) rule.rarities.push(rar);
             } else {
-              rule.rarities = rule.rarities.filter(rr=> rr!==rar);
+              rule.rarities = rule.rarities.filter(rr => rr !== rar);
             }
             renderPreview();
           });
         });
+
         // Sockets
         const socketsInput = socketsLabel.querySelector('input[type="number"]');
-        socketsInput.addEventListener("change", ()=> {
-          rule.socketsVal = parseInt(socketsInput.value||"0",10);
-          renderPreview();
-        });
-        // Quality
-        const qualityInput = qualityLabel.querySelector('input[type="number"]');
-        qualityInput.addEventListener("change", ()=> {
-          rule.qualityVal = parseInt(qualityInput.value||"0",10);
-          renderPreview();
-        });
-        // Itemlevel
-        const lvlInput = itemLevelLabel.querySelector('input[type="number"]');
-        lvlInput.addEventListener("change", ()=> {
-          rule.itemLevelVal = parseInt(lvlInput.value||"0",10);
-          renderPreview();
-        });
-        // Stacksize
-        const stInput = stackLabel.querySelector('input[type="number"]');
-        stInput.addEventListener("change", ()=> {
-          rule.stackVal = parseInt(stInput.value||"0",10);
-          renderPreview();
-        });
-        // Arealevel
-        const areaSel = areaWrap.querySelector('select');
-        const areaNum = areaWrap.querySelector('input[type="number"]');
-        areaSel.addEventListener("change", ()=> {
-          rule.areaOp = areaSel.value;
-          renderPreview();
-        });
-        areaNum.addEventListener("change", ()=> {
-          rule.areaVal = parseInt(areaNum.value||"0",10);
-          renderPreview();
-        });
-        // text color
-        const textCInput = textColorLabel.querySelector('input[type="color"]');
-        textCInput.addEventListener("change", ()=> {
-          rule.textC = textCInput.value;
-          renderPreview();
-        });
-        // border color
-        const borderCInput = borderColorLabel.querySelector('input[type="color"]');
-        borderCInput.addEventListener("change", ()=> {
-          rule.borderC = borderCInput.value;
-          renderPreview();
-        });
-        // bg color
-        const bgCInput = bgColorLabel.querySelector('input[type="color"]');
-        bgCInput.addEventListener("change", ()=> {
-          rule.bgC = bgCInput.value;
-          renderPreview();
-        });
-        // font size
-        const fontCInput = fontSizeLabel.querySelector('input[type="number"]');
-        fontCInput.addEventListener("change", ()=> {
-          rule.fontC = parseInt(fontCInput.value||"35",10);
-          renderPreview();
-        });
-        // alert sound
-        const sel2 = alertWrap.querySelector('select');
-        const dur2 = alertWrap.querySelector('input[type="number"]');
-        sel2.addEventListener("change", ()=> {
-          rule.alertSound = sel2.value;
-          renderPreview();
-        });
-        dur2.addEventListener("change", ()=> {
-          rule.alertDur = parseInt(dur2.value||"300",10);
-          renderPreview();
-        });
-        // minimap
-        const mmSelects = mmWrap.querySelectorAll("select");
-        mmSelects[0].addEventListener("change", ()=> {
-          rule.mmSize = mmSelects[0].value;
-          renderPreview();
-        });
-        mmSelects[1].addEventListener("change", ()=> {
-          rule.mmColor= mmSelects[1].value;
-          renderPreview();
-        });
-        mmSelects[2].addEventListener("change", ()=> {
-          rule.mmShape= mmSelects[2].value;
+        socketsInput.addEventListener("change", () => {
+          rule.socketsVal = parseInt(socketsInput.value || "0", 10);
           renderPreview();
         });
 
-        // init visibility
+        // Quality
+        const qualityInput = qualityLabel.querySelector('input[type="number"]');
+        qualityInput.addEventListener("change", () => {
+          rule.qualityVal = parseInt(qualityInput.value || "0", 10);
+          renderPreview();
+        });
+
+        // ItemLevel
+        const lvlInput = itemLevelLabel.querySelector('input[type="number"]');
+        lvlInput.addEventListener("change", () => {
+          rule.itemLevelVal = parseInt(lvlInput.value || "0", 10);
+          renderPreview();
+        });
+
+        // StackSize
+        const stInput = stackLabel.querySelector('input[type="number"]');
+        stInput.addEventListener("change", () => {
+          rule.stackVal = parseInt(stInput.value || "0", 10);
+          renderPreview();
+        });
+
+        // AreaLevel
+        const areaSel = areaWrap.querySelector('select');
+        const areaNum = areaWrap.querySelector('input[type="number"]');
+        areaSel.addEventListener("change", () => {
+          rule.areaOp = areaSel.value;
+          renderPreview();
+        });
+        areaNum.addEventListener("change", () => {
+          rule.areaVal = parseInt(areaNum.value || "0", 10);
+          renderPreview();
+        });
+
+        // Colors
+        const textCInput = textColorLabel.querySelector('input[type="color"]');
+        textCInput.addEventListener("change", () => {
+          rule.textC = textCInput.value;
+          renderPreview();
+        });
+        const borderCInput = borderColorLabel.querySelector('input[type="color"]');
+        borderCInput.addEventListener("change", () => {
+          rule.borderC = borderCInput.value;
+          renderPreview();
+        });
+        const bgCInput = bgColorLabel.querySelector('input[type="color"]');
+        bgCInput.addEventListener("change", () => {
+          rule.bgC = bgCInput.value;
+          renderPreview();
+        });
+
+        // FontSize
+        const fontCInput = fontSizeLabel.querySelector('input[type="number"]');
+        fontCInput.addEventListener("change", () => {
+          rule.fontC = parseInt(fontCInput.value || "35", 10);
+          renderPreview();
+        });
+
+        // AlertSound
+        const sel2 = alertWrap.querySelector('select');
+        const dur2 = alertWrap.querySelector('input[type="number"]');
+        sel2.addEventListener("change", () => {
+          rule.alertSound = sel2.value;
+          renderPreview();
+        });
+        dur2.addEventListener("change", () => {
+          rule.alertDur = parseInt(dur2.value || "300", 10);
+          renderPreview();
+        });
+
+        // Minimap
+        const mmSelects = mmWrap.querySelectorAll("select");
+        mmSelects[0].addEventListener("change", () => {
+          rule.mmSize = mmSelects[0].value;
+          renderPreview();
+        });
+        mmSelects[1].addEventListener("change", () => {
+          rule.mmColor = mmSelects[1].value;
+          renderPreview();
+        });
+        mmSelects[2].addEventListener("change", () => {
+          rule.mmShape = mmSelects[2].value;
+          renderPreview();
+        });
+
+        // Initialize UI
         updateRaritySocketsVisibility(rarityWrap, socketsLabel, rule.categoryId);
         updateItemLevelStackVisibility(itemLevelLabel, stackLabel, rule);
       });
     }
 
     function updateRaritySocketsVisibility(rarityWrap, socketsLabel, catId) {
-      const cat = CATEGORIES.find(c=> c.id===catId);
+      const cat = CATEGORIES.find(c => c.id === catId);
       if (!cat) return;
-      const isGems = cat.isGemsCategory===true;
-      rarityWrap.style.display  = isGems ? "none":"inline-block";
-      socketsLabel.style.display= isGems ? "none":"inline-block";
+      const isGems = cat.isGemsCategory === true;
+      rarityWrap.style.display = isGems ? "none" : "inline-block";
+      socketsLabel.style.display = isGems ? "none" : "inline-block";
     }
 
     function updateItemLevelStackVisibility(itemLevelLabel, stackLabel, ruleObj) {
-      const cat = CATEGORIES.find(c=> c.id===ruleObj.categoryId);
+      const cat = CATEGORIES.find(c => c.id === ruleObj.categoryId);
       if (!cat) return;
-      const itemData = cat.items.find(i=> i.name===ruleObj.itemName);
+      const itemData = cat.items.find(i => i.name === ruleObj.itemName);
       if (!itemData) return;
-      itemLevelLabel.style.display = itemData.usesItemLevel ? "inline-block":"none";
-      stackLabel.style.display     = itemData.isStackable   ? "inline-block":"none";
+      itemLevelLabel.style.display = itemData.usesItemLevel ? "inline-block" : "none";
+      stackLabel.style.display = itemData.isStackable ? "inline-block" : "none";
     }
 
     /***************************************************************
@@ -871,33 +881,33 @@
         let block = r.showHide + "\n";
 
         // Rarities
-        if (r.rarities?.length>0) {
+        if (r.rarities && r.rarities.length > 0) {
           block += "  Rarity " + r.rarities.join(" ") + "\n";
         }
         // Sockets
-        if (r.socketsVal>0) {
+        if (r.socketsVal > 0) {
           block += `  Sockets > ${r.socketsVal}\n`;
         }
         // Quality
-        if (r.qualityVal>0) {
+        if (r.qualityVal > 0) {
           block += `  Quality > ${r.qualityVal}\n`;
         }
         // ItemLevel
-        if (r.itemLevelVal>0) {
+        if (r.itemLevelVal > 0) {
           block += `  ItemLevel = ${r.itemLevelVal}\n`;
         }
         // StackSize
-        if (r.stackVal>0) {
+        if (r.stackVal > 0) {
           block += `  StackSize >= ${r.stackVal}\n`;
         }
         // AreaLevel
-        if (r.areaOp && r.areaVal>0) {
+        if (r.areaOp && r.areaVal > 0) {
           block += `  AreaLevel ${r.areaOp} ${r.areaVal}\n`;
         }
         // Class or BaseType
-        const cat = CATEGORIES.find(c=> c.id===r.categoryId);
-        const itemData = cat?.items.find(i=> i.name===r.itemName);
-        if (itemData?.isStackable) {
+        const cat = CATEGORIES.find(c => c.id === r.categoryId);
+        const itemData = cat?.items.find(i => i.name === r.itemName);
+        if (itemData && itemData.isStackable) {
           block += `  BaseType "${r.itemName}"\n`;
         } else {
           block += `  Class "${r.itemName}"\n`;
@@ -906,7 +916,7 @@
         // Colors
         block += `  SetTextColor ${hexToRGB(r.textC)}\n`;
         block += `  SetBorderColor ${hexToRGB(r.borderC)}\n`;
-        if (r.bgC.toLowerCase()!=="#ffffff") {
+        if (r.bgC.toLowerCase() !== "#ffffff") {
           block += `  SetBackgroundColor ${hexToRGB(r.bgC)}\n`;
         }
         block += `  SetFontSize ${r.fontC}\n`;
@@ -930,7 +940,7 @@
      ***************************************************************/
     function downloadFilter() {
       const filterText = generateFullFilter();
-      const blob = new Blob([filterText], { type:"text/plain" });
+      const blob = new Blob([filterText], { type: "text/plain" });
       const url = URL.createObjectURL(blob);
       const link = document.getElementById("download-link");
       link.href = url;
@@ -941,7 +951,7 @@
      * Extra Utils
      ***************************************************************/
     function hexToRGB(hex) {
-      const bigint = parseInt(hex.replace("#",""),16);
+      const bigint = parseInt(hex.replace("#", ""), 16);
       const r = (bigint >> 16) & 255;
       const g = (bigint >> 8) & 255;
       const b = bigint & 255;
