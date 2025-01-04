@@ -856,3 +856,4 @@ document.getElementById("filter-form").addEventListener("submit", function(e) {
   document.getElementById("download-section").style.display = "block";
 });
 window.addEventListener("DOMContentLoaded", init);
+
